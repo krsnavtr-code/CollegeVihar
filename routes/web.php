@@ -325,6 +325,3 @@ Route::get("/course/{course}", function (Request $request) {
 });
 
 
-
-
-

@@ -123,8 +123,7 @@
                             @if(is_array($exam->videos))
                             @foreach($exam->videos as $video)
                             <div class="horizontal-group">
-                                <input type="url" name="videos[]" placeholder="Video URL" value="{{ $video['video_url'] }}" required>
-                                <input type="url" name="thumbnails[]" placeholder="Thumbnail URL" value="{{ $video['thumbnail_url'] }}" required>
+                                
                                 <button type="button" class="btn btn-danger">Remove</button>
                             </div>
                             @endforeach

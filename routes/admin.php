@@ -10,6 +10,7 @@ use App\Http\Controllers\backend\TeamController;
 use App\Http\Controllers\backend\BlogController;
 use App\Http\Controllers\backend\ExamController;
 use App\Http\Controllers\backend\EdTechController;
+use App\Http\Controllers\MCQTestController;
 use App\Models\AdminPage;
 use App\Models\EdtechRegistration;
 use App\Models\Jobopening;
@@ -458,6 +459,38 @@ Route::middleware('ensurePermission')->group(function () {
             });
         });
     });
+
+
+
+    Route::prefix('mcq-test')->group(function () {
+
+        // Show all MCQs
+        Route::get('/', [MCQTestController::class, 'index'])->name('admin.mcq.index');
+
+        // Show a single MCQ
+        Route::get('/view/{id}', [MCQTestController::class, 'show'])->name('admin.mcq.view');
+
+        // Create new MCQ form
+        Route::get('/add', function () {
+            return view('admin.mcq.add');
+        })->name('admin.mcq.add');
+
+        // Store new MCQ
+        Route::post('/add', [MCQTestController::class, 'store'])->name('admin.mcq.store');
+
+        // Edit MCQ form
+        Route::get('/edit/{id}', function ($id) {
+            $mcq = \App\Models\MCQTest::findOrFail($id);
+            return view('admin.mcq.edit', compact('mcq'));
+        })->name('admin.mcq.edit');
+
+        // Update MCQ
+        Route::post('/edit/{id}', [MCQTestController::class, 'update'])->name('admin.mcq.update');
+
+        // Delete MCQ
+        Route::post('/delete/{id}', [MCQTestController::class, 'destroy'])->name('admin.mcq.delete');
+    });
+
     // Route::prefix("/adminpage")->group(function () {
     //     Route::get("", function () {
     //     });

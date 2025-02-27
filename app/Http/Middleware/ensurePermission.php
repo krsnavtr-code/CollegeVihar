@@ -20,3 +20,4 @@ class ensurePermission
         return redirect()->route('admin_home');
     }
 }
+    
