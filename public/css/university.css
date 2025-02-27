@@ -1,0 +1,57 @@
+.university {
+    overflow: hidden;
+}
+.university .wrapper {
+    padding: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--gray_100);
+    transition: all 0.3s;
+}
+.university .wrapper:hover {
+    box-shadow: 0 0 10px 0 #00000033;
+    scale: 1.01;
+}
+.university .univ_img {
+    height: 150px;
+    width: 100%;
+}
+.university .univ_details {
+    padding: 20px;
+}
+.university .course {
+    margin-bottom: 15px;
+    letter-spacing: 2px;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+.university .univ_name {
+    font-size: 1.8rem;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    text-transform: capitalize;
+    margin-bottom: 5px;
+}
+.univ_address {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #00000099;
+    margin-bottom: 20px;
+}
+.univ_desc {
+    -webkit-line-clamp: 3;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.university .btn {
+    display: block;
+    margin-top: 20px;
+    padding: 7px;
+    border-radius: 6px;
+    color: white;
+    background: var(--btn_primary);
+    text-align: center;
+}

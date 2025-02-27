@@ -1,0 +1,54 @@
+/* banner  */
+#banner {
+    background: #0056d2;
+    color: #fff;
+    text-transform: capitalize;
+}
+
+/* home cards */
+/* #home-cards button {
+    position: absolute;
+    top: 86%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+} */
+
+/* counter */
+/* Universities */
+
+.uni-card{
+    color: #fff;
+    background: var(--blue);
+}
+
+.uni-img{
+    width: 100%;
+    height: 150px;
+}
+.uni-badge{
+    position: absolute;
+    top: 2%;
+    left: 2%;
+    margin: 2px;
+}
+.courses .card{
+    min-height: 150px;
+}
+.courses .card:hover{
+    transform: scale(1.1);
+}
+.courses .card:hover p{
+    color: var(--red);
+}
+.owl-theme .owl-nav.disabled+.owl-dots{
+    display: none;
+}
+
+/* Universities end */
+@media only screen and (max-width:600px){
+    *{
+        font-size: small;
+    }
+}

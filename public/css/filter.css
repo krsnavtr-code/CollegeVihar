@@ -1,0 +1,72 @@
+.filter-box{
+    border: 1px solid rgb(221, 220, 220);
+    border-radius: 10px;
+    background: var(--blue);
+    overflow: hidden;
+    font-family: poppins;
+    position: sticky;
+    top: 15%;
+}
+.filter{
+    border-top: 1px solid rgb(221, 220, 220);
+    background: #fff;
+    list-style: none;
+    overflow: auto;
+    padding: 0;
+}
+.filter li{
+    margin: 0;
+    padding: 0;
+}
+.filter a{
+    margin: 0;
+    color: gray;
+
+}
+.filter a:hover{
+    background-color: #f9f9f9;
+    color: var(--blue);
+}
+.filter a.active{
+    background: var(--blue);
+    color: #fff !important;
+}
+.filter::-webkit-scrollbar{
+    width: 3px;
+    background: transparent;
+}
+.filter::-webkit-scrollbar-thumb{
+    background: var(--blue);
+    box-sizing: 20px;
+}
+/* filter card */
+.filter-card .text-box{
+    height: 100%;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.filter-btn{
+    display: block;
+    padding: 7px 10px;
+    font-size: 16px;
+    font-weight: 400;
+    text-decoration: none;
+    background: none;
+    border: 0;
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out;
+}
+
+.filter .ms-3{
+    color: rgba(255, 0, 0, 1);
+    background-color: aliceblue;
+    font-size: 12px;
+    border-radius: 0.375rem ;
+    padding-top: .25rem ;
+    padding-bottom: .25rem ;
+    padding-right: .5rem ;
+    padding-left: .5rem ;
+    display: inline-block ;
+
+}

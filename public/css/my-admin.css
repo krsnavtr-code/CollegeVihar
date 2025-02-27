@@ -1,0 +1,122 @@
+body {
+    background-color: #f9f9f9;
+}
+
+::-webkit-scrollbar-thumb:horizontal {
+    height: 3px;
+    background-color: var(--blue);
+}
+
+::-webkit-scrollbar-track:horizontal {
+    background-color: #f1f1f1;
+    height: 3px;
+}
+
+::-webkit-scrollbar {
+    height: 3px;
+}
+
+.side_bar {
+    position: relative;
+    background-color: #fff;
+    position: sticky;
+    top: 0;
+}
+
+.side_bar ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.side_bar li a {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 1rem;
+    padding-left: 2rem;
+    color: gray;
+}
+
+.side_bar li:hover a {
+    background-color: #f9f9f9;
+    color: var(--blue);
+}
+
+.side_bar .accordion-button,
+.side_bar .accordion-header,
+.side_bar .accordion-item {
+    border-radius: 0 !important;
+}
+
+/* University add form */
+h3 {
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--blue);
+    text-transform: uppercase;
+    margin: 2rem 0 1rem;
+}
+
+.field_group {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.field {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: end;
+    white-space: nowrap;
+}
+
+.horizontal-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;   
+}
+.add-item {
+    padding: 21px 40px;
+    background-color: #0D6EFD;
+    border: none;
+    color: #fff;
+    border-radius: 8px;
+}
+
+label,
+input {
+    display: flex;
+}
+
+textarea,
+select,
+input:not(input[type="checkbox"]) {
+    flex: 1;
+    padding: 0.8rem;
+    border-radius: 10px;
+    border: 1px solid gainsboro;
+    margin: 0.5rem;
+}
+
+input[type="checkbox"]:checked+label {
+    background: var(--blue);
+    color: #fff;
+}
+
+input[type="checkbox"] {
+    display: none;
+}
+
+.courses {
+    height: 40vh;
+    overflow: auto;
+    display: flex;
+    flex-wrap: wrap;
+    border-top: 1px solid gainsboro;
+    padding: 1rem 0;
+}
+
+/* add university end */

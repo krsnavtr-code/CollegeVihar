@@ -1,0 +1,43 @@
+.card-diff {
+    position: relative;
+    border-radius: 1.5rem;
+    box-shadow: 0 0 0 0;
+    box-shadow: 0 0 0 0;
+    box-shadow: 0px 8px 0px #2b70f1;
+    background-color: transparent;
+    border: 2px solid #0000;
+    background: linear-gradient(#fff, #fff) padding-box, linear-gradient(#fff,#fff) padding-box,linear-gradient(94.65deg,#5d64ea 12.21%,#5d64ea 64.7%,#5d64ea 100.05%) border-box;
+   
+}
+
+.card-body {
+    padding: 3rem;
+}
+
+.card-title {
+    color: #2b70f1;
+}
+
+.card-text {
+    font-size: 1rem;
+    color: #333;
+}
+
+.line1
+{
+    width: 1px;
+    height: 76px;
+    background-color: rgb(199, 199, 199);
+    position: absolute;
+    top: 26.9%;
+    left: 65.6%;
+}
+.line2
+{
+    width: 1px;
+    height: 76px;
+    background-color: rgb(199, 199, 199);
+    position: absolute;
+    top: 26.9%;
+    left: 34.2%;
+}

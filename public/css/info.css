@@ -1,0 +1,60 @@
+main section {
+    margin: 30px 5vw 10px;
+    padding: 40px 40px 10px 40px;
+    background: white;
+    border-radius: 5px;
+}
+main section:last-of-type{
+    
+    padding-bottom: 40px;
+    
+}
+main section p {
+    line-height: 1.6;
+    text-align: justify;
+}
+main section p:not(:first-of-type) {
+    margin-top: 20px;
+}
+
+main section .section_title {
+    font-size: 2.4rem;
+    font-weight: 400;
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+main section .section_desc {
+    font-size: 1.8rem;
+    color: #00000099;
+    margin-bottom: 20px;
+}
+
+main section li {
+    padding: 3px 10px;
+    text-transform: capitalize;
+}
+
+main .boxes {
+    --gutter:10px;
+}
+
+main .boxes .box .wrapper {
+    background: #e9f5ff;
+    padding: 20px 20px 30px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+main .boxes .box .wrapper h5 {
+    font-size: 4rem;
+    margin-bottom: 15px;
+    color: var(--fv_sec);
+}
+main .boxes .box .wrapper h6 {
+    margin-bottom: 10px;
+}
+
+.why_us .section_title{
+    text-align: center;
+}

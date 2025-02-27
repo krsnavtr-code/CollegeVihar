@@ -1,0 +1,93 @@
+[
+    {
+        "UniverSubject": {
+            "UniverSubject1": "Semester I",
+            "subjectDuration1": "12 Week",
+            "Assignments1": "9 Assignments",
+            "SubjectTopic11": [
+                "Principles of Management and Organizational Behavior",
+                "Managerial Economics",
+                "Accounting for Managers",
+                "Business Statistics and Analytics for Decision making",
+                "Business Environment & Ethics",
+                "Business Communication"
+            ],
+            "UniverSubject2": "Semester II",
+            "subjectDuration2": "12 Week",
+            "Assignments2": "9 Assignments",
+            "Subjects": [
+                "Marketing Management",
+                "Corporate Finance",
+                "Human Resource Management",
+                "Business Research Methods",
+                "Operations Management",
+                "Legal Environment of Business"
+            ],
+            "UniverSubject3": "Semester III",
+            "subjectDuration3": "12 Week",
+            "Assignments3": "6 Assignments",
+            "SubjectTopic31": {
+                "SubjectTopic31": "Common Elective-I*",
+                "SubjectTopic32": "Open Elective - 1**",
+                "SubjectTopic33": "Open Elective - 2**",
+                "SubjectTopic34": "Open Elective - 3**",
+                "SubjectTopic35": "Open Elective - 4**",
+                "SubjectTopic36": "Project Report"
+            },
+            "UniverSubject4": "Semester IV",
+            "subjectDuration4": "12 Week",
+            "Assignments4": "5 Assignments",
+            "SubjectTopic41": {
+                "SubjectTopic41": "Common Elective-I*",
+                "SubjectTopic42": "Open Elective - 1**",
+                "SubjectTopic43": "Open Elective - 2**",
+                "SubjectTopic44": "Open Elective - 3**",
+                "SubjectTopic45": "Open Elective - 4**",
+                "SubjectTopic46": "Management Thesis"
+            }
+        },
+        "Universityalldetails": {
+            "UniverClassType": "Online",
+            "UniverCourseRank": "3",
+            "UniverApplicatDate": null,
+            "UniverAbout": "Vignan's Foundation for Science, Technology and Research (VFSTR), Deemed-to-be University provides quality education in a diverse and intellectually stimulating environment. It imparts value addition through a well-defined curriculum to students to make them competent and build inspired minds. The institute celebrates the power of knowledge, as it aims to inculcate human values through building awareness about one\u2019s self and the societal needs around. \r\nThe institute is well known for its dedicated faculty, state-of-art infrastructure, and excellent placement record year on year. As a Deemed-to-be University, it is in the process of improving its standards to the level of a global technical institution. It aims to help learners to open new doors of opportunities by providing a wide spectrum of resources that offer in-depth and practical exposure.",
+            "ApplicationFee": "2500",
+            "Tutionfee": "",
+            "Examfee": "4000",
+            "UniverTotalFee": "90,000",
+            "UniverTotalFeeUSD": "1800",
+            "UniverEligibility": "Graduation",
+            "UniverDuration": "2 Years",
+            "UniverCourseName": "Master of Business Administration",
+            "IndustryProjects": "Learn through real-world industry projects that replicate real initiatives in top organization across industries.",
+            "UniverAssignment": "Case studies relating to different market conditions and to do an analysis. Case studies/Role plays related ethical issues in business with respect to Indian context."
+        },
+        "Specialization": { "Specialization": "Human Resources" },
+        "OtherDetalis": {
+            "Ranked": "3",
+            "HoursofLearning": "480",
+            "CaseStudiesAssignments": "12",
+            "LiveSessions": "20",
+            "ToolsandSoftware": "Tally, SPSS, AMOS, SWOT Analysis, Experience Curve analysis, Life Cycle analysis, Industry analysis, Strategic Group analysis, Competitor analysis, Regression and Correlation analysis using excel, and analyze data using various statistical tools.",
+            "InternationalLearners": "",
+            "CareerTransitions": "40%",
+            "AverageSalaryHike": "3",
+            "HighestSalary": "14.86"
+        },
+        "KeyHighlights": {
+            "KeyHighlight": "Interactive audio-video lectures, Pre-recorded video lectures, Discussion forum, Self e-learning material, Printed text books, Assignments, quizzes, MCQ, etc. for reinforcement, Independent and group projects\r\n"
+        },
+        "ProgrammeOverview": {
+            "SkillsYouWillLearn": "Interpersonal Skills, Communication Skills, Leadership, Strategic Thinking and Planning Abilities, Entrepreneurial Skills, Technical Skills, Project & Time Management Skills, Teamwork",
+            "JobOpportunities": "Human Resources Manager, Employee Relations Manager, HR Operations Manager , Senior Human Resources Consultsnt, Business Development Manager, System Manager, Project Manager,  Marketing Manager, Business Development Executive, Area Sales Manager, Business Development manager",
+            "ThisProgrammeFor": "Working Professionals, Entrepreneurs, Family Business Owners",
+            "MinimumEligibility": null
+        },
+        "FrequentlyAskedQuestions": {
+            "ProgrammeDetails": "HR and Finance professionals have a large role to play in building an organization whether it is through onboarding & retaining the best minds or implementing effective practices at the workplace. Over a period of time, their responsibilities have evolved to include strategy and financial decision-making. They work closely with the leadership team to transform the organization and workforce by maximizing capabilities and making way for new opportunities.",
+            "Support": "Online Mentoring Sessions on weekends, Doubt Clearing Sessions with faculty during Live Classes and Discussion Forums",
+            "RefundPolicy": "For cancellation of admission, the issue of refund of tuition fee to student shall be decided in the light of MHRD circular, UGC norms (UGC regulations 2016, 6.2) and University policy. The broad rules for refund of tution fee against cancellation of seat are: Admission fee is non-refundable, once student is provisionally admitted. Tuition fee paid will be refunded if the student cancel his /her admission before the commencement of class work. Prior to closing of admissions and after commencement of class work, tuition fee is refundable with proportionate deduction of monthly fee. Once admissions are closed, the entire fee collected shall be forfeited.",
+            "SelectionCriteria": "All the graduates (Regular/Distance/Vocational) with a minimum 50% of marks or 5.2 CGPA in any discipline or equivalent are eligible to apply. In case of SC/ST graduate with a minimum 45% of marks or 4.7 CGPA in any discipline or equivalent are eligible to apply."
+        }
+    }
+]

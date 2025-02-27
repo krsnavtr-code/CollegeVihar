@@ -1,0 +1,56 @@
+footer {
+    text-transform: capitalize;
+}
+
+footer .between {
+    flex-wrap: wrap;
+}
+
+
+footer a {
+    display: block;
+    color: #fff;
+}
+
+footer li:hover a {
+    color: red;
+}
+
+footer .tnc a {
+    color: blue;
+}
+
+
+footer .tnc {
+    text-align: center;
+    color: black;
+}
+
+.tnc a {
+    display: inline;
+}
+
+footer article {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+footer p {
+    text-align: center;
+    padding: 4px;
+}
+
+@media only screen and (max-width:600px) {
+    footer article {
+        display: block;
+    }
+
+
+    footer p,
+    footer ul {
+        text-align: left;
+        padding: 0;
+    }
+}

@@ -1,0 +1,45 @@
+.uni-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    gap: 1rem;
+    color: var(--blue);
+}
+
+.uni-card img {
+    height: 60px;
+}
+
+.uni-card h6 {
+    font-size: 12px;
+    text-align: center;
+}
+
+.uni-card:hover {
+    transform: scale(1.1);
+    color: var(--red);
+}
+
+h2 {
+    color: var(--blue);
+    font-size: 1.7rem;
+    margin: 1rem 0;
+}
+
+h6 {
+    color: var(--blue);
+}
+p{
+    margin: 4px;
+}
+
+.ad-img {
+    height: 200px;
+    mix-blend-mode: screen;
+}
+
+::marker {
+    color: var(--blue);
+}

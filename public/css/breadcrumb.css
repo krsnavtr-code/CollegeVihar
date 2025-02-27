@@ -1,0 +1,31 @@
+/* background image */
+.hero {
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    color: #fff;
+    position: relative;
+    height: 15vh;
+    display: flex;
+    align-items: center;
+    background-position: 0px -81px;
+
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.37);
+    z-index: 1;
+}
+
+.hero-content {
+    z-index: 2;
+}
+
+/* .breadcrumb-item a {
+    color: #fff !important;
+} */
+
+/* background img end */
