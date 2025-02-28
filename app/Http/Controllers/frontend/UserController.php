@@ -558,7 +558,7 @@ class UserController extends Controller
     public function showExamDetails($id)
     {
         $competitive = CompetitiveExam::find($id);
-
+        
         if (!$competitive) {
             return redirect()->back()->with('error', 'Exam not found');
         }
@@ -566,6 +566,9 @@ class UserController extends Controller
 
         return view('user.info.competitive-details', compact('competitive'));
     }
+
+
+    
 
     public function returnToLogin(Request $request)
     {

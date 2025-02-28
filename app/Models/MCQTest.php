@@ -19,5 +19,11 @@ class MCQTest extends Model
         'answer3',
         'answer4',
         'correct_answer',
+        'competitive_exam_id',
     ];
+
+    public function competitiveExam()
+    {
+        return $this->belongsTo(CompetitiveExam::class, 'competitive_exam_id');
+    }
 }

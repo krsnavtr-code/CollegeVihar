@@ -561,7 +561,9 @@ $total_pages = ceil($total_lines / $lines_per_page);
                                     <li class="list-group-item">Ensure you have a stable Internet connection.</li>
                                     <li class="list-group-item">After selecting your answer, click on the "Submit" button.</li>
                                 </ul>
-                                
+                                    <a href="{{ route('exam.quiz', $competitive->id) }}" class="btn btn-primary">
+                                      Start Your Test
+                                    </a>
                             </div>
                         </div>
                     </div>

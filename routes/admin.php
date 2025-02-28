@@ -472,7 +472,8 @@ Route::middleware('ensurePermission')->group(function () {
 
         // Create new MCQ form
         Route::get('/add', function () {
-            return view('admin.mcq.add');
+            $competitiveExams = CompetitiveExam::all();
+            return view('admin.mcq.add', compact('competitiveExams'));
         })->name('admin.mcq.add');
 
         // Store new MCQ
@@ -481,7 +482,8 @@ Route::middleware('ensurePermission')->group(function () {
         // Edit MCQ form
         Route::get('/edit/{id}', function ($id) {
             $mcq = \App\Models\MCQTest::findOrFail($id);
-            return view('admin.mcq.edit', compact('mcq'));
+            $competitiveExams = CompetitiveExam::all();
+            return view('admin.mcq.edit', compact('mcq', 'competitiveExams'));
         })->name('admin.mcq.edit');
 
         // Update MCQ

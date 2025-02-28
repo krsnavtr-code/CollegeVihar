@@ -29,6 +29,14 @@
                     <option value="4">Answer 4</option>
                 </select>
             </div>
+            <div class="field">
+                <label>Competitive Exam</label>
+                <select name="competitive_exam_id" required>
+                    @foreach($competitiveExams as $exam)
+                        <option value="{{ $exam->id }}">{{ $exam->exam_type }}</option>
+                    @endforeach
+                </select>
+            </div>
         </section>
         <div class="text-end p-4">
             <button type="submit" class="btn btn-primary btn-lg">Save MCQ</button>

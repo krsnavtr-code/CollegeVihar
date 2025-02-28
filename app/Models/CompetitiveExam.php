@@ -34,6 +34,10 @@ class CompetitiveExam extends Model
         'exam_urls' => 'json'
     ];
 
+    public function mcqTests()
+    {
+        return $this->hasMany(MCQTest::class, 'competitive_exam_id');
+    }
     
 }
 

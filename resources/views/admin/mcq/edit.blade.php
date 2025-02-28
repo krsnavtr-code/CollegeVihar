@@ -5,6 +5,7 @@
     <h2>Edit MCQ</h2>
     <form action="{{ route('admin.mcq.update', $mcq->id) }}" method="POST">
         @csrf
+       
         <section class="panel">
             <div class="field">
                 <label>Test Duration (minutes)</label>
@@ -27,6 +28,14 @@
                     <option value="2" {{ $mcq->correct_answer == '2' ? 'selected' : '' }}>Answer 2</option>
                     <option value="3" {{ $mcq->correct_answer == '3' ? 'selected' : '' }}>Answer 3</option>
                     <option value="4" {{ $mcq->correct_answer == '4' ? 'selected' : '' }}>Answer 4</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Competitive Exam</label>
+                <select name="competitive_exam_id" required>
+                    @foreach($competitiveExams as $exam)
+                        <option value="{{ $exam->id }}" {{ $mcq->competitive_exam_id == $exam->id ? 'selected' : '' }}>{{ $exam->exam_type }}</option>
+                    @endforeach
                 </select>
             </div>
         </section>

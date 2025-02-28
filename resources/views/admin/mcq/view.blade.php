@@ -12,6 +12,7 @@
         <li><strong>4:</strong> {{ $mcq->answer4 }}</li>
     </ul>
     <p><strong>Correct Answer:</strong> {{ $mcq->correct_answer }}</p>
+    <p><strong>Competitive Exam:</strong> {{ $mcq->competitiveExam->exam_type ?? 'Not assigned' }}</p>
     <a href="{{ route('admin.mcq.index') }}" class="btn btn-primary">Back to MCQs</a>
 </div>
 @endsection
