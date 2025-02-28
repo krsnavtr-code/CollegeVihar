@@ -122,11 +122,11 @@ Route::get('/scholarship-exam/{id}', [UserController::class, 'showscholarshipExa
 // Route::get('/competitive-details/{type}', [UserController::class, 'showCompetitiveDetails']);
 Route::get('/competitive-exam/{id}', [UserController::class, 'showExamDetails']);
 
-Route::get('/exam/{competitive_exam_id}', [MCQTestController::class, 'showQuiz'])->name('exam.quiz');
+Route::get('/competitive-exam/exam/{competitive_exam_id}', [MCQTestController::class, 'showQuiz'])->name('exam.quiz');
 
 // Route::post('/exam/{competitive_exam_id}/next', [MCQTestController::class, 'nextQuiz'])->name('exam.next');
 Route::post('/exam/{competitive_exam_id}/next', [MCQTestController::class, 'nextQuiz'])->name('exam.next');
-Route::get('/exam/{competitive_exam_id}/result', [MCQTestController::class, 'showResult'])->name('exam.result');
+Route::get('/competitive-exam/exam/{competitive_exam_id}/result', [MCQTestController::class, 'showResult'])->name('exam.result');
 
 Route::get("/drive",function(){
     return view("user.info.drive");
