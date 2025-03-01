@@ -547,13 +547,14 @@ $total_pages = ceil($total_lines / $lines_per_page);
 
                             <div class="guidelines-container text-center">
                                 <h2 class="mb-3">Guidelines</h2>
+                                @foreach($mockTests as $mockTest)
                                 <ul class="list-group text-start">
                                     <li class="list-group-item">All questions are mandatory and there is no negative marking.</li>
-                                    <li class="list-group-item">Duration: <?php echo "45"; ?> minutes</li>
+                                    <li class="list-group-item">Duration: {{ $mockTest->test_duration }} minutes</li>
                                     <li class="list-group-item">Total Questions: <?php echo "27"; ?></li>
                                     <li class="list-group-item">Question Type: MCQ</li>
                                 </ul>
-
+                                @endforeach
                                 <h4 class="mt-4">Disclaimer</h4>
                                 <ul class="list-group text-start">
                                     <li class="list-group-item">Read the question carefully.</li>
@@ -561,9 +562,11 @@ $total_pages = ceil($total_lines / $lines_per_page);
                                     <li class="list-group-item">Ensure you have a stable Internet connection.</li>
                                     <li class="list-group-item">After selecting your answer, click on the "Submit" button.</li>
                                 </ul>
-                                    <a href="{{ route('exam.quiz', $competitive->id) }}" class="btn btn-primary mt-3">
+                                @foreach($mockTests as $mockTest)
+                                    <a href="{{ route('quizzes.start', $mockTest->id) }}" class="btn btn-primary mt-3">
                                       Start Your Test
                                     </a>
+                                    @endforeach
                             </div>
                         </div>
                     </div>

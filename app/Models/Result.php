@@ -1,18 +1,22 @@
 <?php
 
-// app/Models/Result.php
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
 class Result extends Model
 {
-    protected $fillable = ['competitive_exam_id', 'total_mcqs', 'correct_answers', 'score'];
+    protected $table = 'results';
 
-   
+    protected $fillable = ['user_id', 'mock_test_id', 'correct_answers', 'wrong_answers', 'score_percentage'];
 
-    public function competitiveExam()
+    public function user()
     {
-        return $this->belongsTo(CompetitiveExam::class);
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function mockTest()
+    {
+        return $this->belongsTo(MockTest::class, 'mock_test_id');
     }
 }

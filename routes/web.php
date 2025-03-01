@@ -12,7 +12,7 @@ use App\Http\Controllers\frontend\UserOtpController;
 use App\Http\Controllers\backend\courseController;
 use App\Http\Controllers\frontend\SearchjobController;
 use App\Http\Controllers\backend\UniversityController;
-use App\Http\Controllers\MCQTestController;
+use App\Http\Controllers\QuizController;
 use App\Models\Course;
 use App\Models\Otp;
 use App\Models\EdtechRegistration;
@@ -122,11 +122,10 @@ Route::get('/scholarship-exam/{id}', [UserController::class, 'showscholarshipExa
 // Route::get('/competitive-details/{type}', [UserController::class, 'showCompetitiveDetails']);
 Route::get('/competitive-exam/{id}', [UserController::class, 'showExamDetails']);
 
-Route::get('/competitive-exam/exam/{competitive_exam_id}', [MCQTestController::class, 'showQuiz'])->name('exam.quiz');
-
-// Route::post('/exam/{competitive_exam_id}/next', [MCQTestController::class, 'nextQuiz'])->name('exam.next');
-Route::post('/exam/{competitive_exam_id}/next', [MCQTestController::class, 'nextQuiz'])->name('exam.next');
-Route::get('/competitive-exam/exam/{competitive_exam_id}/result', [MCQTestController::class, 'showResult'])->name('exam.result');
+Route::get('/competitive-exams/{examId}/mocks', [QuizController::class, 'showMocks'])->name('quizzes.mocks');
+Route::get('/mock-tests/{mockTestId}/start', [QuizController::class, 'startQuiz'])->name('quizzes.start');
+Route::post('/quiz/submit', [QuizController::class, 'submitAnswer'])->name('quizzes.submit');
+Route::get('/quiz/result/{mockTestId}', [QuizController::class, 'showResult'])->name('quizzes.result');
 
 Route::get("/drive",function(){
     return view("user.info.drive");

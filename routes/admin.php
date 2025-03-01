@@ -10,7 +10,7 @@ use App\Http\Controllers\backend\TeamController;
 use App\Http\Controllers\backend\BlogController;
 use App\Http\Controllers\backend\ExamController;
 use App\Http\Controllers\backend\EdTechController;
-use App\Http\Controllers\MCQTestController;
+use App\Http\Controllers\MockTestController;
 use App\Models\AdminPage;
 use App\Models\EdtechRegistration;
 use App\Models\Jobopening;
@@ -465,10 +465,10 @@ Route::middleware('ensurePermission')->group(function () {
     Route::prefix('mcq-test')->group(function () {
 
         // Show all MCQs
-        Route::get('/', [MCQTestController::class, 'index'])->name('admin.mcq.index');
+        Route::get('/', [MockTestController::class, 'index'])->name('admin.mcq.index');
 
         // Show a single MCQ
-        Route::get('/view/{id}', [MCQTestController::class, 'show'])->name('admin.mcq.view');
+        Route::get('/view/{id}', [MockTestController::class, 'show'])->name('admin.mcq.view');
 
         // Create new MCQ form
         Route::get('/add', function () {
@@ -477,24 +477,46 @@ Route::middleware('ensurePermission')->group(function () {
         })->name('admin.mcq.add');
 
         // Store new MCQ
-        Route::post('/add', [MCQTestController::class, 'store'])->name('admin.mcq.store');
+        Route::post('/add', [MockTestController::class, 'store'])->name('admin.mcq.store');
 
         // Edit MCQ form
         Route::get('/edit/{id}', function ($id) {
-            $mcq = \App\Models\MCQTest::findOrFail($id);
+            $mcq = \App\Models\MockTest::findOrFail($id);
             $competitiveExams = CompetitiveExam::all();
             return view('admin.mcq.edit', compact('mcq', 'competitiveExams'));
         })->name('admin.mcq.edit');
 
         // Update MCQ
-        Route::post('/edit/{id}', [MCQTestController::class, 'update'])->name('admin.mcq.update');
+        Route::post('/edit/{id}', [MockTestController::class, 'update'])->name('admin.mcq.update');
 
         // Delete MCQ
-        Route::post('/delete/{id}', [MCQTestController::class, 'destroy'])->name('admin.mcq.delete');
+        Route::post('/delete/{id}', [MockTestController::class, 'destroy'])->name('admin.mcq.delete');
     });
 
     // Route::prefix("/adminpage")->group(function () {
     //     Route::get("", function () {
     //     });
     // });
+    Route::prefix('mock-test')->group(function () {
+    
+    Route::get('/', [MockTestController::class, 'index'])->name('admin.mock-test.index');
+
+    
+    Route::get('/view/{id}', [MockTestController::class, 'show'])->name('admin.mock-test.show');
+
+    
+    Route::get('/add', [MockTestController::class, 'create'])->name('admin.mock-test.add');
+
+    
+    Route::post('/add', [MockTestController::class, 'store'])->name('admin.mock-test.store');
+
+    
+    Route::get('/edit/{id}', [MockTestController::class, 'edit'])->name('admin.mock-test.edit');
+
+    
+    Route::put('/edit/{id}', [MockTestController::class, 'update'])->name('admin.mock-test.update');
+
+    
+    Route::delete('/delete/{id}', [MockTestController::class, 'destroy'])->name('admin.mock-test.delete');
+});
 });

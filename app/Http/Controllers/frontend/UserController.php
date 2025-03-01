@@ -20,6 +20,7 @@ use App\Models\UniversityCourse;
 use App\Models\Course;
 use App\Models\Otp;
 use App\Models\Recruiter;
+use App\Models\MockTest;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Session;
@@ -555,16 +556,21 @@ class UserController extends Controller
     }
 
 
-    public function showExamDetails($id)
+   public function showExamDetails($id)
     {
         $competitive = CompetitiveExam::find($id);
         
         if (!$competitive) {
             return redirect()->back()->with('error', 'Exam not found');
         }
-        // dd($competitive);
 
-        return view('user.info.competitive-details', compact('competitive'));
+        // Fetch related mock tests for this competitive exam
+        $mockTests = MockTest::where('competitive_exam_id', $id)->get();
+        
+        // Get the first mock test (or handle if no mock tests exist)
+        $firstMockTest = $mockTests->first();
+
+        return view('user.info.competitive-details', compact('competitive', 'mockTests', 'firstMockTest'));
     }
 
 

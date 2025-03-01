@@ -4,24 +4,23 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateResultsTable extends Migration
+class CreateMockTestsTable extends Migration
 {
     public function up()
     {
-        Schema::create('results', function (Blueprint $table) {
+        Schema::create('mock_tests', function (Blueprint $table) {
             $table->id();
+            $table->integer('test_duration');
             $table->unsignedBigInteger('competitive_exam_id');
-            $table->integer('total_mcqs');
-            $table->integer('correct_answers');
-            $table->decimal('score', 5, 2);
             $table->timestamps();
 
+            // Foreign key constraint
             $table->foreign('competitive_exam_id')->references('id')->on('competitive_exams')->onDelete('cascade');
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('results');
+        Schema::dropIfExists('mock_tests');
     }
 }
