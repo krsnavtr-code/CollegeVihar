@@ -17,5 +17,7 @@ class Otp extends Model
         'otp',
         'expires_at',
         'status',
+        
+        'user_type',
     ];
 }

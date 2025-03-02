@@ -61,7 +61,13 @@ class CheckUserActive
                  Session::forget('user_active_until');
      
                  // Redirect to the universal login page with target route information
-                 return redirect()->route('universal-login');
+
+                 if ($routeName == 'quizzes.start') {
+                      return redirect()->route('universal-login', ['user_type' => 'mock']);
+                  }
+
+                  return redirect()->route('universal-login');
+
              } 
             
          }

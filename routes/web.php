@@ -123,10 +123,16 @@ Route::get('/scholarship-exam/{id}', [UserController::class, 'showscholarshipExa
 Route::get('/competitive-exam/{id}', [UserController::class, 'showExamDetails']);
 
 Route::get('/competitive-exams/{examId}/mocks', [QuizController::class, 'showMocks'])->name('quizzes.mocks');
-Route::get('/mock-tests/{mockTestId}/start', [QuizController::class, 'startQuiz'])->name('quizzes.start');
-Route::post('/quiz/submit', [QuizController::class, 'submitAnswer'])->name('quizzes.submit');
-Route::get('/quiz/result/{mockTestId}', [QuizController::class, 'showResult'])->name('quizzes.result');
 
+// Route::post('/quiz/verify-otp/{mockTestId}', [QuizController::class, 'VerifyQuizOtp'])->name('quizzes.verify-otp');
+
+
+Route::middleware([CheckUserActive::class])->group(function () {
+    Route::get('competitive-exams/mock-tests/{mockTestId}/start', [QuizController::class, 'startQuiz'])->name('quizzes.start');
+
+    Route::post('/quiz/submit', [QuizController::class, 'submitAnswer'])->name('quizzes.submit');
+    Route::get('competitive-exams/mock-test/result/{mockTestId}', [QuizController::class, 'showResult'])->name('quizzes.result');
+});
 Route::get("/drive",function(){
     return view("user.info.drive");
 });

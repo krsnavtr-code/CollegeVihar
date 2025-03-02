@@ -139,6 +139,7 @@ $page_title = '';
             @csrf
             <label for="email">Email</label>
             <input type="email" id="email" name="email" placeholder="Email" value="{{ old('email') }}" required>
+            <input type="hidden" name="user_type" value="{{ request()->user_type ?? '' }}">
             <button type="submit">Send OTP</button>
         </form>
 
@@ -147,6 +148,7 @@ $page_title = '';
             @csrf
             <label for="phone">Phone</label>
             <input type="text" id="phone" name="phone" placeholder="Phone" value="{{ old('phone') }}"  maxlength="10"  pattern="\d{10}" required>
+            <input type="hidden" name="user_type" value="{{ request()->user_type ?? '' }}">
             <button type="submit">Send OTP</button>
         </form>
 

@@ -34,9 +34,9 @@ class CompetitiveExam extends Model
         'exam_urls' => 'json'
     ];
 
-    public function mcqTests()
+    public function mockTests()
     {
-        return $this->hasMany(MCQTest::class, 'competitive_exam_id');
+        return $this->hasMany(MockTest::class, 'competitive_exam_id');
     }
     
 }

@@ -19,4 +19,9 @@ class Result extends Model
     {
         return $this->belongsTo(MockTest::class, 'mock_test_id');
     }
+
+    public function otp()
+    {
+        return $this->belongsTo(Otp::class, 'user_id', 'id');
+    }
 }

@@ -615,7 +615,8 @@ class UserController extends Controller
             [
                 'otp' => $otp,
                 'expires_at' => now()->addMinutes(10),
-                'status' => 'pending'
+                'status' => 'pending',
+                'user_type' => $request->user_type ?? 'job'
             ]
         );
 
@@ -677,7 +678,10 @@ class UserController extends Controller
             
             // Clear OTP session variables
             Session::forget(['otp_sent', 'otp_method', 'temp_email']);    
-            // return redirect('/');
+            
+            if($otpRecord->user_type == 'mock'){
+                return redirect('/competitive-exam');
+            }
             return redirect('/job-openings');
 
 
@@ -712,7 +716,8 @@ class UserController extends Controller
             [
                 'otp' => $otpCode,
                 'expires_at' => now()->addMinutes(10),
-                'status' => 'pending'
+                'status' => 'pending',
+                'user_type' => $request->user_type ?? 'job'
             ]
         );
 
