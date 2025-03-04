@@ -551,7 +551,7 @@ $total_pages = ceil($total_lines / $lines_per_page);
                                 <ul class="list-group text-start">
                                     <li class="list-group-item">All questions are mandatory and there is no negative marking.</li>
                                     <li class="list-group-item">Duration: {{ $mockTest->test_duration }} minutes</li>
-                                    <li class="list-group-item">Total Questions: <?php echo "27"; ?></li>
+                                    <li class="list-group-item">Total Questions: {{ $mockTest->questions->count() }}</li>
                                     <li class="list-group-item">Question Type: MCQ</li>
                                 </ul>
                                 @endforeach
