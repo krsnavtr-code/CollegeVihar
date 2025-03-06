@@ -15,10 +15,14 @@
                     <option selected disabled value="">
                         ----- Course Type -----
                     </option>
-                    <option @if($course['course_type']=="UG" ) selected @endif value="UG">UG</option>
-                    <option @if($course['course_type']=="PG" ) selected @endif value="PG">PG</option>
-                    <option @if($course['course_type']=="DIPLOMA" ) selected @endif value="DIPLOMA">Diploma</option>
-                    <option @if($course['course_type']=="CERTIFICATION" ) selected @endif value="CERTIFICATION">Certification</option>
+                    <option {{ $course['course_type'] == 'UG' ? 'selected' : '' }} value="UG">UG</option>
+                    <option {{ $course['course_type'] == 'PG' ? 'selected' : '' }} value="PG">PG</option>
+                    <option {{ $course['course_type'] == 'DIPLOMA' ? 'selected' : '' }} value="DIPLOMA">Diploma</option>
+                    <option {{ $course['course_type'] == 'CERTIFICATION' ? 'selected' : '' }} value="CERTIFICATION">Certification</option>
+                    <option {{ $course['course_type'] == 'TECHNICAL COURSES' ? 'selected' : '' }} value="TECHNICAL COURSES">Technical Courses</option>
+                    <option {{ $course['course_type'] == 'MANAGEMENT COURSES' ? 'selected' : '' }} value="MANAGEMENT COURSES">Management Courses</option>
+                    <option {{ $course['course_type'] == 'MEDICAL COURSES' ? 'selected' : '' }} value="MEDICAL COURSES">Medical Courses</option>
+                    <option {{ $course['course_type'] == 'TRADITIONAL COURSES' ? 'selected' : '' }} value="TRADITIONAL COURSES">Traditional Courses</option>
                 </select>
             </div>
             <div class="field">
