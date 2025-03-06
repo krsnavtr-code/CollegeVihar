@@ -43,22 +43,24 @@ class UniversityController extends Controller
             'univ_name' => 'required|unique:universities,univ_name',
             'univ_url' => 'required|unique:universities,univ_url',
             'univ_type' => 'nullable',
+            'univ_category' => 'nullable',
             'univ_person' => 'nullable',
             'univ_person_email' => 'nullable',
             'univ_person_phone' => 'nullable',
             'univ_payout' => 'nullable|numeric',
         ]);
-    
+        
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-    
+        
         $uni = new University;
 
         // University Basic Details
         $uni->univ_name = $request->univ_name;
         $uni->univ_url = $request->univ_url;
         $uni->univ_type = $request->univ_type;
+        $uni->univ_category = $request->univ_category;
 
         // University person to contact
         $uni->univ_person = $request->univ_person;
@@ -76,7 +78,7 @@ class UniversityController extends Controller
             'success' => true,
             'message' => 'University added successfully.'
         ]);   
-       
+        
     }
 
     /* Update University Details */
@@ -87,6 +89,7 @@ class UniversityController extends Controller
         $uni->univ_name = $request->univ_name;
         $uni->univ_url = $request->univ_url;
         $uni->univ_type = $request->univ_type;
+        $uni->univ_category = $request->univ_category;
 
         // University person to contact
         $uni->univ_person = $request->univ_person;
@@ -99,7 +102,7 @@ class UniversityController extends Controller
             isset($cor['old_id']) ? courseController::editUnivCourse($cor) : courseController::addUnivCourse($uni->id, $cor);
         }
         return ["success" => true];
-      
+        
     }
 
     /* Add University Detail */
@@ -233,8 +236,47 @@ class UniversityController extends Controller
         return view ('user.info.showuniversity');
     }
 
+    public function filterUniversities(Request $request)
+    {
+        $query = University::query();
+
+        if ($request->has('univ_category') && $request->univ_category != '') {
+            $query->where('univ_category', $request->univ_category);
+        }
+
+        if ($request->has('course_type') && $request->course_type != '') {
+            $query->whereHas('courses', function ($q) use ($request) {
+                $q->where('course_type', $request->course_type);
+            });
+        }
+
+        if ($request->has('courses') && $request->courses != '') {
+            $query->whereHas('courses', function ($q) use ($request) {
+                $q->where('course_name', $request->courses);
+            });
+        }
+
+        if ($request->has('univ_name') && $request->univ_name != '') {
+            $query->where('univ_name', 'like', '%' . $request->univ_name . '%');
+        }
+
+        $universities = $query->with('courses')->get();
+
+        $courses = [];
+        if ($request->has('course_type') && $request->course_type != '') {
+            $courses = \App\Models\Course::where('course_type', $request->course_type)
+            ->select('course_name')
+            ->get()
+            ->toArray();
+        }
+
+        return response()->json([
+            'universities' => $universities,
+            'courses' => $courses
+        ]);
+    }
     
 }
 
 
-  
+

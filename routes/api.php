@@ -60,3 +60,7 @@ Route::get("search/{query}", function ($query) {
     print_r($results);
     echo "</pre>";
 });
+
+
+
+Route::get('/universities/search', [UniversityController::class, 'filterUniversities']);

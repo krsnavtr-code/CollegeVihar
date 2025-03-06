@@ -16,6 +16,10 @@
                     <option value="PG">PG</option>
                     <option value="DIPLOMA">Diploma</option>
                     <option value="CERTIFICATION">Certification</option>
+                    <option value="TECHNICAL COURSES">Technical Courses</option>
+                    <option value="MANAGEMENT COURSES">Management Courses</option>
+                    <option value="MEDICAL COURSES">Medical Courses</option>
+                    <option value="TRADITIONAL COURSES">Traditional Courses</option>
                 </select>
             </div>
             <div class="field">

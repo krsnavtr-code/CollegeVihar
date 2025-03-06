@@ -40,6 +40,19 @@ $added[] = $course['id'];
                         <option @if ($university['univ_type']=='online' ) selected @endif value="online">online</option>
                     </select>
                 </div>
+                <div class="field">
+    <label for="univ_category">University Category</label>
+    <!-- Debug: Show current value -->
+    <!-- <p>Current value: {{ $university['univ_category'] ?? 'Not set' }}</p> -->
+    <select name="univ_category" id="univ_category" required>
+        <option value="" {{ !isset($university['univ_category']) || empty(trim($university['univ_category'])) ? 'selected' : '' }}>-- Please Select --</option>
+        <option value="central university" {{ trim(strtolower($university['univ_category'] ?? '')) === 'central university' ? 'selected' : '' }}>Central University</option>
+        <option value="state university" {{ trim(strtolower($university['univ_category'] ?? '')) === 'state university' ? 'selected' : '' }}>State University</option>
+        <option value="state private university" {{ trim(strtolower($university['univ_category'] ?? '')) === 'state private university' ? 'selected' : '' }}>State Private University</option>
+        <option value="state public university" {{ trim(strtolower($university['univ_category'] ?? '')) === 'state public university' ? 'selected' : '' }}>State Public University</option>
+        <option value="deemed university" {{ trim(strtolower($university['univ_category'] ?? '')) === 'deemed university' ? 'selected' : '' }}>Deemed University</option>
+    </select>
+</div>
             </div>
         </section>
         <section class="panel">
@@ -138,6 +151,95 @@ $added[] = $course['id'];
                 @endforeach
             </div>
         </section>
+
+        <section class="card p-2 mb-4">
+            <div class="flex">
+                <h3>TECHNICAL Courses :</h3>
+                <input type="search" name="" id="searchTECHNICAL" placeholder="Search TECHNICAL Courses" oninput="filterCourses('TECHNICAL')">
+            </div>
+            <div class="courses">
+                @foreach ($courses as $i => $course)
+                @if ($course['course_type'] == 'TECHNICAL COURSES')
+                <div class="course-item-TECHNICAL" title="{{ $course['course_name'] }}"
+                @class(['disable' => in_array($course['id'], $added)])>
+                <input type="checkbox" value="{{ $course['id'] }}"
+                data-course="{{ $course['course_name'] . ' (' . $course['course_short_name'] . ')' }}"
+                id="f{{ $i }}"
+                @if (in_array($course['id'], $added)) checked disabled @endif
+                onchange="add_commision_field(this, {{ $course['id'] }})">
+                <label for="f{{ $i }}" class="btn btn-outline-primary rounded-pill m-1">{{ $course['course_name'] }} ({{ $course['course_short_name'] }})</label>
+            </div>
+            @endif
+            @endforeach
+        </div>
+    </section>
+
+    <section class="card p-2 mb-4">
+        <div class="flex">
+            <h3>MANAGEMENT Courses :</h3>
+            <input type="search" name="" id="searchMANAGEMENT" placeholder="Search MANAGEMENT Courses" oninput="filterCourses('MANAGEMENT')">
+        </div>
+        <div class="courses">
+            @foreach ($courses as $i => $course)
+            @if ($course['course_type'] == 'MANAGEMENT COURSES')
+            <div class="course-item-MANAGEMENT" title="{{ $course['course_name'] }}"
+            @class(['disable' => in_array($course['id'], $added)])>
+            <input type="checkbox" value="{{ $course['id'] }}"
+            data-course="{{ $course['course_name'] . ' (' . $course['course_short_name'] . ')' }}"
+            id="f{{ $i }}"
+            @if (in_array($course['id'], $added)) checked disabled @endif
+            onchange="add_commision_field(this, {{ $course['id'] }})">
+            <label for="f{{ $i }}" class="btn btn-outline-primary rounded-pill m-1">{{ $course['course_name'] }} ({{ $course['course_short_name'] }})</label>
+        </div>
+        @endif
+        @endforeach
+    </div>
+</section>
+
+<section class="card p-2 mb-4">
+    <div class="flex">
+        <h3>MEDICAL Courses :</h3>
+        <input type="search" name="" id="searchMEDICAL" placeholder="Search MEDICAL Courses" oninput="filterCourses('MEDICAL')">
+    </div>
+    <div class="courses">
+        @foreach ($courses as $i => $course)
+        @if ($course['course_type'] == 'MEDICAL COURSES')
+        <div class="course-item-MEDICAL" title="{{ $course['course_name'] }}"
+        @class(['disable' => in_array($course['id'], $added)])>
+        <input type="checkbox" value="{{ $course['id'] }}"
+        data-course="{{ $course['course_name'] . ' (' . $course['course_short_name'] . ')' }}"
+        id="f{{ $i }}"
+        @if (in_array($course['id'], $added)) checked disabled @endif
+        onchange="add_commision_field(this, {{ $course['id'] }})">
+        <label for="f{{ $i }}" class="btn btn-outline-primary rounded-pill m-1">{{ $course['course_name'] }} ({{ $course['course_short_name'] }})</label>
+    </div>
+    @endif
+    @endforeach
+</div>
+</section>
+
+<section class="card p-2 mb-4">
+    <div class="flex">
+        <h3>TRADITIONAL Courses :</h3>
+        <input type="search" name="" id="searchTRADITIONAL" placeholder="Search TRADITIONAL Courses" oninput="filterCourses('TRADITIONAL')">
+    </div>
+    <div class="courses">
+        @foreach ($courses as $i => $course)
+        @if ($course['course_type'] == 'TRADITIONAL COURSES')
+        <div class="course-item-TRADITIONAL" title="{{ $course['course_name'] }}"
+        @class(['disable' => in_array($course['id'], $added)])>
+        <input type="checkbox" value="{{ $course['id'] }}"
+        data-course="{{ $course['course_name'] . ' (' . $course['course_short_name'] . ')' }}"
+        id="f{{ $i }}"
+        @if (in_array($course['id'], $added)) checked disabled @endif
+        onchange="add_commision_field(this, {{ $course['id'] }})">
+        <label for="f{{ $i }}" class="btn btn-outline-primary rounded-pill m-1">{{ $course['course_name'] }} ({{ $course['course_short_name'] }})</label>
+    </div>
+    @endif
+    @endforeach
+</div>
+</section>
+        
         <section class="card p-2">
             <h3 class="section_title">Commision</h3>
             <section id="courses">

@@ -16,29 +16,38 @@ class courseController extends Controller
         return UniversityCourse::where('university_id', $univId)->with('course:id,course_name,course_short_name')->get(['id', 'course_id', 'university_id'])->toArray();
     }
     static function addCourse(Request $request)
-    {
-        $course = new Course();
-        $type = $request->course_type;
-        $count = Course::where('course_type', $type)->orderBy('id', 'desc')->first()->toArray();
-        // dd($count);
-        $id = $count['id'];
-        // Feeding new Data
-        $course->id = $id + 1;
+{
+    $course = new Course();
+    $type = $request->course_type;
 
-        // Save the new image
-        if ($request->hasFile('course_img')) {
-            $image = $request->file('course_img');
-            $imageName = time() . '_' . $image->getClientOriginalName();
-            $image->move(public_path('images/courses/course_images'), $imageName);
-            $course->course_img = $imageName;
-        }
-        
-        $course->course_name = $request->course_name;
-        $course->course_short_name = $request->course_short_name;
-        $course->course_online = $request->course_online;
-        $course->course_type = $type;
-        return ["success" => $course->save()];
+    $existingCourse = Course::where('course_type', $type)->orderBy('id', 'desc')->first();
+    $count = $existingCourse ? $existingCourse->toArray() : ['id' => 0]; 
+
+    $id = $count['id'];
+    $newId = $id + 1;
+
+    while (Course::find($newId)) {
+        $newId++; 
     }
+
+    $course->id = $newId; // Unique ID set karo
+
+    if ($request->hasFile('course_img')) {
+        $image = $request->file('course_img');
+        $imageName = time() . '_' . $image->getClientOriginalName();
+        $image->move(public_path('images/courses/course_images'), $imageName);
+        $course->course_img = $imageName;
+    }
+    
+    $course->course_name = $request->course_name;
+    $course->course_short_name = $request->course_short_name;
+    $course->course_online = $request->course_online;
+    $course->course_type = $type;
+
+    // Course save karo aur response return karo
+    $saved = $course->save();
+    return ["success" => $saved];
+}
     static function editCourse(Request $request)
     {
         $course = Course::find($request->course_id);
