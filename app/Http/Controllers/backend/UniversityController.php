@@ -236,9 +236,23 @@ class UniversityController extends Controller
         return view ('user.info.showuniversity');
     }
 
-    public function filterUniversities(Request $request)
+    public function filterUniversities(Request $request, $state = null)
     {
         $query = University::query();
+
+        if ($state) {
+            $stateId = \App\Models\State::where('state_name', $state)->value('id');
+            if ($stateId) {
+                $query->where('univ_state', $stateId); 
+            } else {
+                return response()->json([
+                    'universities' => [],
+                    'courses' => []
+                ]);
+            }
+        }
+        // return($stateId);
+
 
         if ($request->has('univ_category') && $request->univ_category != '') {
             $query->where('univ_category', $request->univ_category);
@@ -257,7 +271,10 @@ class UniversityController extends Controller
         }
 
         if ($request->has('univ_name') && $request->univ_name != '') {
-            $query->where('univ_name', 'like', '%' . $request->univ_name . '%');
+            // if ($state && strtolower($request->univ_name) === strtolower($state)) {
+            // } else {
+                $query->where('univ_name', 'like', '%' . $request->univ_name . '%');
+            // }
         }
 
         $universities = $query->with('courses')->get();
@@ -265,9 +282,9 @@ class UniversityController extends Controller
         $courses = [];
         if ($request->has('course_type') && $request->course_type != '') {
             $courses = \App\Models\Course::where('course_type', $request->course_type)
-            ->select('course_name')
-            ->get()
-            ->toArray();
+                ->select('course_name')
+                ->get()
+                ->toArray();
         }
 
         return response()->json([

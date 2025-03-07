@@ -25,6 +25,7 @@
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-08Z5ZZCQ9H"></script>
     <script>
+        window.assetBaseUrl = '{{ url('/') }}';
         window.dataLayer = window.dataLayer || [];
 
         function gtag() {

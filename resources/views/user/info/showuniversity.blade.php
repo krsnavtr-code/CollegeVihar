@@ -30,6 +30,7 @@
                                     <option value="State private university">State private university</option>
                                     <option value="State public university">State public university</option>
                                     <option value="Deemed University">Deemed University</option>
+                                    <option value="Autonomous Institude">Autonomous Institude</option>
                                 </select>
                             </div>
 
@@ -63,6 +64,9 @@
                             <!-- Filter Button -->
                             <div class="col-md-2 col-12">
                                 <button type="submit" class="btn btn-primary w-100 mt-4">Filter</button>
+                            </div>
+                            <div class="col-md-2 col-12">
+                                <button type="button" class="btn btn-primary w-100 mt-4" id="resetFilterButton">Clear Filter</button>
                             </div>
                         </form>
                     </div>
@@ -195,18 +199,26 @@
     </main>
 
     @push('script')
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
+  <script>
+     document.addEventListener('DOMContentLoaded', function () {
     const courseTypeSelect = document.getElementById('courseType');
     const coursesSelect = document.getElementById('courses');
     const filterForm = document.getElementById('universityFilterForm');
     const universityCards = document.querySelectorAll('.filter-card');
     const universityList = document.getElementById('universityList');
+    const resetFilterButton = document.getElementById('resetFilterButton');
     let initialState = universityList.innerHTML; // Store initial state of university list
 
+    // Define base URL directly in the script using Laravel's url helper
+    window.assetBaseUrl = '{{ url("/") }}'; // This will output http://127.0.0.1:8000/
+
     // Define asset and route functions or URLs
-    const asset = (path) => `/storage/${path}`; // Adjust this based on your Laravel storage path
+    const asset = (path) => `${window.assetBaseUrl}/images/${path}`; // Use full base URL
     const route = (name, param) => `/download-pdf/${param}`; // Adjust this based on your route setup
+
+    // Get current state from URL (assuming it's segment 2)
+    const currentState = '{{ Request::segment(2) }}'; // Blade syntax to get state from URL
+    console.log('Current State:', currentState); // Debug log
 
     // Dynamic population of Courses dropdown based on Course Type
     courseTypeSelect.addEventListener('change', function () {
@@ -214,10 +226,10 @@
         coursesSelect.innerHTML = '<option value="">Select Course</option>'; // Reset options
 
         if (courseType) {
-            fetch(`/api/universities/search?course_type=${courseType}`)
+            fetch(`/api/universities/${currentState}?course_type=${courseType}`)
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Courses Response:', data); // Debug log
+                    console.log('Courses Response:', data);
                     if (data.courses && data.courses.length > 0) {
                         data.courses.forEach(course => {
                             const option = document.createElement('option');
@@ -237,21 +249,19 @@
         const formData = new FormData(this);
         let hasMatches = false;
 
-        fetch('/api/universities/search?' + new URLSearchParams(formData).toString())
+        fetch('/api/universities/' + (currentState ? currentState : '') + '?' + new URLSearchParams(formData).toString())
             .then(response => response.json())
             .then(data => {
                 console.log('Universities Response:', data); // Debug log
                 universityList.innerHTML = ''; // Clear current list
 
                 if (data.universities && data.universities.length > 0) {
-                    // Render filtered universities
                     data.universities.forEach(univ => {
-                        // Handle missing fields with fallback values
                         const univName = univ.univ_name || 'Unknown University';
                         const univUrl = univ.univ_url || '#';
-                        const univImage = univ.univ_image || 'default.jpg'; // Fallback image
+                        const univImage = univ.univ_image || 'default.jpg';
                         const univAddress = univ.univ_address || 'Address not available';
-                        const univType = univ.univ_type || 'offline'; // Default to offline if not specified
+                        const univType = univ.univ_type || 'offline';
                         const courses = univ.courses || [];
                         const courseFee = courses.length > 0 ? courses[0].pivot?.univ_course_fee : 'N/A';
 
@@ -263,7 +273,7 @@
                                 data-name="${univName.toLowerCase()}">
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <img class="img-fluid rounded-1" src="${asset('images/university/campus/' + univImage)}" alt="${univName}">
+                                        <img class="img-fluid rounded-1" src="${asset('university/campus/' + univImage)}" alt="${univName}">
                                     </div>
                                     <div class="col-md-8">
                                         <div class="text-box">
@@ -308,13 +318,21 @@
                         </div>
                     `;
                     document.getElementById('backButton').addEventListener('click', function () {
-                        universityList.innerHTML = initialState; // Restore initial state
+                        universityList.innerHTML = initialState;
                         filterForm.reset();
                         universityCards.forEach(card => card.style.display = 'block');
                     });
                 }
             })
             .catch(error => console.error('Error fetching universities:', error));
+    });
+
+    // Reset Filter logic
+    resetFilterButton.addEventListener('click', function () {
+        filterForm.reset();
+        coursesSelect.innerHTML = '<option value="">Select Course</option>';
+        universityList.innerHTML = initialState;
+        universityCards.forEach(card => card.style.display = 'block');
     });
 
     // Existing Filter by Course logic (unchanged)
@@ -336,6 +354,6 @@
         });
     });
 });
-    </script>
+  </script>
 @endpush
 @endsection

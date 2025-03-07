@@ -63,6 +63,7 @@
                         <option value="state private university">State Private University</option>
                         <option value="state public university">State Public University</option>
                         <option value="deemed university">Deemed University</option>
+                        <option value="autonomous institude">Autonomous Institude</option>
                     </select>
                 </div>
             </div>

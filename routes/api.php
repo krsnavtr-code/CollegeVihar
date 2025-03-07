@@ -63,4 +63,4 @@ Route::get("search/{query}", function ($query) {
 
 
 
-Route::get('/universities/search', [UniversityController::class, 'filterUniversities']);
+Route::get('/universities/{state?}', [UniversityController::class, 'filterUniversities'])->where('state', '[A-Za-z]+');
