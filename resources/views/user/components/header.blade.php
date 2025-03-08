@@ -30,20 +30,9 @@
 
     @include('user.components.header.modal')
     <!-- top bar -->
-    <nav class="top-bar" style="gap: 0;">
-        <h5 style="margin-right: 10px;">Talk to our career expert:</h5>
-        <div class="flex">
-            <a href="tel:+919266585858">
-                <i class="fa-solid fa-phone"></i>
-                <span>+91-9266585858</span>
-            </a>
-            <span style="display: none;">or</span>
-            <a href="mailto:info@collegevihar.com">
-                <i class="fa-solid fa-envelope"></i>
-                <span>info@collegevihar.com</span>
-            </a>
-        </div>
-        <div class="flex">
+    <nav class="top-bar">
+        <h5 style="margin: 0px 10px;">Talk to our career expert:</h5>
+        <div class="flex justify-content-evenly">
             <a title="Request a call" href="#callbackModal" data-bs-toggle="modal" data-bs-target="#callbackModal">
                 <i class="fa-solid fa-bell"></i>
                 <span>Request a callback</span>
@@ -53,7 +42,28 @@
                 <span>Partner with us</span>
             </a>
         </div>
+        <div class="flex justify-content-evenly">
+            <div class="contact-dropdown">
+                <i class="fa-solid fa-phone-volume"></i>
+                <span>Get In Touch</span>
+                <div class="contact-options">
+                    <a href="tel:+919266585858">
+                        <i class="fa-solid fa-phone"></i> Call Us
+                    </a>
+                    <a href="mailto:info@collegevihar.com">
+                        <i class="fa-solid fa-envelope"></i> Email Us
+                    </a>
+                </div>
+            </div>
+            <div class="firstvite">
+                <a href="https://firstvite.com" target="_blank" rel="noopener noreferrer">
+                    <span style="color: #E97D17">FIRST</span><span style="color: #0897DF">Vite</span>
+                </a>
+            </div>
+        </div>
     </nav>
+
+
     <!-- nav bar -->
     <header>
         <nav class="navbar navbar-expand-lg bg-body-tertiary bottom-nav" style="padding: 0px 0px 5px 0px;">
@@ -83,12 +93,12 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav align-items-center" style="margin: auto;">
+                    <ul class="navbar-nav mobile-nav-dropdown align-items-center" style="margin: auto;">
                         <li class="nav-item">
                             {{--<a class="nav-link bg-blue rounded-1" data-bs-toggle="collapse" href="#collapseOnline"
                                 role="button" aria-expanded="false" aria-controls="collapseOnline">online
                                 programs</a>--}}
-                            <a class="nav-link bg-blue rounded-1" href="/online-programs">online programs</a>
+                            <a class="nav-link bg-blue rounded-1 blue-button-hover" href="/online-programs">online programs</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="collapse" href="#collapsePartnerUni" role="button"
@@ -155,11 +165,11 @@
                                 Quickly</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link search" data-bs-toggle="offcanvas" href="#offcanvasSearch" role="button"
+                            <a class="nav-link blue-button-hover" data-bs-toggle="offcanvas" href="#offcanvasSearch" role="button"
                                 aria-controls="offcanvasExample">
-                                <span>search</span>
-                                <span>|</span>
-                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <span >search</span>
+                                <!-- <span>|</span>
+                                <i class="fa-solid fa-magnifying-glass"></i> -->
                             </a>
                         </li>
                         <li class="nav-item px-2 position-relative">
@@ -187,8 +197,9 @@
                 </div>
             </div>
         </nav>
+
         <!-- partner universities -->
-        <div class="collapse bg-light p-2" id="collapsePartnerUni">
+        <div class="collapse bg-light partner-universities-dropdown p-2" id="collapsePartnerUni">
             <div class="card p-2">
                 <div class="state-container" id="region-container">
                     <a class="btn-close position-absolute end-0 top-0 p-1 m-1 rounded-circle" data-bs-toggle="collapse"

@@ -1,6 +1,22 @@
+#gradient-color {
+    background: linear-gradient(180deg, #1e90ff, #99badd, #99badd85);
+}
+#card-gradient-color {
+    transition: 0.5s;
+    background: linear-gradient(180deg, #0048ff, #4f9cff);
+}
+#card-gradient-color img {
+    height: 100px;
+    width: 100px;
+}
+#card-gradient-color:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 10px 10px black;
+}
+
 /* banner  */
 #banner {
-    background: #0056d2;
+    /* background: #0056d2; */
     color: #fff;
     text-transform: capitalize;
 }
@@ -14,6 +30,13 @@
     white-space: nowrap;
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 } */
+
+.card-body-content {
+    font-size: 12px;
+    color: white;
+    padding-bottom: 5px;
+    height: 60px;
+ }
 
 /* counter */
 /* Universities */
@@ -50,5 +73,15 @@
 @media only screen and (max-width:600px){
     *{
         font-size: small;
+    }
+}
+
+@media only screen and (max-width:490px){
+    .card-body-content {
+        height: 75px;
+    }
+    #card-gradient-color img {
+        height: 70px;
+        width: 70px;
     }
 }

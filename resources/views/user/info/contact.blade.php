@@ -11,7 +11,7 @@ $page_title = 'Contact Us';
 @section('main')
 <main>
     <section class="container">
-        <div class="row">
+        <div class="row m-3">
             <div class="col-md-6 p-2">
                 <h2 class="display-6">Contact Us</h2>
                 <h6 class="font-mono"> Head Office:</h6>

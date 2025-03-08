@@ -1,11 +1,11 @@
 header {
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 10;
     text-transform: capitalize;
 }
 .top-bar {
-    padding: .4rem;
+    /* padding: .4rem; */
     background-color: var(--blue);
     color: #fff;
     display: flex;
@@ -14,6 +14,7 @@ header {
     flex-wrap: wrap;
     gap: 2rem;
     font-size: 1rem;
+    padding: 0px 20px;
 }
 .top-bar .flex{
     flex-wrap: wrap;
@@ -30,17 +31,74 @@ header {
     font-size: 16px;
 }
 
-/* .top-bar .flex {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-} */
-.top-bar a i {
-    font-size: 16px;
+/*  */
+.contact-dropdown {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    padding: 5px 10px;
 }
 
+.contact-options {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: var(--blue);
+    border: 1px solid #ccc;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    min-width: 150px;
+    padding: 5px 0;
+    z-index: 100;
+}
+
+/* Fix: Dropdown visible rahe jab tak mouse uske andar ho */
+.contact-dropdown:hover .contact-options {
+    display: block;
+}
+.blue-button-hover {
+    background-color: var(--blue);
+    color: white;
+    border-radius: 5px;
+}
+.blue-button-hover:hover {
+    color: var(--blue);
+    background-color: #0058d22d;
+}
+
+.contact-options a {
+    display: block;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #fff;
+    transition: 0.3s;
+    white-space: nowrap;
+}
+
+.firstvite {
+    background: cornsilk;
+    padding: 1px 8px;
+    text-align: center;
+    /* margin-left: 20px; */
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.firstvite a {
+    display: block;
+    text-decoration: none;
+    /* color: white; */
+    font-weight: bold;
+}
+/*  */
+
+/* .top-bar a i {
+    font-size: 16px;
+} */
+
 .bottom-nav {
-    flex-wrap: wrap
+    flex-wrap: wrap;
 }
 
 /* online-bar */
@@ -69,8 +127,9 @@ header {
     margin: 2px 0;
 }
 .search {
-    background-color: lightblue;
+    background-color: var(--blue);
     color: #fff !important;
+    border-radius: 6px;
 }
 
 /*  */
@@ -120,6 +179,10 @@ header {
     padding: 0px;
 }
 
+.mobile-nav-dropdown {
+    margin: auto;
+}
+
 .logout-dropdown {
     position: absolute;
     top: 100%;
@@ -131,6 +194,14 @@ header {
     border-radius: 5px;
     padding: 10px;
     /* width: 100px; */
+}
+
+.partner-universities-dropdown {
+    position: absolute;
+    margin: 0px 10px;
+    border-radius: 6px;
+    /* opacity: 0.9; */
+    background: #dbdbdb;
 }
 
 @media (min-width: 992px) {
@@ -153,46 +224,81 @@ header {
 }
 
 /* Media query for max-width 768px */
-@media (max-width: 768px) {
+@media (max-width: 889px) {
     .top-bar {
-        flex-direction: column;
-        text-align: center;
-        gap: 0;
-        padding: 3px 0 0 2px;
+        gap: 0px;
     }
-    .top-bar-mobile {
+    /* .top-bar-mobile {
         display: flex;
         justify-content: center;
         align-items: center;
         gap: 1rem;
-    }
-
-    .top-bar .flex {
-        flex-direction: row;
-        justify-content: center;
-        flex-wrap: wrap;
-        width: 100%;
-    }
-    
-    .top-bar h5 {
-        margin-bottom: 5px;
-    }
+    } */
 }
-@media (max-width: 425px) { 
-    .top-bar .flex a i, .top-bar .flex span{
+
+@media (max-width: 425px) {
+    /* .top-bar .flex a i, .top-bar .flex span{
         font-size: 12px;
-    }
+    } */
     .navbar {
         margin-bottom: 0 !important;
     }
 }
+
 @media (max-width: 375px) { 
     .hm {
         margin-left: 0;
     }
 }
+
 @media (min-width: 1000px) {
     .home-program-card {
         max-width: 200px !important; /* Ya jitni width chahiye */
+    }
+}
+
+@media (max-width: 425px) {
+    .state-container {
+        display: block; 
+        max-height: 400px; 
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        padding: 10px; 
+        width: 100%;
+        margin-top: 20px;
+    }
+    .partner-universities-dropdown {
+        margin: 0;
+    }
+    .state img {
+        display: none;
+    }
+    .state:hover img {
+        display: none;
+    }
+}
+@media (max-width: 991px) {
+    /* Nav Mobile Dropdown */
+    .mobile-nav-dropdown {
+        margin: auto;
+        position: absolute;
+        background: whitesmoke;
+        padding:20px 50px;
+        border-radius: 6px;
+        right: 0px;
+        top: 50px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        /* width: 70%; */
+        gap: 10px;
+    }
+    .mobile-nav-dropdown .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .nav-link {
+        padding: 2px 6px;
     }
 }

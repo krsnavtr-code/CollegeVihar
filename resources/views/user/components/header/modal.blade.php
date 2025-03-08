@@ -1,21 +1,50 @@
- <!-- search offcanvas -->
- <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSearch" aria-labelledby="offcanvasSearchLabel">
+<!-- Course Details Modal -->
+<div class="modal fade" id="courseDetailsModal" tabindex="-1" aria-labelledby="courseDetailsModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="courseDetailsModalLabel">Course Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="course-info">
+                    <h4 class="course-name mb-3"></h4>
+                    <div class="universities-list">
+                        <h5>Universities Offering This Course:</h5>
+                        <ul class="list-group mt-2"></ul>
+                    </div>
+                </div>
+                <div class="text-center mt-3">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#queryModal">
+                        <i class="fa-solid fa-envelope me-2"></i>Enquire Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- search offcanvas -->
+ <div class="offcanvas offcanvas-start search-container" tabindex="-1" id="offcanvasSearch" aria-labelledby="offcanvasSearchLabel">
     <div class="offcanvas-header">
         <h5 class="offcanvas-title" id="offcanvasSearchLabel"></h5>
         <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body text-center">
-        <img src="/images/web assets/logo_mini.jpeg" alt="logo" width="200">
+        <img src="/images/web assets/logo_mini.jpeg" alt="logo" width="150">
         <h5>
             <span class="blue">collage</span>
             <span class="red">vihar</span>
         </h5>
         <h5>Search College or Course</h5>
+        <p>Enter full course name</p>
         <div class="">
             <input class="form-control mr-sm-2" type="search" placeholder="Search college or course here..." aria-label="Search" id="searchInput">
             <div id="searchResults"></div>
         </div>
-        <p>Trending Searches...</p>
+        <!-- <p>Trending Searches...</p>
         <div class="search-tabs">
             <button type="button" class="btn btn-outline-primary">Online MCA</button>
             <button type="button" class="btn btn-outline-primary">Online BTECH</button>
@@ -23,7 +52,7 @@
             <button type="button" class="btn btn-outline-primary">Online MCA</button>
             <button type="button" class="btn btn-outline-primary">Online BCA</button>
             <button type="button" class="btn btn-outline-primary">Diploma Course</button>
-        </div>
+        </div> -->
     </div>
 </div>
 <!-- search offcanvas end -->
@@ -636,3 +665,151 @@
     </div>
 </div>
 <!-- Recruiter Modal end -->
+
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("searchInput");
+        const searchResults = document.getElementById("searchResults");
+        const courseDetailsModal = new bootstrap.Modal(document.getElementById('courseDetailsModal'));
+
+        let searchTimeout;
+
+        searchInput.addEventListener("input", function () {
+            const query = searchInput.value.toLowerCase().trim();
+            clearTimeout(searchTimeout);
+
+            if (query.length < 2) {
+                searchResults.innerHTML = "";
+                return;
+            }
+
+            searchResults.innerHTML = '<div class="text-center"><i class="fa fa-spinner fa-spin"></i> Searching...</div>';
+
+            searchTimeout = setTimeout(() => {
+                fetch(`/api/search?query=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        searchResults.innerHTML = "";
+
+                        if (data.length === 0) {
+                            searchResults.innerHTML = '<p class="p-2">No results found</p>';
+                            return;
+                        }
+
+                        const resultList = document.createElement("ul");
+                        resultList.classList.add("list-group");
+
+                        data.forEach(item => {
+                            const listItem = document.createElement("li");
+                            listItem.classList.add("list-group-item", "search-result-item");
+
+                            const link = document.createElement("a");
+                            if (item.type === 'university') {
+                                const urlFriendlyName = item.univ_name.toLowerCase()
+                                    .replace(/[^a-z0-9]+/g, '-')  // Replace non-alphanumeric chars with hyphens
+                                    .replace(/^-+|-+$/g, '');     // Remove leading/trailing hyphens
+                                link.href = `/university/${urlFriendlyName}`;
+                            } else {
+                                link.href = '#';
+                            }
+                            link.className = 'd-flex align-items-center text-decoration-none';
+
+                            const icon = document.createElement("i");
+                            icon.className = item.type === 'course' ?
+                                'fa-solid fa-graduation-cap me-2' :
+                                'fa-solid fa-university me-2';
+
+                            link.appendChild(icon);
+                            link.appendChild(document.createTextNode(item.type === 'university' ? item.univ_name : item.course_name));
+
+                            if (item.type === 'course') {
+                                link.addEventListener('click', (e) => {
+                                    e.preventDefault();
+                                    showCourseDetails(item.id, item.course_name);
+                                });
+                            }
+
+                            listItem.appendChild(link);
+                            resultList.appendChild(listItem);
+                        });
+
+                        searchResults.appendChild(resultList);
+                    })
+                    .catch(error => {
+                        searchResults.innerHTML = '<p class="text-danger p-2">Error fetching results</p>';
+                        console.error('Search error:', error);
+                    });
+            }, 300);
+        });
+
+        function showCourseDetails(courseId, courseName) {
+            const modal = document.getElementById('courseDetailsModal');
+            const courseNameElement = modal.querySelector('.course-name');
+            const universitiesList = modal.querySelector('.universities-list ul');
+
+            courseNameElement.textContent = courseName;
+            universitiesList.innerHTML = '<div class="text-center py-3"><i class="fa fa-spinner fa-spin"></i> Loading universities...</div>';
+
+            courseDetailsModal.show();
+
+            fetch(`/api/course/${courseId}/universities`)
+                .then(response => response.json())
+                .then(data => {
+                    universitiesList.innerHTML = '';
+
+                    if (data.length === 0) {
+                        universitiesList.innerHTML = '<li class="list-group-item">No universities found offering this course.</li>';
+                        return;
+                    }
+
+                    data.forEach(university => {
+                        const li = document.createElement('li');
+                        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+
+                        // Convert university name to URL-friendly format
+                        const urlFriendlyName = university.univ_name.toLowerCase()
+                            .replace(/[^a-z0-9]+/g, '-')  // Replace non-alphanumeric chars with hyphens
+                            .replace(/^-+|-+$/g, '');     // Remove leading/trailing hyphens
+
+                        const univLink = document.createElement('a');
+                        univLink.href = `/university/${urlFriendlyName}`;
+                        univLink.className = 'text-decoration-none';
+                        univLink.innerHTML = `<i class="fa-solid fa-university me-2"></i>${university.univ_name}`;
+
+                        li.appendChild(univLink);
+                        universitiesList.appendChild(li);
+                    });
+                })
+                .catch(error => {
+                    universitiesList.innerHTML = '<li class="list-group-item text-danger">Error loading universities.</li>';
+                    console.error('Error fetching universities:', error);
+                });
+        }
+    });
+</script>
+
+<style>
+    .course-info {
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .universities-list {
+        margin-top: 20px;
+    }
+
+    .universities-list ul {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    .search-container{
+        border-radius: 10px;
+        margin: 10px 0px;
+    /* height: fit-content; */
+    padding-bottom: 42px;
+    }
+</style>
