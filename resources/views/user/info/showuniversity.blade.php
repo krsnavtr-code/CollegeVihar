@@ -204,7 +204,6 @@
     const courseTypeSelect = document.getElementById('courseType');
     const coursesSelect = document.getElementById('courses');
     const filterForm = document.getElementById('universityFilterForm');
-    const universityCards = document.querySelectorAll('.filter-card');
     const universityList = document.getElementById('universityList');
     const resetFilterButton = document.getElementById('resetFilterButton');
     let initialState = universityList.innerHTML; // Store initial state of university list
@@ -343,6 +342,8 @@
             this.classList.add('active');
 
             const filter = this.getAttribute('data-filter');
+            const universityCards = document.querySelectorAll('.filter-card');
+            
             universityCards.forEach(card => {
                 const courses = card.getAttribute('data-courses').split(',');
                 if (filter === 'all' || courses.includes(filter)) {
