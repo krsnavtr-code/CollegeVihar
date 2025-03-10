@@ -23,7 +23,7 @@ $page_title = 'Contact Us';
                 </div>
                 <div class="d-flex align-items-baseline gap-2">
                     <h6> Mobile No:</h6>
-                    <a href="tel:9990999561">+91 9266585858</a>
+                    <a href="tel:+919266585858">+91 9266585858</a>
                 </div>
             </div>
             <div class="col-sm-6 p-2">

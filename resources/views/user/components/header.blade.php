@@ -98,7 +98,7 @@
                             {{--<a class="nav-link bg-blue rounded-1" data-bs-toggle="collapse" href="#collapseOnline"
                                 role="button" aria-expanded="false" aria-controls="collapseOnline">online
                                 programs</a>--}}
-                            <a class="nav-link bg-blue rounded-1 blue-button-hover" href="/online-programs">online programs</a>
+                            <a class="nav-link rounded-1 blue-button-hover" href="/online-programs">online programs</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="collapse" href="#collapsePartnerUni" role="button"
