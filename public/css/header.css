@@ -4,6 +4,7 @@ header {
     z-index: 10;
     text-transform: capitalize;
 }
+
 .top-bar {
     /* padding: .4rem; */
     background-color: var(--blue);
@@ -16,16 +17,20 @@ header {
     font-size: 1rem;
     padding: 0px 20px;
 }
-.top-bar .flex{
+
+.top-bar .flex {
     flex-wrap: wrap;
 }
+
 .top-bar a {
     color: #fff;
 }
+
 .top-bar a:hover {
     color: #fff;
     scale: 1.1;
 }
+
 .top-bar h5 {
     margin: 0;
     font-size: 16px;
@@ -57,11 +62,13 @@ header {
 .contact-dropdown:hover .contact-options {
     display: block;
 }
+
 .blue-button-hover {
     background-color: var(--blue);
     color: white;
     border-radius: 5px;
 }
+
 .blue-button-hover:hover {
     color: var(--blue);
     background-color: #0058d22d;
@@ -91,6 +98,7 @@ header {
     /* color: white; */
     font-weight: bold;
 }
+
 /*  */
 
 /* .top-bar a i {
@@ -109,23 +117,28 @@ header {
     gap: 1rem;
     flex-wrap: wrap;
 }
+
 .online-bar li a {
     display: flex;
     gap: 2px;
     align-items: baseline;
     color: var(--blue);
 }
+
 .online-bar li a:hover {
     color: var(--red);
 }
+
 .online-cards {
     max-height: 60vh;
     overflow-y: auto;
 }
+
 /* search offcanvas */
 .search-tabs button {
     margin: 2px 0;
 }
+
 .search {
     background-color: var(--blue);
     color: #fff !important;
@@ -166,6 +179,7 @@ header {
     display: none;
     border-radius: 6px;
 }
+
 .state:hover p {
     color: red;
 }
@@ -204,6 +218,17 @@ header {
     background: #dbdbdb;
 }
 
+.dropdown-menu-end {
+    position: absolute !important;
+    left: -135px;
+    top: 35px;
+    /* background: #dbdbdb; */
+    border-radius: 6px;
+    padding: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+}
+
 @media (min-width: 992px) {
     .navbar-expand-lg .navbar-collapse {
         white-space: nowrap;
@@ -228,6 +253,7 @@ header {
     .top-bar {
         gap: 0px;
     }
+
     /* .top-bar-mobile {
         display: flex;
         justify-content: center;
@@ -237,6 +263,7 @@ header {
 }
 
 @media (max-width: 425px) {
+
     /* .top-bar .flex a i, .top-bar .flex span{
         font-size: 12px;
     } */
@@ -245,7 +272,7 @@ header {
     }
 }
 
-@media (max-width: 375px) { 
+@media (max-width: 375px) {
     .hm {
         margin-left: 0;
     }
@@ -253,37 +280,43 @@ header {
 
 @media (min-width: 1000px) {
     .home-program-card {
-        max-width: 200px !important; /* Ya jitni width chahiye */
+        max-width: 200px !important;
+        /* Ya jitni width chahiye */
     }
 }
 
 @media (max-width: 425px) {
     .state-container {
-        display: block; 
-        max-height: 400px; 
+        display: block;
+        max-height: 400px;
         overflow-y: auto;
         border: 1px solid #ccc;
-        padding: 10px; 
+        padding: 10px;
         width: 100%;
         margin-top: 20px;
     }
+
     .partner-universities-dropdown {
         margin: 0;
     }
+
     .state img {
         display: none;
     }
+
     .state:hover img {
         display: none;
     }
 }
+
 @media (max-width: 991px) {
+
     /* Nav Mobile Dropdown */
     .mobile-nav-dropdown {
         margin: auto;
         position: absolute;
         background: whitesmoke;
-        padding:20px 50px;
+        padding: 20px 50px;
         border-radius: 6px;
         right: 0px;
         top: 50px;
@@ -293,11 +326,13 @@ header {
         /* width: 70%; */
         gap: 10px;
     }
+
     .mobile-nav-dropdown .nav-item {
         display: flex;
         align-items: center;
         gap: 10px;
     }
+
     .nav-link {
         padding: 2px 6px;
     }

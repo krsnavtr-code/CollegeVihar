@@ -74,27 +74,27 @@ $page_title = 'Job Requirement';
 @section('main_section')
 <main>
     <div class="header">
-        <h1>What do you want to do?</h1>
+        <h2>What do you want to do?</h2>
     </div>
     <div class="option-container">
-        <form action="{{ url('/consultant') }}" method="get" class="option">
+        <form action="{{ url('/consultant') }}" method="get" class="option p-3">
             <img src="{{ asset('images/job/svg/consultant.svg') }}" alt="Hire Intern">
             <input type="radio" id="consultant" name="jobType" value="consultant" onclick="this.form.submit()">
-            <label for="consultant">
+            <label for="consultant mb-3">
                 We are Consultant
             </label>
         </form>
-        <form action="{{ url('/company') }}" method="get" class="option">
+        <form action="{{ url('/company') }}" method="get" class="option p-3">
             <img src="{{ asset('images/job/svg/company.svg') }}" alt="Hire Intern">
             <input type="radio" id="company" name="jobType" value="company" onclick="this.form.submit()">
-            <label for="company">
+            <label for="company mb-3">
                 We are Company
             </label>
         </form>
-        <form action="{{ url('/freelancer') }}" method="get" class="option">
+        <form action="{{ url('/freelancer') }}" method="get" class="option p-3">
             <img src="{{ asset('images/job/svg/freelancer.svg') }}" alt="Hire Intern">
             <input type="radio" id="freelancer" name="jobType" value="freelancer" onclick="this.form.submit()">
-            <label for="freelancer">
+            <label for="freelancer mb-3">
                 We are Freelancer Recruiter
             </label>
         </form>

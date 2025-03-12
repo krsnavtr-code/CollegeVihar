@@ -70,7 +70,7 @@
                             </div>
                             <div class="item">
                                 <div class="row align-items-center text-sm-start text-center">
-                                    <div class="col-sm-8 mt-1">
+                                    <div class="col-sm-8 mt-4   ">
                                         <h5 class="owl-carousel-font-size-h"> Get The Best Jobs Now Today Fast Quick</h5>
                                         </h5> {{-- Explore a world of knowledge --}}
                                         <p class="display-5 owl-carousel-font-size">From Leading MNCs Offering Exciting

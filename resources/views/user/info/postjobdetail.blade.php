@@ -88,6 +88,10 @@ $page_title = 'Job Requirement Details';
         background: #fff !important;
     }
 
+    .panal .form-group {
+        
+    }
+
     .job-container h2 {
         font-size: 16px;
         color: #3f51b5;
@@ -106,7 +110,7 @@ $page_title = 'Job Requirement Details';
 
     .form-group label {
         margin: 2rem 0 1rem;
-        font-size: 16px;
+        /* font-size: 16px; */
         font-weight: 500;
         line-height: 20px;
         display: flex;
@@ -125,15 +129,15 @@ $page_title = 'Job Requirement Details';
     }
 
     .form-group textarea {
-        width: 70%;
+        width: -webkit-fill-available;
     }
 
     .form-group input,
     .form-group select {
         padding-left: 1rem;
         text-transform: capitalize;
-        width: 50%;
-        height: 35px;
+        width: 95%;
+        /* height: 35px; */
         border: 1px solid #ccc;
         border-radius: 4px;
         font-size: 16px;
@@ -146,8 +150,9 @@ $page_title = 'Job Requirement Details';
 
     .radio-group {
         display: flex;
+        flex-direction: column;
         gap: 1rem;
-        align-items: center;
+        /* align-items: center; */
     }
 
     .experience .radio-group label {
@@ -173,6 +178,8 @@ $page_title = 'Job Requirement Details';
     .range {
         display: flex;
         overflow: hidden;
+        flex-direction: column;
+        gap: 0.5rem;
     }
 
     .range input {
@@ -213,7 +220,7 @@ $page_title = 'Job Requirement Details';
     }
 
     #interviewDetails {
-        width: 300px;
+        width: -webkit-fill-available;
     }
 
     .form-control {
@@ -399,7 +406,7 @@ $page_title = 'Job Requirement Details';
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="salary">Monthly In-hand Salary<span>*</span> <small>(Only Put Actual Salary)</small></label>
+                    <label class="d-flex flex-column" for="salary">Monthly In-hand Salary * <small>(Only Put Actual Salary)</small></label>
                     <div class="range">
                         <input type="number" id="min-salary" min="10000" placeholder="eg: 10,000/-">
                         <span>to</span>
@@ -414,8 +421,8 @@ $page_title = 'Job Requirement Details';
                     </select> -->
                 </div>
                 <div class="form-group bonus">
-                    <label>Do you offer bonus in addition to monthly salary?</label>
-                    <div class="radio-group">
+                    <label>Do you offer bonus in addition </label><p>to monthly salary?</p>
+                    <div class="radio-group flex-row">
                         <input type="radio" name="bonus" value="yes" id="yes" required>
                         <label for="yes">Yes</label>
                         <input type="radio" name="bonus" value="no" id="no" required>
@@ -506,11 +513,15 @@ $page_title = 'Job Requirement Details';
 
             <div class="form-footer">
                 <div class="checkbox-group">
-                    <input type="checkbox" id="terms" name="terms" class="form-check-input" required>
-                    <label for="terms">I Accept <a href="#">Terms And Conditions</a> and <a href="#">Privacy Policy</a><span>*</span></label>
+                    <div class="d-flex">
+                        <input type="checkbox" id="terms" name="terms" class="form-check-input" required>
+                        <label for="terms">I Accept <a href="#">Terms And Conditions</a> and <a href="#">Privacy Policy</a><span>*</span></label>
+                    </div>    
                     <small class="note">Asking job seeker for any kind of payment is strictly prohibited.</small>
                 </div>
-                <button type="submit" class="btn-submit">Submit</button>
+                <div class="d-flex justify-content-center align-items-center">
+                    <button type="submit" class="btn-submit">Submit</button>
+                </div>
             </div>
 
             <!-- New Find Jobs Section -->

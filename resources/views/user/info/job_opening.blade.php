@@ -12,8 +12,8 @@ $page_title = 'Job Openings';
         <div class="container text-end">
             <a class="btn btn-primary m-1" title="Post a job" href="{{ url('/post-job') }}">Post a Requirement</a>
             <div class="card p-4 text-center search ">
-                <h2 class="blue">India's Job Portal</h2>
-                <p class="blue text-center">Collegevihar helps you hire</p>
+                <h2 class="">India's Job Portal</h2>
+                <p class=" text-center">Collegevihar helps you hire</p>
                 <div class="buttons">
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#RecruiterModal">
                         Hire now

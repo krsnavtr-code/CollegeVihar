@@ -110,7 +110,7 @@
                                 <img src="/images/web assets/logo_mini.jpeg" alt="" width="30">
                                 <span>stopgap</span>
                             </a>
-                            <ul class="dropdown-menu">
+                            <ul class="dropdown-menu dropdown-menu-end">
                                 <li>
                                     <a class="dropdown-item" href="/post-admission-support">
                                         <i class="fa-regular fa-circle-check"></i>
