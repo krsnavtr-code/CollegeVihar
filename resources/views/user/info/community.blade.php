@@ -121,6 +121,44 @@
             position: absolute;
             left: 0;
         }
+        @media screen and (max-width: 768px) {
+            .main-container {
+                padding: 20px;
+                margin-top: -50px;
+            }
+
+            .main-container h1 {
+                font-size: 24px;
+            }
+
+            .main-container p {
+                font-size: 18px;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+
+            .buttons a {
+                width: 100%;
+                max-width: 200px;
+                margin:  auto;
+            }
+
+            .section-container {
+                flex-direction: column;
+            }
+
+            .video-container,
+            .guidelines-container {
+                margin: 10px 0;
+            }
+
+            .guidelines-container {
+                max-width: 100%;
+            }
+            
+        }
     </style>
 @endpush
 

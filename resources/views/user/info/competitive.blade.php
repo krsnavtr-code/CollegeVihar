@@ -74,7 +74,7 @@
 <main>
     <div class="container">
         <h1 style="text-align: center;">Excel in Competitive Exams</h1>
-        <p style="font-size: 20px;">
+        <p style="font-size: 16px;">
            Our platform offers comprehensive online study materials, smart class video tutorials, test papers, and AI assignments to empower aspiring candidates for
            various competitive exams such as SSC, Banking, Railway, Civil Services, and many others. We recognize the significance of bridging the gap between traditional
            education and the dynamic requirements of competitive exams, ensuring that our resources are tailored to meet the evolving needs outlined in the National 

@@ -6,27 +6,30 @@
 <style>
     .emp-container {
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
+        /* flex-direction: row; */
         margin: 20px auto;
         max-width: 90%;
         padding: 20px;
     }
 
     .filter-section {
-        width: 30%;
+        width: auto;
+        /* width: 30%; */
         padding: 15px;
         margin-top: 15px;
         background: rgba(176, 224, 230, 0.8);
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         color: black;
-        position: sticky;
+        /* position: sticky; */
         top: 80px;
         height: auto;
+        max-width: 650px;
     }
 
     .listing-section {
-        width: 70%;
+        /* width: 70%; */
         padding: 15px;
         margin-left: 0;
     }
@@ -79,12 +82,13 @@
         font-size: 14px;
         color: #666;
         display: flex;
+        margin-bottom: 20px;
     }
 
     .info p i {
-        margin-right: 6px;
+        margin-right: 2px;
         color: #1e90ff;
-        font-size: 1.6rem;
+        /* font-size: 1.6rem; */
         width: 20px;
     }
 
@@ -96,10 +100,10 @@
         color: #1e90ff;
     }
 
-    .apply-now {
+    /* .apply-now {
         text-align: right;
         margin-left: auto;
-    }
+    } */
 
     .apply-now a {
         text-decoration: none;
@@ -125,6 +129,43 @@
         font-size: 16px;
         margin-bottom: 10px;
     }
+
+    /* For screens smaller than 768px (tablets and below) */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 15px;
+    }
+
+    .card h4, .card h5 {
+        font-size: 1.2rem;
+    }
+
+    .info {
+        font-size: 0.9rem;
+    }
+    .emp-container {
+        margin: 1px;
+        max-width: 100%;
+        padding: 5px;
+    }
+}
+
+/* For screens smaller than 576px (phones) */
+@media (max-width: 576px) {
+    .card h4, .card h5 {
+        font-size: 1rem;
+    }
+
+    .info {
+        font-size: 0.8rem;
+    }
+
+    .card-body img {
+        width: 100px;
+        height: 100px;
+    }
+}
+
 </style>
 @endpush
 
@@ -148,7 +189,7 @@
                 <div class="form-group">
                     <label for="experience">Experience</label>
                     <div class="experience-group">
-                        <select id="work-experience-years" name="work_experience_years" class="form-control">
+                        <select id="work-experience-years" name="work_experience_years" class="form-control mb-1">
                             <option value="">Select year</option>
                             @for ($i = 0; $i <= 50; $i++)
                                 <option value="{{ $i }}">{{ $i }} year{{ $i != 1 ? 's' : '' }}</option>
@@ -176,7 +217,7 @@
                 </div>
                 <!-- End of Employment Type Section -->
 
-                <button type="submit" class="btn btn-primary">Apply Filters</button>
+                <button type="submit" class="btn btn-primary mt-2">Apply Filters</button>
             </form>
         </div>
         <div class="listing-section">
@@ -200,23 +241,29 @@
                         <h4>Name: <span class="dynamic-data">{{ ucfirst($employee->full_name) }}</span></h4>
                         <h5>Job Type: <span class="dynamic-data">{{ ucfirst($employee->job_title) }}</span></h5>
                         <div class="card-body">
-                            <div class="details">
-                                <img src="{{ $employee->employee_photo ? asset($employee->employee_photo) : asset('images/default/img2.png') }}" alt="Employee Image">
-                                <div class="info">
-                                    <div class="info-grid">
-                                        <p><i class="fas fa-user"></i> Gender: <span class="dynamic-data">{{ ucfirst($employee->gender) }}</span></p>
-                                        <p><i class="fas fa-graduation-cap"></i> Education: <span class="dynamic-data">{{ ucfirst($employee->education) }}</span></p>
-                                        <p><i class="fas fa-map-marker-alt"></i> Current City: <span class="dynamic-data">{{ ucfirst($employee->current_city) }}</span></p>
-                                        <p><i class="fas fa-building"></i> Company: <span class="dynamic-data">{{ ucfirst($employee->company_name) }}</span></p>
-                                        <p><i class="fas fa-briefcase"></i> Employment Type: <span class="dynamic-data">{{ ucfirst($employee->employment_type) }}</span></p>
-                                        <p><i class="fas fa-clock"></i> Experience: <span class="dynamic-data">{{ ucfirst($employee->work_experience_years) }} years {{ ucfirst($employee->work_experience_months) }} months</span></p>
-                                        <p><i class="fas fa-money-bill-wave"></i> Annual Salary: <span class="dynamic-data">{{ ucfirst($employee->annual_salary) }}</span></p>
-                                        <p><i class="fas fa-cogs"></i> Skills: <span class="dynamic-data">{{ ucfirst($employee->key_skills) }}</span></p>
-                                        <p><i class="fas fa-phone"></i> Phone: <span class="dynamic-data">{{ ucfirst($employee->phone_number) }}</span></p>
+                            <div class="row">
+                                <img class="col-12 col-lg-3" style="width: 100px; height: 100px;" src="{{ $employee->employee_photo ? asset($employee->employee_photo) : asset('images/default/img2.png') }}" alt="Employee Image">
+                                <div class="info col-12 col-lg-9">
+                                    <div class="row">
+                                        <div class="col-12 col-md-4">
+                                            <p><i class="fas fa-user"></i> Gender: <span class="dynamic-data">{{ ucfirst($employee->gender) }}</span></p>
+                                            <p><i class="fas fa-graduation-cap"></i> Education: <span class="dynamic-data">{{ ucfirst($employee->education) }}</span></p>
+                                            <p><i class="fas fa-map-marker-alt"></i> Current City: <span class="dynamic-data">{{ ucfirst($employee->current_city) }}</span></p>
+                                        </div>   
+                                        <div class="col-12 col-md-4">
+                                            <p><i class="fas fa-building"></i> Company: <span class="dynamic-data">{{ ucfirst($employee->company_name) }}</span></p>
+                                            <p><i class="fas fa-briefcase"></i> Employment Type: <span class="dynamic-data">{{ ucfirst($employee->employment_type) }}</span></p>
+                                            <p><i class="fas fa-clock"></i> Experience: <span class="dynamic-data">{{ ucfirst($employee->work_experience_years) }} years {{ ucfirst($employee->work_experience_months) }} months</span></p>
+                                        </div> 
+                                        <div class="col-12 col-md-4">
+                                            <p><i class="fas fa-money-bill-wave"></i> Annual Salary: <span class="dynamic-data">{{ ucfirst($employee->annual_salary) }}</span></p>
+                                            <p><i class="fas fa-cogs"></i> Skills: <span class="dynamic-data">{{ ucfirst($employee->key_skills) }}</span></p>
+                                            <p><i class="fas fa-phone"></i> Phone: <span class="dynamic-data">{{ ucfirst($employee->phone_number) }}</span></p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="apply-now">
+                            <div class="apply-now text-center mt-3">
                                 <a href="downresume/{{ basename($employee->resume_path) . '?id=' . $recruiterId }}">
                                     <button><i class="fa-solid fa-download fa-xs"></i> Download Resume</button>
                                 </a>

@@ -175,6 +175,14 @@
         height: auto;
         border-radius: 10px;
     }
+
+    @media (max-width: 768px) {
+        .contact-section {
+            display: block;
+        }
+        .contact-info .address {
+            display: block;
+        }
 </style>
 @endpush
 
