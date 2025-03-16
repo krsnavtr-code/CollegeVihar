@@ -33,6 +33,8 @@
             gap: 1rem;
             padding: 3rem 2rem;
             border-radius: 20px;
+            width: 100%;
+            max-width: 318px;
         }
     </style>
 </head>

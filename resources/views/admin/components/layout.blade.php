@@ -15,7 +15,7 @@
 
 <body>
     <div class="container-fluid">
-        <div class="row">
+        <div class="row p-4">
             <div class="col-lg-3 col-md-4">
                 @include('admin.components.sidebar')
             </div>
