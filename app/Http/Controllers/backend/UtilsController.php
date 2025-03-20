@@ -75,21 +75,53 @@ class UtilsController extends Controller
         mail("anand24h@gmail.com", "Connect", "connected successfully");
         return ["success" => true];
     }
-    static function query_form(Request $request)
+    // static function query_form(Request $request)
+    // {
+    //     if(Lead::where("lead_contact", $request->ucontact)->get()->toArray()){
+    //         return ["success" => true,"msg"=>"Already Exists"];
+    //     }
+    //     $lead = new Lead;
+
+    //     $lead->lead_name = $request->uname;
+    //     $lead->lead_contact = $request->ucontact;
+    //     $lead->lead_email = $request->umail;
+    //     $lead->lead_university = $request->uuniversity;
+    //     $lead->lead_course = $request->ucourse;
+    //     $lead->lead_source = "web";
+    //     $lead->lead_query = $request->uquery;
+
+    //     return ["success"=>$lead->save()];
+    // }
+
+    public static function query_form(Request $request)
     {
-        if(Lead::where("lead_contact", $request->ucontact)->get()->toArray()){
-            return ["success" => true,"msg"=>"Already Exists"];
-        }
-        $lead = new Lead;
+    // Validate request
+    $validated = $request->validate([
+        'uname' => 'required|string|max:255',
+        'ucontact' => 'required|string|unique:leads,lead_contact',
+        'umail' => 'nullable|email|max:255',
+        'uuniversity' => 'nullable|string|max:255',
+        'ucourse' => 'nullable|string|max:255',
+        'uquery' => 'nullable|string',
+    ]);
 
-        $lead->lead_name = $request->uname;
-        $lead->lead_contact = $request->ucontact;
-        $lead->lead_email = $request->umail;
-        $lead->lead_university = $request->uuniversity;
-        $lead->lead_course = $request->ucourse;
-        $lead->lead_source = "web";
-        $lead->lead_query = $request->uquery;
-
-        return ["success"=>$lead->save()];
+    // Check if lead already exists
+    if (Lead::where("lead_contact", $request->ucontact)->exists()) {
+        return response()->json(["success" => false, "msg" => "Already Exists"], 409);
     }
+
+    // Save new lead
+    $lead = Lead::create([
+        'lead_name' => $validated['uname'],
+        'lead_contact' => $validated['ucontact'],
+        'lead_email' => $validated['umail'] ?? null,
+        'lead_university' => $validated['uuniversity'] ?? null,
+        'lead_course' => $validated['ucourse'] ?? null,
+        'lead_source' => 'web',
+        'lead_query' => $validated['uquery'] ?? null,
+    ]);
+
+    return response()->json(["success" => true, "msg" => "Lead Saved Successfully", "lead" => $lead], 201);
+    }
+
 }

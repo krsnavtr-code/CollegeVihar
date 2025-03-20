@@ -280,10 +280,15 @@ Route::controller(SearchController::class)->group(function (){
     Route::get("/download-pdf", 'downloadPDF')->name('download.pdf');
 });
 
-Route::post("/query-form", function (Request $request) {
-    $result = UtilsController::query_form($request);
-    return $result;
-});
+// Route::post("/query-form", function (Request $request) {
+//     $result = UtilsController::query_form($request);
+//     return $result;
+// });
+
+Route::get('/query-form', [UtilsController::class, 'query_form']);
+
+Route::post('/query-form', [UtilsController::class, 'query_form']);
+
 
 // University and universities
 Route::get("/university", function () {

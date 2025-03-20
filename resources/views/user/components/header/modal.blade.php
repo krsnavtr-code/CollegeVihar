@@ -70,14 +70,15 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="/query-form" method="post" class="row flex-column gap-2">
+                <form action="/query-form" method="post" id="queryForm" class="row flex-column gap-2">
+                    @csrf
                     <div class="flex">
                         <img src="/images/web assets/user.png" alt="User icon" class="img-fluid">
-                        <input type="text" name="name" id="getName" class="form-control validate" placeholder="Enter your name here..." value="{{ session('success') ? old('name') : '' }}" required>
+                        <input type="text" name="uname" id="getName" class="form-control validate" placeholder="Enter your name here..." value="{{ session('success') ? old('name') : '' }}" required>
                     </div>
                     <div class="flex">
                         <img src="/images/web assets/contact.png" alt="contact icon" class="img-fluid">
-                        <input type="tel" id="getNumber" class="form-control validate" name="phone" placeholder="Phone (10 digits)" pattern="[0-9]{10}" title="Please enter a 10-digit phone number" value="{{ session('success') ? old('phone') : '' }}" required>
+                        <input type="tel" id="getNumber" class="form-control validate" name="ucontact" placeholder="Phone (10 digits)" pattern="[0-9]{10}" title="Please enter a 10-digit phone number" value="{{ session('success') ? old('phone') : '' }}" required>
                     </div>
                     <div class="flex">
                         <img src="/images/web assets/email.png" alt="email icon" class="img-fluid">
@@ -104,7 +105,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary">Submit <i class="fa fa-paper-plane"></i></button>
+                <button type="button" class="btn btn-primary" id="submitBtn">Submit <i class="fa fa-paper-plane"></i></button>
             </div>
         </div>
     </div>
@@ -788,6 +789,12 @@
                     console.error('Error fetching universities:', error);
                 });
         }
+    });
+</script>
+
+<script>
+    document.getElementById('submitBtn').addEventListener('click', function() {
+        document.getElementById('queryForm').submit();
     });
 </script>
 
