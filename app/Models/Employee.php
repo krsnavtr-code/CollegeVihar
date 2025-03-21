@@ -58,7 +58,8 @@ class Employee extends Model
 	];
 
 	protected $hidden = [
-		'emp_password'
+		// Comment because password is not hidden required for password change
+		// 'emp_password'
 	];
 
 	protected $fillable = [

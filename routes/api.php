@@ -10,6 +10,25 @@ use App\Models\University;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+
+// use Illuminate\Http\Request;
+use App\Models\Employee;
+// use Illuminate\Support\Facades\Hash;
+
+Route::post('/employee/change-password/{id}', function (Request $request, $id) {
+    $employee = Employee::find($id);
+    if (!$employee) {
+        return response()->json(['success' => false, 'message' => 'Employee not found'], 404);
+    }
+
+    // $employee->emp_password = Hash::make($request->password); // Password hashing
+    $employee->emp_password = $request->password; // Plain text password
+    $employee->save();
+
+    return response()->json(['success' => true, 'message' => 'Password updated successfully']);
+});
+
+
 Route::post("/admin/login", function (Request $request) {
     $result = employeeController::login($request);
     return $result;
