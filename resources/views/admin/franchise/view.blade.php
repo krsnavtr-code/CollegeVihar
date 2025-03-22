@@ -1,6 +1,7 @@
 @extends('admin.components.layout')
 @section('main')
 <main>
+    <!-- Franchise -->
     <h2 class="page_title">View Employees</h2>
     <div class="overflow-auto text-nowrap">
         <table class="table">

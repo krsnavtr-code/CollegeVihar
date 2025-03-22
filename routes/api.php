@@ -28,6 +28,18 @@ Route::post('/employee/change-password/{id}', function (Request $request, $id) {
     return response()->json(['success' => true, 'message' => 'Password updated successfully']);
 });
 
+Route::post('/employee/change-username/{id}', function (Request $request, $id) {
+    $employee = Employee::find($id);
+    if (!$employee) {
+        return response()->json(['success' => false, 'message' => 'Employee not found'], 404);
+    }
+
+    $employee->emp_username = $request->username;
+    $employee->save();
+
+    return response()->json(['success' => true, 'message' => 'Username updated successfully']);
+});
+
 
 Route::post("/admin/login", function (Request $request) {
     $result = employeeController::login($request);

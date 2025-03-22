@@ -102,15 +102,17 @@
                             @endif
                         </td>
                         <td class="fw-bold">{{ $employee['emp_name'] }}</td>
-                        <td>{{ $employee['emp_username'] }}</td>
                         <td>
-                            <span class="password-field" data-password="{{ $employee['emp_password'] }}">••••••••</span>
-                            <button class="btn btn-sm btn-outline-secondary" onclick="togglePassword(this)">
-                                <i class="fa-solid fa-eye"></i>
-                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="changeUser({{ $employee['id'] }})">
+                                <i class="fa-solid fa-key"></i>
+                            </button>    
+                            <span class="user-field">{{ $employee['emp_username'] }}</span>
+                        </td>
+                        <td style="width: 200px;">
                             <button class="btn btn-sm btn-outline-primary" onclick="changePassword({{ $employee['id'] }})">
                                 <i class="fa-solid fa-key"></i>
                             </button>
+                            <span class="password-field">{{ $employee['emp_password'] }}</span>
                         </td>
                         <td class="text-capitalize">{{ $employee['jobrole']['job_role_title'] }}</td>
                         <td>
@@ -155,18 +157,6 @@
         });
     }
 
-
-    function togglePassword(button) {
-        let passwordSpan = button.previousElementSibling;
-        if (passwordSpan.textContent === "••••••••") {
-            passwordSpan.textContent = passwordSpan.getAttribute("data-password");
-            button.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
-        } else {
-            passwordSpan.textContent = "••••••••";
-            button.innerHTML = '<i class="fa-solid fa-eye"></i>';
-        }
-    }
-
     function changePassword(empId) {
         let newPassword = prompt("Enter new password:");
         if (newPassword) {
@@ -190,6 +180,33 @@
             .catch(error => {
                 console.error("Error:", error);
                 alert("Error updating password.");
+            });
+        }
+    }
+
+    function changeUser(empId) {
+        let newUsername = prompt("Enter new username:");
+        if (newUsername) {
+            fetch(`/api/employee/change-username/${empId}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                },
+                body: JSON.stringify({ username: newUsername })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                if (data.success) {
+                    alert("Username updated successfully!");
+                } else {
+                    alert("Error updating username.");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Error updating username.");
             });
         }
     }
