@@ -30,6 +30,16 @@ use App\Models\Blog;
 use App\Models\UrlLinksLead;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\EmailController;
+use App\Http\Middleware\ensurePermission;
+
+
+
+Route::prefix('/admin/email')->group(function () {  
+    Route::get('/send-email', [EmailController::class, 'showEmailForm'])->name('admin.email');
+    Route::post('/send-email', [EmailController::class, 'sendEmail'])->name('admin.send-email');
+});
+
 
 
 // Admin Dashboard Page
@@ -445,17 +455,17 @@ Route::middleware('ensurePermission')->group(function () {
     
     Route::prefix("/adminpage")->group(function () {
         Route::get("", function () {
-            return "Working on this";
+            return view("admin.working");
         });
         Route::get("/create", function () {
-            return "Working on this";
+            return view("admin.working");
         });
         Route::prefix("/group")->group(function () {
             Route::get("", function () {
-                return "Working on this";
+                return view("admin.working");
             });
             Route::get("/create", function () {
-                return "Working on this";
+                return view("admin.working");
             });
         });
     });

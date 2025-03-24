@@ -4,7 +4,7 @@
         @include('admin.components.response')
         <form action="/admin/team/create" method="post">
             @csrf
-            <h2 class="page_title">Add University</h2>
+            <h2 class="page_title">Add Team</h2>
             <section class="panel">
                 <div class="field_group">
                     <div class="field">
@@ -32,13 +32,13 @@
                                 <input type="checkbox" name="team_members[]" value="{{ $employee['id'] }}"
                                     id="f{{ $i }}" @if ($employee['emp_team']) disabled @endif
                                     @if ($employee['emp_team'] == '1') checked @endif>
-                                <label for="f{{ $i }}">{{ $employee['emp_name'] }}</label>
+                                <label class="form-label" for="f{{ $i }}">{{ $employee['emp_name'] }}</label>
                             </div>
                         </div>
                     @endforeach
                 </div>
             </section>
-            <button type="submit">Create Team</button>
+            <button type="submit" class="btn btn-primary mt-3">Create Team</button>
         </form>
     </main>
 @endsection
