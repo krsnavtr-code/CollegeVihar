@@ -18,6 +18,53 @@
         font-size: 1.2rem !important;
     }
 
+    .course-card {
+    border-radius: 12px;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    background: #fff;
+}
+
+.course-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.image-container {
+    width: 100%;
+    height: 150px; /* Fixed height for uniformity */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.image-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.blue {
+    color: #007bff;
+    font-size: 16px;
+}
+
+@media (max-width: 768px) {
+    .image-container {
+        height: 120px; /* Adjust height for smaller screens */
+    }
+    .blue {
+        font-size: 14px;
+    }
+}
+
+
     /* .owl-carousel-font-size-h{
         font-size: 1.3rem !important;
     } */
@@ -244,13 +291,13 @@
                     <div class="container">
                         <div class="row align-items-center">
                             <div class="col-sm-8 p-2">
-                                <h5>Let’s find the</h5>
-                                <h2 class="display-5">best university/course</h2>
-                                <h5>for your career</h5>
+                                <h6 >Let’s find the</h6>
+                                <h2 style="margin-left: 40px;">Best University/Course</h2>
+                                <h6 style="margin-left: 80px;" >for your career</h6>
 
                             </div>
                             <div class="col-sm-4 p-2">
-                                <a class="btn btn-light" title="get recommendation" href="#queryModal" data-bs-toggle="modal"
+                                <a class="btn btn-light text-right" title="get recommendation" href="#queryModal" data-bs-toggle="modal"
                                     data-bs-target="#queryModal">
                                     Get Recommendation
                                 </a>
@@ -462,31 +509,33 @@
                                 @foreach ($tabs as $tab)
                                     <div class="tab-pane fade courses" id="nav-{{ $tab }}" role="tabpanel"
                                         aria-labelledby="nav-{{ $tab }}-tab" tabindex="0">
-                                        <div class="row">
+                                        <div class="row justify-content-center">
                                             @foreach (Request::get('courses') as $course)
                                                 @if ($course['course_type'] == $tab)
-                                                    <div class="col-lg-3 p-2 text-center">
-                                                        <a class="card h-100 p-2" href="/{{ $course['metadata']['url_slug'] }}">
-                                                            {{-- <img src="{{ $course['course_img'] }}" alt="" class="m-auto" width="80"
-                                                                height="60"> --}}
-                                                            <img src="{{ File::exists(public_path('images/courses/course_images/' . $course['course_img'])) ? asset('images/courses/course_images/' . $course['course_img']) : $course['course_img'] }}"
-                                                                alt="{{ $course['course_name'] }}" class="m-auto"
-                                                                style="height:100px ; width: 215px;">
-                                                            <p class="blue">{{ $course['course_name'] }}</p>
+                                                    <div class="col-lg-3 col-md-4 col-sm-6 col-12 p-2">
+                                                        <a class="card course-card h-100 p-3 text-center shadow-sm border-0" href="/{{ $course['metadata']['url_slug'] }}">
+                                                            <div class="image-container">
+                                                                <img src="{{ File::exists(public_path('images/courses/course_images/' . $course['course_img'])) ? asset('images/courses/course_images/' . $course['course_img']) : $course['course_img'] }}" 
+                                                                    alt="{{ $course['course_name'] }}" class="img-fluid">
+                                                                </div>
+                                                            <p class="blue mt-2 fw-bold">{{ $course['course_name'] }}</p>
                                                         </a>
                                                     </div>
                                                 @endif
                                             @endforeach
                                         </div>
-                                        <div class="row">
+                                        <div class="row justify-content-center">
                                             @foreach (Request::get('universities') as $university)
                                                 @if ($university['univ_type'] == $tab)
-                                                    <div class="col-lg-3 p-2 text-center">
-                                                        <a class="card h-100 p-1" href="/{{ $university['metadata']['url_slug'] }}">
-                                                            <img src="/images/university/logo/{{ $university['univ_logo'] }}" alt=""
-                                                                class="m-auto" onerror="this.src='/images/web assets/university.png'"
-                                                                width="80%" height="60">
-                                                            <p class="blue">{{ $university['univ_name'] }}</p>
+                                                    <div class="col-lg-3 col-md-4 col-sm-6 col-12 p-2">
+                                                        <a class="card university-card h-100 p-3 text-center shadow-sm border-0" href="/{{ $university['metadata']['url_slug'] }}">
+                                                            <div class="image-container">
+                                                                <img src="/images/university/logo/{{ $university['univ_logo'] }}" 
+                                                                    alt="{{ $university['univ_name'] }}"
+                                                                    class="img-fluid"
+                                                                    onerror="this.src='/images/web assets/university.png'">
+                                                            </div>
+                                                            <p class="blue mt-2 fw-bold">{{ $university['univ_name'] }}</p>
                                                         </a>
                                                     </div>
                                                 @endif
@@ -551,7 +600,7 @@
                         <div class="col-sm-8 p-2">
                             <h5 class="display-6">
                                 <span>Why</span>
-                                <span class="blue">College</span>
+                                <span style="color: #0C73B8;">College</span>
                                 <span class="red">Vihar</span>
                                 <span>?</span>
                             </h5>

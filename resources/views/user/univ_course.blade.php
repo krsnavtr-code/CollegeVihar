@@ -55,13 +55,13 @@ $page_title = $course['university']['univ_name'] . ' - '.$course['course']['cour
     </section>
 
     <section class="container" style="text-transform: none;">
-        <h2>{{ $page_title }}</h2>
+        <h4>{{ $page_title }}</h4>
         @foreach (json_decode($course['uc_about']) as $intro)
         <p>{{ $intro }}</p>
         @endforeach
     </section>
     <section class="container" style="text-transform: none;">
-        <h2 class="section_title">Course Overview</h2>
+        <h4>Course Overview</h4>
         <ul>
             @foreach (json_decode($course['uc_overview']) as $li)
             <li>{{ $li }}</li>
@@ -69,7 +69,7 @@ $page_title = $course['university']['univ_name'] . ' - '.$course['course']['cour
         </ul>
     </section>
     <section class="container highlights " style="text-transform: none;">
-        <h2>Course Highlights</h2>
+        <h4>Course Highlights</h4>
         <p class="p-2">The course's primary highlights cover a variety of academic and professional
             advantages, ensuring that aspiring students have a well-rounded and enriching educational experience.</p>
         <div class="row">
@@ -88,7 +88,7 @@ $page_title = $course['university']['univ_name'] . ' - '.$course['course']['cour
     </section>
     <section class="container" style="text-transform: none;">
         <article>
-            <h2>Simplified Approach to Complete Admission Process</h2>
+            <h4>Simplified Approach to Complete Admission Process</h4>
             <p>There is an online admissions process available at Online {{ $course['course_name'] }}, therefore there is
                 no need to physically visit the campus to apply for admission. There is no entrance exam required to apply for
                 admission to {{ $course['course_name'] }} Online because admissions are made directly. The following
@@ -99,7 +99,7 @@ $page_title = $course['university']['univ_name'] . ' - '.$course['course']['cour
         </article>
     </section>
     <section class="container" style="text-transform: none;">
-        <h2>Course Details</h2>
+        <h4>Course Details</h4>
         <p>This concise course overview includes key features and essential details, offering a comprehensive understanding of the program's offerings.</p>
         <table class="table table-striped text-capitalize bordered">
             <thead class="table-primary">
@@ -125,7 +125,7 @@ $page_title = $course['university']['univ_name'] . ' - '.$course['course']['cour
         </table>
     </section>
     <section class="container" style="text-transform: none;">
-        <h2>Course Syllabus</h2>
+        <h4>Course Syllabus</h4>
         <p>A comprehensive breakdown of the course-related syllabus, encompassing subjects
             organized by year or semester, is available for your detailed perusal.</p>
         <div class="row subject_groups">
@@ -145,8 +145,8 @@ $page_title = $course['university']['univ_name'] . ' - '.$course['course']['cour
         </div>
     </section>
     <section class="container" style="text-transform: none;">
-        <h2 class="section_title">Course Assignments</h2>
-        <p class="section_about">The course entails a series of assignments designed to foster skill development,
+        <h4>Course Assignments</h4>
+        <p>The course entails a series of assignments designed to foster skill development,
             critical thinking, and practical application of the subject matter.</p>
         <div class="row">
             @php
@@ -164,19 +164,19 @@ $page_title = $course['university']['univ_name'] . ' - '.$course['course']['cour
     </section>
 
     <section class="container" >
-        <h2>How Collegevihar helps you ?</h2>
+        <h4>How Collegevihar helps you ?</h4>
         @foreach (json_decode($course['uc_cv_help']) as $intro)
         <p style="text-transform: none;">{{ $intro }}</p>
         @endforeach
     </section>
     <section class="container" >
-        <h2>Collaboration to succeed</h2>
+        <h4>Collaboration to succeed</h4>
         @foreach (json_decode($course['uc_collab']) as $intro)
         <p style="text-transform: none;">{{ $intro }}</p>
         @endforeach
     </section>
     <section class="container">
-        <h2>Grouping with experts</h2>
+        <h4>Grouping with experts</h4>
         @foreach (json_decode($course['uc_expert']) as $intro)
         <p style="text-transform: none;">{{ $intro }}</p>
         @endforeach
@@ -215,7 +215,7 @@ $page_title = $course['university']['univ_name'] . ' - '.$course['course']['cour
 
 
     <section class="container" style="text-transform: none;">
-        <h2 class="section_title">{{ $course['university']['univ_name'] }} <span>Admission Process</span></h2>
+        <h4>{{ $course['university']['univ_name'] }} <span>Admission Process</span></h4>
         <p>There is an online admissions process available at {{ $course['university']['univ_name'] }}, therefore there
             is no need to physically visit the campus to apply for admission. There is no entrance exam required to apply
             for admission to {{ $course['university']['univ_name'] }} Online because admissions are made directly. The

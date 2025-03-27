@@ -62,6 +62,7 @@ $page_title = 'MCQs Test';
                 @php $firstQuestion = $questions->first(); @endphp
                 <div class="question mt-3" data-question-id="{{ $firstQuestion->id }}">
                     <h5 class="text-secondary">Question <span id="current-question" class="text-danger">{{ session('current_question', 1) }}</span> of {{ $questions->count() }}</h5>
+
                     <p id="question-text" class="question-title">{{ $firstQuestion->question }}</p>
                     
                     <ul id="answers-list" class="list-group mt-3">

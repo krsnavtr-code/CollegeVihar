@@ -19,6 +19,41 @@ $industry = json_decode($university['univ_industry'], true);
     img {
         max-height: 200px;
     }
+
+   .image-container {
+    width: 100%;
+    height: 120px; /* Reduced height for smaller card */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.image-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; /* Ensures full visibility without cropping */
+}
+
+.card {
+    border-radius: 10px;
+    transition: transform 0.2s ease-in-out;
+    padding: 10px; /* Reduced padding */
+}
+
+.card:hover {
+    transform: translateY(-3px);
+}
+
+h6 {
+    font-size: 14px; /* Smaller title */
+}
+
+p {
+    font-size: 12px; /* Smaller description */
+}
+
+
 </style>
 @endpush
 @section('main')
@@ -45,11 +80,13 @@ $industry = json_decode($university['univ_industry'], true);
                     <h2>{{ $university['univ_name'] }} Advantages</h2>
                     <div class="row">
                         @foreach ($advantage['data'] as $d)
-                        <div class="col-md-4 col-6 p-2">
-                            <article class="card p-2 h-100">
-                                <img class="img-fluid" src="/images/icon_png/{{ $d['logo'] }}" alt="{{$d['title']}}" height="200">
-                                <h5 class="blue">{{ $d['title'] }}</h5>
-                                <p>{{ $d['description'] }}</p>
+                        <div class="col-md-3 col-6 p-2"> <!-- Reduced column size -->
+                            <article class="card p-2 h-100 shadow-sm border-0 text-center">
+                                <div class="image-container">
+                                    <img class="img-fluid" src="/images/icon_png/{{ $d['logo'] }}" alt="{{$d['title']}}">
+                                </div>
+                                <h6 class="blue mt-2">{{ $d['title'] }}</h6> 
+                                <!-- <p class="text-muted small">{{ $d['description'] }}</p> -->
                             </article>
                         </div>
                         @endforeach

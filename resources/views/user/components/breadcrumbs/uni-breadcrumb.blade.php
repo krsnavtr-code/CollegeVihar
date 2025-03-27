@@ -1,7 +1,7 @@
-<div class="container hero-content mt-5">
+<div class="container hero-content mt-3">
         <div class="row">
             <div class="col">
-                <p class="display-4" style="font-size: 2.2rem; font-weight: 400;">{{ $page_title }}</p>
+                <p class="display-4" style="font-size: 1.6rem; font-weight: 400;">{{ $page_title }}</p>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/" class="">

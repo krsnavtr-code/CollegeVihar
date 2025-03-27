@@ -13,7 +13,7 @@ $permissions = Request::get('admin_permissions');
         </a>
         <a class="btn btn-primary flex p-3 ps-4 rounded-0" href="{{ route('admin_home') }}">Dashboard</a>
         <!-- Send Email -->
-        <a href="{{route('admin.email')}}" class="btn btn-danger flex p-3 ps-4 rounded-0">Send Email</a>
+        <a href="{{route('admin.email')}}" class="btn btn-primary flex p-3 ps-4 rounded-0">Send Email</a>
 
         @foreach ($pagegroups as $pagegroupIndex => $pagegroup)
         @php

@@ -65,6 +65,24 @@
     document.addEventListener('DOMContentLoaded', function () {
         let questionCount = 1;
         
+        // Function to update question indices
+        function updateQuestionIndices() {
+            const questions = document.querySelectorAll('.question-row');
+            questions.forEach((question, index) => {
+                // Update textarea name
+                question.querySelector('textarea').name = `questions[${index}][question]`;
+                
+                // Update answer input names
+                const answers = question.querySelectorAll('input[type="text"]');
+                answers.forEach((answer, answerIndex) => {
+                    answer.name = `questions[${index}][answer${answerIndex + 1}]`;
+                });
+                
+                // Update correct answer select name
+                question.querySelector('select').name = `questions[${index}][correct_answer]`;
+            });
+        }
+        
         document.getElementById('add-question').addEventListener('click', function () {
             const container = document.getElementById('questions-container');
             const newQuestion = document.createElement('div');
@@ -73,18 +91,18 @@
                 <button type="button" class="btn btn-sm btn-outline-danger remove-question position-absolute top-0 end-0 m-2">❌</button>
                 <div class="form-group">
                     <label class="font-weight-bold">Question</label>
-                    <textarea name="questions[\${questionCount}][question]" class="form-control border-success" required></textarea>
+                    <textarea name="questions[${questionCount}][question]" class="form-control border-success" required></textarea>
                 </div>
                 <div class="form-group">
                     <label class="font-weight-bold">Answers</label>
-                    <input type="text" name="questions[\${questionCount}][answer1]" class="form-control mb-2 border-success" placeholder="Answer 1" required>
-                    <input type="text" name="questions[\${questionCount}][answer2]" class="form-control mb-2 border-success" placeholder="Answer 2" required>
-                    <input type="text" name="questions[\${questionCount}][answer3]" class="form-control mb-2 border-success" placeholder="Answer 3" required>
-                    <input type="text" name="questions[\${questionCount}][answer4]" class="form-control mb-2 border-success" placeholder="Answer 4" required>
+                    <input type="text" name="questions[${questionCount}][answer1]" class="form-control mb-2 border-success" placeholder="Answer 1" required>
+                    <input type="text" name="questions[${questionCount}][answer2]" class="form-control mb-2 border-success" placeholder="Answer 2" required>
+                    <input type="text" name="questions[${questionCount}][answer3]" class="form-control mb-2 border-success" placeholder="Answer 3" required>
+                    <input type="text" name="questions[${questionCount}][answer4]" class="form-control mb-2 border-success" placeholder="Answer 4" required>
                 </div>
                 <div class="form-group">
                     <label class="font-weight-bold"> Correct Answer</label>
-                    <select name="questions[\${questionCount}][correct_answer]" class="form-control border-success" required>
+                    <select name="questions[${questionCount}][correct_answer]" class="form-control border-success" required>
                         <option value="1">Answer 1</option>
                         <option value="2">Answer 2</option>
                         <option value="3">Answer 3</option>
@@ -94,12 +112,19 @@
             `;
             container.appendChild(newQuestion);
             questionCount++;
+            updateQuestionIndices(); // Update indices after adding
         });
         
         document.getElementById('questions-container').addEventListener('click', function (e) {
             if (e.target.classList.contains('remove-question')) {
                 e.target.closest('.question-row').remove();
+                updateQuestionIndices(); // Update indices after removing
             }
+        });
+
+        // Add form submit handler to ensure indices are updated before submission
+        document.querySelector('form').addEventListener('submit', function(e) {
+            updateQuestionIndices();
         });
     });
 </script>

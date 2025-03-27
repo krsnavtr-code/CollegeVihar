@@ -11,7 +11,7 @@ $page_title = $course['course_name'] . ' - (' . $course['course_short_name'] . '
 @include('user.components.breadcrumbs.course-breadcrumb')
     {{-- @php dd($course['universities']) ;@endphp --}}
     <section class="text-center p-2">
-        <div class="container card py-4 bg-blue">
+        <div class="container card py-2 bg-blue">
             <div class="row">
                 <div class="col-4">
                     <article>
@@ -36,8 +36,8 @@ $page_title = $course['course_name'] . ' - (' . $course['course_short_name'] . '
     </section>
     <section style="text-transform: none;">
         <div class="container">
-            <h1 class="display-5 blue text-center">Course Introduction</h1>
-            <h2 class="blue">{{ $course['course_name'] }}</h2>
+            <h1 class="blue text-center">Course Introduction</h1>
+            <h4 class="blue">{{ $course['course_name'] }}</h4>
             {{-- @php dd( $course); @endphp --}}
             @foreach (json_decode($course['course_intro'], true) ?? [] as $intro)
             <p class="p-2">{{ $intro }}</p>
@@ -45,7 +45,7 @@ $page_title = $course['course_name'] . ' - (' . $course['course_short_name'] . '
         </div>
     </section>
     <section class="container" style="text-transform: none;">
-        <h2 class="blue">Course Overview</h2>
+        <h4 class="blue">Course Overview</h4>
         @foreach (json_decode($course['course_overview'], true) ?? [] as $intro)
         <p class="p-2">{{ $intro }}</p>
         @endforeach
@@ -54,7 +54,7 @@ $page_title = $course['course_name'] . ' - (' . $course['course_short_name'] . '
         @php
         $course['course_eligibility'] = json_decode($course['course_eligibility'], true) ?? [];
         @endphp
-        <h2 class="blue">Course Eligibility</h2>
+        <h4 class="blue">Course Eligibility</h4>
         <p class="p-2">{{ $course['course_eligibility']['about'] ?? '' }}</p>
         @isset($course['course_eligibility']['data'])
         <ul>
@@ -65,7 +65,7 @@ $page_title = $course['course_name'] . ' - (' . $course['course_short_name'] . '
         @endisset
     </section>
     <section class="container" style="text-transform: none;">
-        <h2 class="blue">Universities </h2>
+        <h4 class="blue">Universities </h4>
         <div class="row p-2">
             @foreach ($course['universities'] as $univ)
             @php
@@ -87,7 +87,7 @@ $page_title = $course['course_name'] . ' - (' . $course['course_short_name'] . '
             <div class="row">
                 <div class="col-lg-6 p-2">
                     <article>
-                        <h2>Admission Process</h2>
+                        <h4>Admission Process</h4>
                         <p>There is an online admissions process available at Online {{ $course['course_name'] }}, therefore there is
                             no need to physically visit the campus to apply for admission. There is no entrance exam required to apply for
                             admission to {{ $course['course_name'] }} Online because admissions are made directly. The following
@@ -128,7 +128,7 @@ $page_title = $course['course_name'] . ' - (' . $course['course_short_name'] . '
                 @php
                 $course['course_subjects'] = json_decode($course['course_subjects'], true);
                 @endphp
-                <h2>Course Subjects</h2>
+                <h4 class="blue">Course Subjects</h4>
                 <ul class="list-unstyled row">
                     @foreach ($course['course_subjects']['data'] ?? [] as $li)
                     <li class="col-6 p-2">
@@ -146,7 +146,7 @@ $page_title = $course['course_name'] . ' - (' . $course['course_short_name'] . '
                 @php
                 $course['course_highlights'] = json_decode($course['course_highlights'], true) ?? [];
                 @endphp
-                <h2 class="blue">{{ $course['course_name'] }}'s Highlights</h2>
+                <h4 class="blue">{{ $course['course_name'] }}'s Highlights</h4>
                 @foreach ($course['course_highlights'] ?? [] as $i => $type)
                 @if ($type['title'])
                 <div class="col-lg-4 col-sm-6 p-2 m-md-0 m-2">
@@ -167,14 +167,14 @@ $page_title = $course['course_name'] . ' - (' . $course['course_short_name'] . '
         <div class="container">
             <div class="row gap-3">
                 <article>
-                    <h2 class="blue">{{ $course['course_name'] }}'s Freights</h2>
+                    <h4 class="blue">{{ $course['course_name'] }}'s Freights</h4>
                     <p class="p-2">{{ $course['course_freights'] }}</p>
                 </article>
                 <article>
                     @php
                     $course['course_specialization'] = json_decode($course['course_specialization'], true) ?? [] ;
                     @endphp
-                    <h2 class="blue">{{ $course['course_name'] }}'s Specialization</h2>
+                    <h4 class="blue">{{ $course['course_name'] }}'s Specialization</h4>
                     <p class="p-2">{{ $course['course_specialization']['about'] ?? 'N/A' }}</p>
                     @isset($course['course_specialization']['data'])
                     <ul class="list-unstyled row">
@@ -195,7 +195,7 @@ $page_title = $course['course_name'] . ' - (' . $course['course_short_name'] . '
         @php
         $course['course_job'] = json_decode($course['course_job'], true) ?? [];
         @endphp
-        <h2>Course Job</h2>
+        <h4 class="blue">Course Job</h4>
         <p>{{ $course['course_job']['about'] ?? '' }}</p>
         <ul class="list-unstyled row">
             @foreach ($course['course_job']['data'] ?? [] as $li)
@@ -210,7 +210,7 @@ $page_title = $course['course_name'] . ' - (' . $course['course_short_name'] . '
         @php
         $course['course_types'] = json_decode($course['course_types'], true) ?? [];
         @endphp
-        <h2 class="blue">Course Types</h2>
+        <h4 class="blue">Course Types</h4>
         @foreach ($course['course_types'] ?? [] as $type)
         @if ($type['title'])
         <article class="p-2">
@@ -228,17 +228,17 @@ $page_title = $course['course_name'] . ' - (' . $course['course_short_name'] . '
             @endforeach
         </ul>
     </section>
-    <section class="container">
-        <h2 class="">Frequently Asked Questions</h2>
+    <section class="container"> 
+        <h4 class="blue">Frequently Asked Questions</h4>
         @foreach (json_decode($course['course_faqs'], true)??[] as $i => $faq)
         <div class="accordion p-1">
             <article class="accordion-item">
-                <h2 class="accordion-header">
+                <h4 class="accordion-header">
                     <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panel{{ $i + 1 }}" aria-expanded="true" aria-controls="panel{{ $i + 1 }}">
                         <span>Q {{ $i + 1 }} : </span>
                         <span class="ms-1">{{ $faq['question'] }}</span>
                     </button>
-                </h2>
+                </h4>
                 <div id="panel{{ $i + 1 }}" class="accordion-collapse collapse">
                     <div class="accordion-body">
                         <p class="step_desc" style="text-transform: none;">A {{ $i + 1 }} : {{ $faq['answer'] }}</p>

@@ -49,6 +49,14 @@ $page_title = 'Test Result';
         <div class="result-header">
             Test Result
         </div>
+        <!-- User Email -->
+        <div class="mt-3">
+            @php
+                $userContact = session('email') ?? session('phone');
+            @endphp
+            <p class="text-center font-weight-bold">{{ strtoupper($userContact) }}</p>
+        </div>  
+
 
         <!-- Main Content -->
         <div class="p-4">
@@ -71,9 +79,12 @@ $page_title = 'Test Result';
             </div>
 
             <!-- Buttons -->
-            <div class="mt-4">
-                <a href="/" class="btn btn-primary btn-lg">
-                    <i class="fas fa-home"></i> Back to Home
+            <div class="mt-4 d-flex gap-2 justify-content-center">
+                <a href="/" class="btn btn-primary">
+                    <i class="fas fa-home me-2 "></i> <span style="font-size: 16px;">Back to Home</span>
+                </a>
+                <a href="/competitive-exam" class="btn btn-primary">
+                    <i class="fas fa-graduation-cap me-2"></i> <span style="font-size: 16px;">Back to all Exam</span>
                 </a>
                 
             </div>
