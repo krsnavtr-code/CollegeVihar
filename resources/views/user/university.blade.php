@@ -50,7 +50,7 @@ h6 {
 }
 
 p {
-    font-size: 12px; /* Smaller description */
+    font-size: 15px; /* Smaller description */
 }
 
 

@@ -77,6 +77,10 @@
     font-weight: 400;
 }
 
+use-chat-gpt-ai-content-menu {
+    display: none;
+}
+
 /* Universities end */
 @media only screen and (max-width:600px){
     *{

@@ -1,4 +1,3 @@
-
 <?php
 
 
@@ -7,6 +6,7 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\frontend\BlogController;
 use App\Http\Controllers\frontend\UserController;
+use App\Http\Controllers\frontend\QueryController;
 use App\Http\Controllers\frontend\JobOpeningController;
 use App\Http\Controllers\frontend\UserOtpController;
 use App\Http\Controllers\backend\courseController;
@@ -48,6 +48,16 @@ Route::post('/logout', function () {
     Session::flush(); // remove session data
     return redirect('/'); // redirect to homepage
 });
+
+// Query Form Routes
+// Route::post('/submit-query-form', [QueryController::class, 'store']);
+// routes/web.php ya routes/frontend.php jahan bhi defined hai
+// Route::post('/submit-query', [QueryController::class, 'submitQuery']);
+
+Route::post('/submit-query-form', [QueryController::class, 'submitQuery'])->name('submit.query.form');
+// Route::get('/submit-query-form', function () {
+//     abort(404); 
+// });
 
 # HomePage of website
 Route::get("/", function (Request $request) {
@@ -340,5 +350,3 @@ Route::get("/course/{course}", function (Request $request) {
         return view("user.univ_course", ["course" => $universityCourse]);
     }
 });
-
-

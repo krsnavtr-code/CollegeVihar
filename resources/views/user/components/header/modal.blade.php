@@ -70,19 +70,20 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="/query-form" method="post" id="queryForm" class="row flex-column gap-2">
+                <form id="queryForm" class="row flex-column gap-2">
                     @csrf
+                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
                     <div class="flex">
                         <img src="/images/web assets/user.png" alt="User icon" class="img-fluid">
-                        <input type="text" name="uname" id="getName" class="form-control validate" placeholder="Enter your name here..." value="{{ session('success') ? old('name') : '' }}" required>
+                        <input type="text" name="uname" id="getName" class="form-control validate" placeholder="Enter your name here..." required>
                     </div>
                     <div class="flex">
                         <img src="/images/web assets/contact.png" alt="contact icon" class="img-fluid">
-                        <input type="tel" id="getNumber" class="form-control validate" name="ucontact" placeholder="Phone (10 digits)" pattern="[0-9]{10}" title="Please enter a 10-digit phone number" value="{{ session('success') ? old('phone') : '' }}" required>
+                        <input type="tel" id="getNumber" class="form-control validate" name="ucontact" placeholder="Phone (10 digits)" pattern="[0-9]{10}" title="Please enter a 10-digit phone number" required>
                     </div>
                     <div class="flex">
                         <img src="/images/web assets/email.png" alt="email icon" class="img-fluid">
-                        <input type="email" name="email" id="getEmail" class="form-control validate" placeholder="Enter your email here..." value="{{ session('success') ? old('email') : '' }}" required>
+                        <input type="email" name="email" id="getEmail" class="form-control validate" placeholder="Enter your email here..." required>
                     </div>
                     <div class="flex">
                         <img src="/images/web assets/course.png" alt="course icon" class="img-fluid">
@@ -98,14 +99,18 @@
                         </select>
                     </div>
                     <div class="flex">
-                        <img src="/images/web assets/description.png" alt="course icon" class="img-fluid">
-                        <textarea name="message" class="form-control validate" placeholder="Enter Your Message"></textarea>
+                        <img style="width: 35px;" src="/images/web assets/location.png" alt="location icon" class="img-fluid">
+                        <input type="text" name="location" id="getLocation" class="form-control validate" placeholder="Enter your city/location..." required>
+                    </div>
+                    <div class="flex">
+                        <img style="width: 35px;" src="/images/web assets/description.png" alt="course icon" class="img-fluid">
+                        <textarea name="message" class="form-control validate" placeholder="Enter Course Name If not in the list / message"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" id="submitBtn" class="btn btn-primary">Submit</button>
                     </div>
                 </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="submitBtn">Submit <i class="fa fa-paper-plane"></i></button>
             </div>
         </div>
     </div>
@@ -793,8 +798,58 @@
 </script>
 
 <script>
-    document.getElementById('submitBtn').addEventListener('click', function() {
-        document.getElementById('queryForm').submit();
+    document.addEventListener('DOMContentLoaded', function() {
+        // Store CSRF token in a variable
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+        
+        document.getElementById('submitBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            const form = document.getElementById('queryForm');
+            const formData = new FormData(form);
+
+            // Add CSRF token to formData
+            formData.append('_token', csrfToken);
+
+            fetch('/submit-query-form', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    alert(data.message);
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('queryModal'));
+                    modal.hide();
+                    form.reset();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            });
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if we're on the homepage
+        if (window.location.pathname === '/') {
+            // Show the query modal after a 3-second delay
+            setTimeout(function() {
+                const queryModal = new bootstrap.Modal(document.getElementById('queryModal'));
+                queryModal.show();
+            }, 3000);
+        }
     });
 </script>
 
