@@ -70,7 +70,7 @@
         <nav class="navbar navbar-expand-lg bg-body-tertiary bottom-nav" style="padding: 0px 0px 5px 0px;">
             <div class="container ">
                 <a class="navbar-brand text-center" style="margin: 0" href="/">
-                    <img src="/images/web assets/logo_mini.jpeg" alt="" width="40">
+                    <img src="/images/logomini.png" alt="Logo" width="40">
                     <h6>
                         <span class="blue">college</span>
                         <span class="red">vihar</span>
