@@ -45,4 +45,24 @@ class EmailController extends Controller
 
         return redirect()->back()->with('success', 'Emails sent successfully!');
     }
+
+    public function sendProposalEmail(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'subject' => 'required|string',
+            'cover_letter' => 'nullable|string'
+        ]);
+
+        $details = [
+            'subject' => $request->subject,
+            'is_proposal' => true,
+            'cover_letter' => $request->cover_letter,
+            'proposal_pdf' => public_path('prospectus/CV Proposal.pdf')
+        ];
+
+        Mail::to($request->email)->send(new CustomEmail($details));
+
+        return redirect()->back()->with('success', 'Proposal email sent successfully!');
+    }
 }

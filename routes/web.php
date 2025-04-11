@@ -166,9 +166,13 @@ Route::get('downresume/{filename}', [UserController::class, 'downloadResume']);
 //   JOB OPENING OTP Routes 
 
 
-Route::get('/login',function(){
-    return redirect('/');
-});
+Route::get('/login', function () {
+    return view('auth.login');
+})->name('login');
+
+Route::post('/login', [UserController::class, 'login'])->name('login.post');
+Route::post('/logout', [UserController::class, 'logout'])->name('logout');
+
 // Route::post('/jobregister',[UserController::class,'jobRegister']);
 // Route::post('/send-otp', [UserController::class,'sendOtp'])->name('sendOtp');
 // Route::get('/verification/{id}',[UserController::class,'verification']);
@@ -349,4 +353,11 @@ Route::get("/course/{course}", function (Request $request) {
         // dd($universityCourse, 24);
         return view("user.univ_course", ["course" => $universityCourse]);
     }
+});
+
+// Email Routes
+Route::prefix('admin')->group(function () {
+    Route::get('/email', [\App\Http\Controllers\Admin\EmailController::class, 'showEmailForm'])->name('admin.email-form');
+    Route::post('/send-email', [\App\Http\Controllers\Admin\EmailController::class, 'sendEmail'])->name('admin.send-email');
+    Route::post('/send-proposal-email', [\App\Http\Controllers\Admin\EmailController::class, 'sendProposalEmail'])->name('admin.send-proposal-email');
 });

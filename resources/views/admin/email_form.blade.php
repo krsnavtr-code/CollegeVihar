@@ -40,10 +40,48 @@
                 <label class="form-label">Attachments (Optional)</label>
                 <input type="file" name="attachments[]" multiple class="form-control" accept="*">
             </div>
-            <button type="submit" class="btn btn-primary mt-3 w-25">Send</button>
+            <button type="submit" class="btn btn-primary mt-3 w-50">Send</button>
         </form>
     </div>
-</div>
+
+
+
+    <!-- proposal email form -->
+    <div class="container mt-4">
+        <div class="card shadow-lg p-4 w-50 mx-auto">
+            <h2 class="text-center">📄 Send Proposal Email</h2>
+
+            {{-- Success & Error Message --}}
+            @if (session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div class="alert alert-danger">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            <form action="{{ route('admin.send-proposal-email') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="mb-3">
+                    <label class="form-label">Recipient Email</label>
+                    <input type="email" name="email" class="form-control" placeholder="Enter recipient's email" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Subject</label>
+                    <input type="text" name="subject" class="form-control" placeholder="Proposal Subject" value="College Vihar Proposal" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Cover Letter (Optional)</label>
+                    <textarea name="cover_letter" class="form-control" rows="5" placeholder="Add a personalized cover letter..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3 w-50">Send Proposal</button>
+            </form>
+        </div>
+    </div>
 
 {{-- Auto-hide messages after 3 seconds --}}
 <script>
