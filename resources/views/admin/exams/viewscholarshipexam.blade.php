@@ -117,7 +117,7 @@
                         </h6>
                         <p class="text-wrap text-secondary text-sm">
                             <strong class="text-danger">A:</strong>
-                            {{ $answers[$i] }}
+                            {{ $mockTestAnswers[$i] ?? '' }}
                         </p>
                         @endforeach
                         @else
@@ -139,7 +139,7 @@
                         </h6>
                         <p class="text-wrap text-secondary text-sm">
                             <strong class="text-danger">A:</strong>
-                            {{ $answers[$i] }}
+                            {{ $mockTestAnswers[$i] ?? '' }}
                         </p>
                         @endforeach
                         @else
