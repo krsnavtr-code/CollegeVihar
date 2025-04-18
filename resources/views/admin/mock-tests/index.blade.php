@@ -19,7 +19,7 @@
                     <tr>
                         <td>{{ $test->id }}</td>
                         <td>{{ $test->test_duration }} minutes</td>
-                        <td>{{ $test->competitiveExam->exam_type }}</td>
+                        <td>{{ optional($test->competitiveExam)->exam_type }}</td>
                         <td>
                             <a href="{{ route('admin.mock-test.show', $test->id) }}">
                                 <i class="icon fa-solid fa-eye" title="View Mock Test"></i>
