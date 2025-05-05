@@ -282,8 +282,15 @@ Route::middleware('ensurePermission')->group(function () {
     });
     // Seo Routes
     Route::prefix("/web_pages")->group(function () {
-        Route::get("", function () {
-            $pages = Metadata::paginate(30)->toArray();
+        Route::get("", function (Request $request) {
+            $query = Metadata::query();
+            
+            // Apply search filter if search parameter exists
+            if ($request->has('search') && !empty($request->search)) {
+                $query->where('url_slug', 'like', '%' . $request->search . '%');
+            }
+            
+            $pages = $query->paginate(30)->withQueryString()->toArray();
             $data = ["pages" => $pages['data'], 'com' => $pages];
             return view('admin.seo.pages', $data);
         });

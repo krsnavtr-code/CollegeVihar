@@ -5,6 +5,10 @@ $permissions = Request::get('admin_permissions');
 @section('main')
 <main>
     <h2 class="page_title">View University</h2>
+    <form method="GET" action="/admin/web_pages" class="mb-3 d-flex" style="max-width: 800px;">
+        <input type="text" name="search" value="{{ request('search') }}" class="form-control me-2" placeholder="Search by page URL">
+        <button type="submit" class="btn btn-primary" style="margin: 0.6rem;">Search</button>
+    </form>
     <div class="overflow-auto text-nowrap">
         <table class="table">
             <thead class="text-center">
@@ -35,25 +39,25 @@ $permissions = Request::get('admin_permissions');
     <!-- pagination -->
     @if ($com['last_page'] > 1)
     <nav aria-label="Page navigation" class="d-flex justify-content-center mt-3">
-        <ul class="pagination">
+        <ul class="pagination" style="display: flex; flex-wrap: wrap; justify-content: center;">
             <!-- Previous Page Link -->
             <li class="page-item {{ $com['current_page'] == 1 ? 'disabled' : '' }}">
-                <a class="page-link" href="/admin/web_pages?page={{ $com['current_page'] - 1 }}">Previous</a>
+                <a class="page-link" href="/admin/web_pages?page={{ $com['current_page'] - 1 }}{{ request('search') ? '&search='.request('search') : '' }}">Previous</a>
             </li>
 
             <!-- Page Number Links -->
             @for ($i = 1; $i <= $com['last_page']; $i++)
                 <li class="page-item {{ $com['current_page'] == $i ? 'active' : '' }}">
-                <a class="page-link" href="/admin/web_pages?page={{ $i }}">
+                <a class="page-link" href="/admin/web_pages?page={{ $i }}{{ request('search') ? '&search='.request('search') : '' }}">
                     {{ $i }}
                 </a>
                 </li>
-                @endfor
+            @endfor
 
-                <!-- Next Page Link -->
-                <li class="page-item {{ $com['current_page'] == $com['last_page'] ? 'disabled' : '' }}">
-                    <a class="page-link" href="/admin/web_pages?page={{ $com['current_page'] + 1 }}">Next</a>
-                </li>
+            <!-- Next Page Link -->
+            <li class="page-item {{ $com['current_page'] == $com['last_page'] ? 'disabled' : '' }}">
+                <a class="page-link" href="/admin/web_pages?page={{ $com['current_page'] + 1 }}{{ request('search') ? '&search='.request('search') : '' }}">Next</a>
+            </li>
         </ul>
     </nav>
     @endif
