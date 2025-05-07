@@ -19,13 +19,13 @@
                 <h3 class="section_title">University Details</h3>
                 <div class="field_group">
                     <div class="field">
-                        <label for="c1" class="img_label"><img src="" alt=""><span>University
+                        <label for="c1" class="img_label"><img src="" alt="univ_logo"><span>University
                                 Logo</span></label>
                         <input type="file" onchange="display_pic(this)" name="univ_logo" id="c1"
                             accept="image/png,image/webp">
                     </div>
                     <div class="field">
-                        <label for="c2" class="img_label"><img src="" alt=""><span>University
+                        <label for="c2" class="img_label"><img src="" alt="univ_image"><span>University
                                 Campus</span></label>
                         <input type="file" onchange="display_pic(this)" name="univ_image" id="c2">
                     </div>
@@ -61,7 +61,7 @@
                     <input type="text" name="univ_adv[about]" placeholder="University Advantage About">
                 </div>
                 <i class="icon fa-solid fa-plus add_field"
-                    data-field='<div class="field_group"><div class="field aie" style="width:auto;"><label for="advl__id__" class="logo"><img src="" alt=""></label><input type="file" id="advl__id__" name="univ_adv[data][__id__][logo]" placeholder="University Advantage Logo" onchange="display_pic(this)"></div><div class="field cflex"><label for="advt__id__">Advantage Title</label><input type="text" id="advt__id__" name="univ_adv[data][__id__][title]" placeholder="University Advantage"></div><div class="field cflex"><label for="advd__id__">Advantage Description</label><input type="text" id="advd__id__" name="univ_adv[data][__id__][description] "placeholder="University Advantage Description"></div></div>'></i>
+                    data-field='<div class="field_group"><div class="field aie" style="width:auto;"><label for="advl__id__" class="logo"><img src="" alt="advl__id__"></label><input type="file" id="advl__id__" name="univ_adv[data][__id__][logo]" placeholder="University Advantage Logo" onchange="display_pic(this)"></div><div class="field cflex"><label for="advt__id__">Advantage Title</label><input type="text" id="advt__id__" name="univ_adv[data][__id__][title]" placeholder="University Advantage"></div><div class="field cflex"><label for="advd__id__">Advantage Description</label><input type="text" id="advd__id__" name="univ_adv[data][__id__][description] "placeholder="University Advantage Description"></div></div>'></i>
             </section>
             <section class="panel">
                 <h3 class="section_title">Industry-Ready Programs for Enhanced Career Readiness</h3>

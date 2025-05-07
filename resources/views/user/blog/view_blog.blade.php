@@ -52,7 +52,7 @@
                         <a class="side-card" href="{{ url($reb['metadata']['url_slug']) }}">
                             <img class="img-fluid rounded" src="{{ url('images/blogs/' . $reb['blog_pic']) }}"
                                 onerror="this.onerror=null; this.src='{{ url('images/blogs/blog.png') }}';"
-                                alt="" width="100">
+                                alt="blog_image" width="100">
                             <div class="">
                                 <h6 class="blue title">{{ $reb['blog_title'] }} </h6>
                                 <p>{{ $reb['blog_author'] }}</p>
@@ -69,7 +69,7 @@
     {{-- <div class="cart_layout">
         <div class="main_content">
             <div class="blog_image">
-                <img src="{{ url('images/blogs/' . $blog['blog_pic']) }}" alt="">
+                <img src="{{ url('images/blogs/' . $blog['blog_pic']) }}" alt="blog_image" onerror="this.onerror=null; this.src='{{ url('images/blogs/blog.png') }}';">
     </div>
     <div class="blog">
         <h1 class="blog_title">{{ $blog['blog_title'] }}</h1>
@@ -84,7 +84,7 @@
             @foreach ($recent as $rcb)
             <a class="blog_mini" href="{{ url($rcb['metadata']['url_slug']) }}">
                 <div class="blog_img"><img src="{{ url('images/blogs/' . $rcb['blog_pic']) }}"
-                        alt="">
+                        alt="blog_image" onerror="this.onerror=null; this.src='{{ url('images/blogs/blog.png') }}';">
                 </div>
                 <div class="blog_desc">
                     <h6 class="blog_title">{{ $rcb['blog_title'] }}</h6>

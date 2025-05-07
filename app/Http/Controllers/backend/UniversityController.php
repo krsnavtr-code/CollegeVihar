@@ -277,7 +277,7 @@ class UniversityController extends Controller
             // }
         }
 
-        $universities = $query->with('courses')->get();
+        $universities = $query->with(['courses', 'metadata'])->get();
 
         $courses = [];
         if ($request->has('course_type') && $request->course_type != '') {

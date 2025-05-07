@@ -539,7 +539,7 @@ $page_title = 'Job Requirement Details';
                 <figure>
                     <div class="meter-box">
                         <div>
-                            <img src="https://resources.workindia.in/employer/assets/icon/ic_default_meter_92_47.svg" alt="">
+                            <img src="https://resources.workindia.in/employer/assets/icon/ic_default_meter_92_47.svg" alt="not enough data">
                             <small>not enough data</small>
                         </div>
                         <p>Based on your requirement parameters</p>

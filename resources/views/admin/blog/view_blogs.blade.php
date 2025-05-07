@@ -41,7 +41,7 @@
                             </p>
                         </td>
                         <td>
-                            <img src="{{ url('images/blogs/' . $blog['blog_pic']) }}" alt="" class="img-fluid" width="100">
+                            <img src="{{ url('images/blogs/' . $blog['blog_pic']) }}" alt="blog image" class="img-fluid" width="100">
                         </td>
                         <td>
                             <a class="btn btn-light blue rounded-circle" href="">

@@ -74,7 +74,7 @@
                 <div class="col-lg-6">
                     <label for="blog_pic">
                         <div class="display">
-                            <img src="" alt="" class="img-fluid">
+                            <img src="" alt="blog image" class="img-fluid">
                         </div>
                     </label>
                 </div>

@@ -21,7 +21,7 @@
                         <a href="/{{ $university['metadata']['url_slug'] }}" class="rflex aic"
                             title="{{ $university['univ_name'] }}">
                             <img style="height: 40px;width:60px;margin-right:20px;"
-                                src="/images/university/logo/{{ $university['univ_logo'] }}" alt="">
+                                src="/images/university/logo/{{ $university['univ_logo'] }}" alt="university logo">
                             <h6>{{ $university['univ_name'] }}</h6>
                         </a>
                     </li>

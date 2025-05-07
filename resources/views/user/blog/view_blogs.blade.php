@@ -71,7 +71,7 @@
                             @foreach ($recent as $reb)
                                 <div class="card mb-2">
                                     <a class="side-card" href="{{ url($reb['metadata']['url_slug']) }}">
-                                        <img class="img-fluid rounded" src="{{ url('images/blogs/' . $reb['blog_pic']) }}" alt=""
+                                        <img class="img-fluid rounded" src="{{ url('images/blogs/' . $reb['blog_pic']) }}" alt="blog_image"
                                             width="100" onerror="this.onerror=null; this.src='{{ url('images/blogs/blog.png') }}';">
                                         <div class="">
                                             <h6 class="blue title">{{ $reb['blog_title'] }}

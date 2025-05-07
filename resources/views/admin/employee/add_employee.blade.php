@@ -7,7 +7,7 @@
         <section class="jcc">
             <div class="profile_pic field">
                 <label for="pp">
-                    <img src="/images/profile/profile 1.jpg" alt="">
+                    <img src="/images/profile/profile 1.jpg" alt="profile">
                 </label>
                 <input type="file" name="" id="pp" onchange="display_pic(this)">
             </div>

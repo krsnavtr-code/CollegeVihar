@@ -79,7 +79,7 @@ $page_title = $course['university']['univ_name'] . ' - '.$course['course']['cour
             @foreach (json_decode($course['uc_highlight']) as $i => $highlight)
             <div class="col-lg-3 col-md-4 col-6 p-2">
                 <figure class="card text-center h-100">
-                    <img src="/univ_course_img/{{ $img[$i%count($img)] }}" alt="" class="img-fluid m-auto" width="100">
+                    <img src="/univ_course_img/{{ $img[$i%count($img)] }}" alt="course_highlight" class="img-fluid m-auto" width="100">
                     <h6 class="blue">{{ $highlight }}</h6>
                 </figure>
             </div>
@@ -155,7 +155,7 @@ $page_title = $course['university']['univ_name'] . ' - '.$course['course']['cour
             @foreach (json_decode($course['uc_assign']) as $i => $assign)
             <div class="col-lg-3 col-md-4 col-6 p-2">
                 <figure class="card text-center h-100">
-                    <img src="/univ_course_img/{{ $img[$i%count($img)] }}" alt="" class="img-fluid m-auto" width="100">
+                    <img src="/univ_course_img/{{ $img[$i%count($img)] }}" alt="course_assign" class="img-fluid m-auto" width="100">
                     <h6 class="blue">{{ $assign }}</h6>
                 </figure>
             </div>

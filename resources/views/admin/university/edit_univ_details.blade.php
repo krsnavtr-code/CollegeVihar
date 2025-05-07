@@ -38,7 +38,7 @@
                 </div>
                 <div class="col-lg-6">
                     <label for="c1" class="img_label">
-                        <img src="/images/university/logo/{{ $university['univ_logo'] }}" alt="" class="img-fluid rounded">
+                        <img src="/images/university/logo/{{ $university['univ_logo'] }}" alt="univ_logo" class="img-fluid rounded">
                     </label>
                 </div>
                 <div class="col-lg-6">
@@ -51,7 +51,7 @@
                 </div>
                 <div class="col-lg-6">
                     <label for="c1" class="img_label">
-                        <img src="/images/university/campus/{{ $university['univ_image'] }}" alt="" class="img-fluid rounded">
+                        <img src="/images/university/campus/{{ $university['univ_image'] }}" alt="univ_image" class="img-fluid rounded">
                     </label>
                 </div>
             </div>
@@ -142,7 +142,7 @@
             <div class="field_group head_field flex">
                 <div class="field">
                     <label for="advl{{ $i + 1 }}" class="logo"><img src="/icon_png/{{ $adv['logo'] }}"
-                            alt=""></label>
+                            alt="advl{{ $i + 1 }}"></label>
                     <input type="file" id="advl{{ $i + 1 }}"
                         name="univ_adv[data][{{ $i + 1 }}][logo]" onchange="display_pic(this)">
                     @error("univ_adv.data.{{ $i + 1 }}.logo")
@@ -169,7 +169,7 @@
             @endforeach
             <button class="add_field btn btn-primary"
                 data-init={{ $i + 2 }}
-                data-field='<div class="field_group head_field"><div class="field aie" style="width:auto;"><label for="advl__id__" class="logo"><img src="" alt=""></label><input type="file" id="advl__id__" name="univ_adv[data][__id__][logo]" onchange="display_pic(this)"></div><div class="field"><label for="advt__id__">Advantage Title</label><input type="text" id="advt__id__" name="univ_adv[data][__id__][title]" placeholder="University Advantage"></div><div class="field"><label for="advd__id__">Advantage Description</label><input type="text" id="advd__id__" name="univ_adv[data][__id__][description] "placeholder="University Advantage Description"></div><i class="icon delete fa-solid fa-trash" onclick="delete_field(this)"></i></div>'></i>
+                data-field='<div class="field_group head_field"><div class="field aie" style="width:auto;"><label for="advl__id__" class="logo"><img src="" alt="advl__id__"></label><input type="file" id="advl__id__" name="univ_adv[data][__id__][logo]" onchange="display_pic(this)"></div><div class="field"><label for="advt__id__">Advantage Title</label><input type="text" id="advt__id__" name="univ_adv[data][__id__][title]" placeholder="University Advantage"></div><div class="field"><label for="advd__id__">Advantage Description</label><input type="text" id="advd__id__" name="univ_adv[data][__id__][description] "placeholder="University Advantage Description"></div><i class="icon delete fa-solid fa-trash" onclick="delete_field(this)"></i></div>'></i>
                 <i class="icon fa-solid fa-plus"></i>
                 <span>Add</span>
             </button>

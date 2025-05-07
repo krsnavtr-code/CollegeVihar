@@ -18,7 +18,7 @@
                     <span>Upload Image to preview</span>
                     <label for="logo">
                         <div class="display">
-                            <img src="" alt="">
+                            <img src="" alt="job logo">
                         </div>
                     </label>
                 </div>

@@ -81,9 +81,8 @@
                                 <div class="row align-items-center text-sm-start text-center">
                                     <div class="col-sm-8">
                                         <div class="text-box mt-4">
-                                            <h5 class="display-7"> Start Your Preparation</h5> {{-- Let’s find the --}}
+                                            <h5 class="display-7"> Start Your Preparation</h5>
                                             <p class="display-6 owl-carousel-font-size">With Our Award Winning Guru's</p>
-                                            {{-- <h2 class="display-5"></h2> --}}
                                             <a class="btn btn-light mt-3" title="Get Started Now" href="#callbackModal"
                                                 data-bs-toggle="modal" data-bs-target="#callbackModal">
                                                 Get Started Now
@@ -91,7 +90,7 @@
                                         </div>
                                     </div>
                                     <div class="col-sm-4 d-flex justify-content-center">
-                                        <img src="https://collegevihar.com/images/slider/slide_1.webp" alt="" class="img-fluid"
+                                        <img src="https://collegevihar.com/images/slider/slide_1.webp" alt="slide_image_1" class="img-fluid"
                                             style="height: 11rem; width:9rem" />
                                     </div>
                                 </div>
@@ -106,11 +105,10 @@
                                                 <a href="tel:+919266585858" class="btn btn-light mt-2"> call us:
                                                     +91 9266585858</a>
                                             </p>
-
                                         </div>
                                     </div>
                                     <div class="col-sm-4 d-flex justify-content-center">
-                                        <img src="https://collegevihar.com/images/slider/slide_2.webp" alt="" class="img-fluid"
+                                        <img src="https://collegevihar.com/images/slider/slide_2.webp" alt="slide_image_2" class="img-fluid"
                                             style="height: 11rem; width:9rem" />
                                     </div>
                                 </div>
@@ -119,13 +117,11 @@
                                 <div class="row align-items-center text-sm-start text-center">
                                     <div class="col-sm-8 mt-4">
                                         <h5 class="owl-carousel-font-size-h"> Get The Best Jobs Now Today Fast Quick</h5>
-                                        </h5> {{-- Explore a world of knowledge --}}
                                         <p class="display-5 owl-carousel-font-size">From Leading MNCs Offering Exciting
                                             Opportunities</p>
-                                        {{--you are one click away --}}
                                     </div>
                                     <div class="col-sm-4 d-flex justify-content-center">
-                                        <img src="https://collegevihar.com/images/slider/slide_3.webp" alt="" class="img-fluid"
+                                        <img src="https://collegevihar.com/images/slider/slide_3.webp" alt="slide_image_3" class="img-fluid"
                                             style="height: 11rem; width:9rem" />
                                     </div>
                                 </div>
@@ -134,17 +130,15 @@
                                 <div class="row align-items-center text-sm-start text-center">
                                     <div class="col-sm-8 mt-4">
                                         <div class="text-box mt-1">
-                                            <h5>Scholarship For</h5> {{--Allow our admission --}}
-                                            <h2 class="display-5 owl-carousel-font-size"> Deserving Student</h2> {{--services to
-                                            simplify--}}
+                                            <h5>Scholarship For</h5>
+                                            <h2 class="display-5 owl-carousel-font-size"> Deserving Student</h2>
                                             <p class="owl-carousel-font-size"> Get All Information Regarding Scholarship
                                                 Programs At
-                                                One Place</p> {{--your path
-                                            to success--}}
+                                                One Place</p>
                                         </div>
                                     </div>
                                     <div class="col-sm-4 d-flex justify-content-center mb-2">
-                                        <img src="https://collegevihar.com/images/slider/slide_4.webp" alt=""
+                                        <img src="https://collegevihar.com/images/slider/slide_4.webp" alt="slide_image_4"
                                             style="height: 11rem; width:9rem;" />
                                     </div>
                                 </div>
@@ -218,6 +212,7 @@
                 <!-- home cards Ner -->
                 <section>
                     <div class="container py-1">
+                        <h1 style="color: white; text-align: center; font-size: 1.7rem; font-weight: 500; margin-top: -1rem; margin-bottom: .8rem;">Empower Your Career with Flexible Online Degree Programs</h1>
                         <div class="row g-4">
                             <div class="col-6 col-sm-6 col-lg-3">
                                 <div class="card text-center p-1 shadow" id="card-gradient-color">
@@ -289,6 +284,7 @@
                 <!-- recommend -->
                 <section class=" py-4">
                     <div class="container">
+                        
                         <div class="row align-items-center">
                             <div class="col-sm-8 p-2">
                                 <h6 >Let’s find the</h6>
@@ -446,7 +442,7 @@
                                                                                                                         onerror="this.src='/images/web assets/university.png'"
                                                                                                                         loading="lazy">
                                                                                                                     <img class="uni-badge rounded-1"
-                                                                                                                        src="/images/university/logo/{{ $university->univ_logo}}"
+                                                                                                                        src="/images/university/logo/{{ $university->univ_logo}}" alt="{{ $university->univ_name }}"
                                                                                                                         height="30" />
                                                                                                                 </a>
                                                                                                             </div>

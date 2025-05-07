@@ -46,7 +46,7 @@
         <div class="col-12 col-s-6 col-m-3">
             <div class="wrapper cflex aic">
                 <div class="profile_pic">
-                    <img src="{{ $testimonial['profile'] }}" alt="">
+                    <img src="{{ $testimonial['profile'] }}" alt="profile">
                 </div>
                 <h4 class="username">{{ $testimonial['username'] }}</h4>
                 <p class="review">{{ $testimonial['review'] }}</p>

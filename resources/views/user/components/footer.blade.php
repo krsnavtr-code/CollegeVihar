@@ -4,7 +4,7 @@
             <div class="col-md-3 p-2">
                 <article>
                     <figure class="rounded-1 p-2 bg-white">
-                        <img src="/images/web assets/logo_full.jpeg" alt="" class="img-fluid" width="150">
+                        <img src="/images/web assets/logo_full.jpeg" alt="College Vihar" class="img-fluid" width="150">
                     </figure>
                     <p>College<span class="red">Vihar</span>
                         is Empowering global students with top university programs. Flexible, personalized, and

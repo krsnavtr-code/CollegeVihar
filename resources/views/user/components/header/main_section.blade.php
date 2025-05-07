@@ -1,8 +1,8 @@
 <section class="main_header rflex aic jcsb" id="">
     <div class="rflex aic">
         <a href="/" class="brand reset block">
-            <img src="/images/web assets/logo_mini.jpeg" alt="" class="full">
-            <img src="/images/web assets/logo_mini.jpeg" alt="" class="mini">
+            <img src="/images/web assets/logo_mini.jpeg" alt="logo_mini" class="full">
+            <img src="/images/web assets/logo_mini.jpeg" alt="logo_mini" class="mini">
         </a>
         <p style="font-weight: 600">
             <span style="color:var(--fv_sec)">College</span><span style="color:var(--fv_prime)">Vihar</span><span

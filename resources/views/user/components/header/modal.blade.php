@@ -66,7 +66,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="queryModalLabel">Query Form</h1>
+                <h5 class="modal-title fs-5" id="queryModalLabel">Query Form</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -121,7 +121,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <form action="{{ route('submit.form') }}" method="POST" class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="callbackModalLabel">Request a call</h1>
+                <h5 class="modal-title fs-5" id="callbackModalLabel">Request a call</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -195,7 +195,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <form action="{{ route('univstore') }}" method="POST" class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="partnershipModalLabel">Partner With Us</h1>
+                <h5 class="modal-title fs-5" id="partnershipModalLabel">Partner With Us</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -256,7 +256,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <form action="{{ route('univstore') }}" method="POST" class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="addUniModalLabel">Add University</h1>
+                <h5 class="modal-title fs-5" id="addUniModalLabel">Add University</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -317,7 +317,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <form action="/edregister" method="POST" class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="addUniModalLabel">Add Ed-Tech</h1>
+                <h5 class="modal-title fs-5" id="addUniModalLabel">Add Ed-Tech</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -448,7 +448,7 @@
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="suggestModalLabel">Know more about course</h1>
+                <h5 class="modal-title fs-5" id="suggestModalLabel">Know more about course</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -480,7 +480,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <form action="{{ route('submit.form') }}" method="POST" class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="applyModalLabel">Apply Now</h1>
+                <h5 class="modal-title fs-5" id="applyModalLabel">Apply Now</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -554,7 +554,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <form action="{{ url('/jobregister') }}" method="POST" class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="jobModalLabel">Job Registration</h1>
+                <h5 class="modal-title fs-5" id="jobModalLabel">Job Registration</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -615,7 +615,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <form action="{{ route('recruiterRegister') }}"  method="POST" class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="RecruiterModalLabel">Recruiter/HR Registration</h1>
+                <h5 class="modal-title fs-5" id="RecruiterModalLabel">Recruiter/HR Registration</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">

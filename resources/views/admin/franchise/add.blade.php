@@ -7,7 +7,7 @@
             <section class="jcc">
                 <div class="profile_pic field">
                     <label for="pp">
-                        <img src="/images/profile/profile 1.jpg" alt="">
+                        <img src="/images/profile/profile 1.jpg" alt="profile">
                     </label>
                     <input type="file" name="" id="pp" onchange="display_pic(this)">
                 </div>
@@ -95,14 +95,14 @@
                 <div class="field_group">
                     <div class="field">
                         <label for="aadhar_front" style="border: 2px dashed #00000044;">
-                            <img src="" alt="" style="width: 100%">
+                            <img src="" alt="Aadhar Front Side" style="width: 100%">
                             <span>Aadhar Front Side</span>
                         </label>
                         <input type="file" onchange="display_pic(this)" name="aadhar_front" id="aadhar_front">
                     </div>
                     <div class="field">
                         <label for="aadhar_back" style="border: 2px dashed #00000044;">
-                            <img src="" alt="" style="width: 100%">
+                            <img src="" alt="Aadhar Back Side" style="width: 100%">
                             <span>Aadhar Back Side</span>
                         </label>
                         <input type="file" onchange="display_pic(this)" name="aadhar_back" id="aadhar_back">
@@ -117,7 +117,7 @@
                 <div class="field_group">
                     <div class="field">
                         <label for="pan_pic" style="border: 2px dashed #00000044;">
-                            <img src="" alt="" style="width: 100%">
+                            <img src="" alt="Pan Card Pic" style="width: 100%">
                             <span>Pan Card Pic</span>
                         </label>
                         <input type="file" onchange="display_pic(this)" name="pan_pic" id="pan_pic">
@@ -145,7 +145,7 @@
                 <div class="field_group">
                     <div class="field">
                         <label for="bank_pic" style="border: 2px dashed #00000044;">
-                            <img src="" alt="" style="width: 100%">
+                            <img src="" alt="Bank Passbook Pic" style="width: 100%">
                             <span>Bank Passbook Pic</span>
                         </label>
                         <input type="file" onchange="display_pic(this)" name="bank_pic" id="bank_pic">

@@ -108,7 +108,7 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                                 aria-expanded="false">
-                                <img src="/images/web assets/logo_mini.jpeg" alt="" width="30">
+                                <img src="/images/web assets/logo_mini.jpeg" alt="logo_mini" width="30">
                                 <span>stopgap</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
@@ -272,7 +272,7 @@
                 </div>
             </div>
         </div>
-        <img style="height: 0px;" src="/images/right-bg.png" alt="" width="40">
+        <img style="height: 0px;" src="/images/right-bg.png" alt="bg" width="40">
     </header>
 
     <!-- Rest of your HTML content -->

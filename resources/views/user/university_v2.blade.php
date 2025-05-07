@@ -223,7 +223,7 @@
                     @foreach ($university['univ_advantage']['data'] as $adv)
                         <div class="col-12 col-s-6 col-m-4 cflex advantage">
                             <div class="wrapper">
-                                <img class="icon" src="/icon_png/{{ $adv['logo'] }}" alt="">
+                                <img class="icon" src="/icon_png/{{ $adv['logo'] }}" alt="icon">
                                 <h6 class="advantage_title">{{ $adv['title'] }}</h6>
                                 <p class="advantage_desc">{{ $adv['description'] }}</p>
                             </div>
@@ -324,7 +324,7 @@
                     @foreach ($university['univ_placement_partner']['data'] as $par)
                         <div class="col-12 col-m-4">
                             <div class="wrapper">
-                                <img class="icon" src="/icon_png/{{ $par['logo'] }}" alt="">
+                                <img class="icon" src="/icon_png/{{ $par['logo'] }}" alt="icon">
                                 <p>{{ $par['description'] }}</p>
                             </div>
                         </div>

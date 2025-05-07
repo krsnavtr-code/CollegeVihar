@@ -32,8 +32,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\EmailController;
 use App\Http\Middleware\ensurePermission;
+use App\Http\Controllers\backend\MetadataConroller;
 
 
+
+// Slug update route
+Route::post('/update-slug', [\App\Http\Controllers\backend\MetadataConroller::class, 'updateSlug'])->name('admin.update-slug');
 
 Route::prefix('/admin/email')->group(function () {  
     Route::get('/send-email', [EmailController::class, 'showEmailForm'])->name('admin.email');

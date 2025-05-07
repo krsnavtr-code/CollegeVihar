@@ -9,7 +9,7 @@ $permissions = Request::get('admin_permissions');
 <aside class="side_bar">
     <nav>
         <a href="/admin">
-            <img src="/images/web assets/logo_full.jpeg" alt="" class="img-fluid" width="200">
+            <img src="/images/web assets/logo_full.jpeg" alt="college vihar" class="img-fluid" width="200">
         </a>
         <a class="btn btn-primary flex p-3 ps-4 rounded-0" href="{{ route('admin_home') }}">Dashboard</a>
         <!-- Send Email -->
