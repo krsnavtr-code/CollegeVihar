@@ -64,10 +64,6 @@
     }
 }
 
-
-    /* .owl-carousel-font-size-h{
-        font-size: 1.3rem !important;
-    } */
 </style>
 
 @section('main')

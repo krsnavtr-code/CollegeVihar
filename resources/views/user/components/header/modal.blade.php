@@ -841,7 +841,7 @@
         });
     });
 
-    document.addEventListener('DOMContentLoaded', function() {
+    {{-- document.addEventListener('DOMContentLoaded', function() {
         // Check if we're on the homepage
         if (window.location.pathname === '/') {
             // Show the query modal after a 3-second delay
@@ -850,7 +850,7 @@
                 queryModal.show();
             }, 3000);
         }
-    });
+    }); --}}
 </script>
 
 <style>
