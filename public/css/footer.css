@@ -1,11 +1,10 @@
-footer {
+/* footer {
     text-transform: capitalize;
 }
 
 footer .between {
     flex-wrap: wrap;
 }
-
 
 footer a {
     display: block;
@@ -52,5 +51,63 @@ footer p {
     footer ul {
         text-align: left;
         padding: 0;
+    }
+} */
+
+
+
+/* Smooth transition for all links and icons */
+footer a {
+    transition: all 0.3s ease-in-out;
+}
+
+/* Text links hover effect */
+footer a.text-decoration-none:hover {
+    color: #FF0000 !important;
+    /* Bootstrap's warning color */
+    text-decoration: underline;
+}
+
+/* Social icon hover effect */
+footer .list-inline-item a:hover {
+    color: #FF0000 !important;
+    transform: scale(1.2);
+}
+
+/* Underline animation */
+footer a.underline-hover::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 2px;
+    background: #FF0000;
+    transition: width 0.3s;
+}
+
+footer a.underline-hover:hover::after {
+    width: 100%;
+}
+
+@media screen and (max-width:767px) {
+    footer .contact_us {
+        display: flex;
+        justify-content: space-between;
+        /* gap: 2px; */
+    }
+    footer .contact_details {
+        display: flex;
+        flex-direction: column;
+        justify-content: start;
+        align-items: start;
+    }
+    footer .contact_details ul {
+        text-align: left !important; 
+    }
+    footer .company_links ul {
+        width: auto !important;
+        margin: auto !important;
+    }
+    footer .company_links h6 {
+        text-align: left !important; 
     }
 }

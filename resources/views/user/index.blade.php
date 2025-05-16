@@ -613,7 +613,7 @@
             </section>
             <!-- why us end-->
             <!-- Our Approach -->
-            <section class="bg-blue py-4">
+            {{-- <section class="bg-blue py-4">
                 <div class="container">
                     <div class="row align-items-center">
                         <div class="col-sm-6 p-2">
@@ -630,7 +630,7 @@
                         <div class="col-sm-6 p-2">
                             <div class="accordion">
                                 @php
-    $steps = [['step_title' => 'Explore Programs', 'step_desc' => 'Browse our diverse range of programs like MBA, BBA, MA, B.COM, Machine Learning, Python and many more...'], ['step_title' => 'Fill Application', 'step_desc' => 'Fill online application form with accurate.'], ['step_title' => 'Get Expert Help', 'step_desc' => "You get your own education mentor who helps with all your questions about courses, university, colleges and fees. They're there to make things clear and easy for you."], ['step_title' => 'Upload Documents', 'step_desc' => 'Make your college application faster by sending your documents and paying the registeration fees.'], ['step_title' => 'Confirm Admission', 'step_desc' => 'Upon acceptance, pay fees to secure your seat and finalize enrollment'], ['step_title' => 'Start Class & Claim Gift', 'step_desc' => 'Confirm your class date, seat, enrollment number and get your gift as reward points']];
+                                    $steps = [['step_title' => 'Explore Programs', 'step_desc' => 'Browse our diverse range of programs like MBA, BBA, MA, B.COM, Machine Learning, Python and many more...'], ['step_title' => 'Fill Application', 'step_desc' => 'Fill online application form with accurate.'], ['step_title' => 'Get Expert Help', 'step_desc' => "You get your own education mentor who helps with all your questions about courses, university, colleges and fees. They're there to make things clear and easy for you."], ['step_title' => 'Upload Documents', 'step_desc' => 'Make your college application faster by sending your documents and paying the registeration fees.'], ['step_title' => 'Confirm Admission', 'step_desc' => 'Upon acceptance, pay fees to secure your seat and finalize enrollment'], ['step_title' => 'Start Class & Claim Gift', 'step_desc' => 'Confirm your class date, seat, enrollment number and get your gift as reward points']];
                                 @endphp
                                 @for ($i = 0; $i < count($steps); $i++)
                                     <article class="accordion-item">
@@ -653,13 +653,13 @@
                         </div>
                     </div>
                 </div>
-            </section>
+            </section> --}}
             <!-- Our Approach end-->
             <!-- Contact Us -->
             <section class="bg-light py-4">
                 <div class="container">
-                    <div class="row align-items-center">
-                        <div class="col-sm-6 p-2">
+                    <div class="row">
+                        {{-- <div class="col-sm-6 p-2">
                             <h5 class="display-6">
                                 Contact us now!
                             </h5>
@@ -677,9 +677,43 @@
                                     <span>info@collegevihar.com</span>
                                 </a>
                             </div>
+                        </div> --}}
+
+                        <!-- FAQ -->
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-6 p-2">
+                            <h5>
+                                Frequently Asked Questions
+                            </h5>
+                            <!-- <p>Explore our programs, partner universities, and tuition rates with ease. Let us help you reach your academic goals!</p> -->
+                            <div class="accordion">
+                                @php
+                                    $faq = [['faq_title' => 'Explore Programs', 'faq_desc' => 'Browse our diverse range of programs like MBA, BBA, MA, B.COM, Machine Learning, Python and many more...'], ['faq_title' => 'Fill Application', 'faq_desc' => 'Fill online application form with accurate.'], ['faq_title' => 'Get Expert Help', 'faq_desc' => "You get your own education mentor who helps with all your questions about courses, university, colleges and fees. They're there to make things clear and easy for you."], ['faq_title' => 'Upload Documents', 'faq_desc' => 'Make your college application faster by sending your documents and paying the registeration fees.'], ['faq_title' => 'Confirm Admission', 'faq_desc' => 'Upon acceptance, pay fees to secure your seat and finalize enrollment'], ['faq_title' => 'Start Class & Claim Gift', 'faq_desc' => 'Confirm your class date, seat, enrollment number and get your gift as reward points']];
+                                @endphp
+                                @for ($i = 0; $i < count($faq); $i++)
+                                    <article class="accordion-item">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#panel{{ $i + 1 }}" aria-expanded="true"
+                                                aria-controls="panel{{ $i + 1 }}">
+                                                <span>Step {{ $i + 1 }} : </span>
+                                                <span class="ms-1">{{ $faq[$i]['faq_title'] }}</span>
+                                            </button>
+                                        </h2>
+                                        <div id="panel{{ $i + 1 }}" class="accordion-collapse collapse">
+                                            <div class="accordion-body">
+                                                <p class="step_desc">{{ $faq[$i]['faq_desc'] }}</p>
+                                            </div>
+                                        </div>
+                                    </article>
+                                @endfor
+                            </div>
                         </div>
-                        <div class="col-sm-6 p-2">
-                            <form action="" class="card row gap-2 py-3 m-sm-0 m-1">
+
+                        {{-- Contact Form --}}
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-6 p-2">
+                            <h5>Contact Us</h5>
+                            <!-- <p>Explore our programs, partner universities, and tuition rates with ease. Let us help you reach your academic goals!</p> -->
+                            <form action="" class="card row gap-2 py-3 m-sm-0 m-1" style="height: 92%; overflow: hidden;">
                                 <div class="flex">
                                     <i class="fa-solid fa-user"></i>
                                     <input type="text" name="name" class="form-control validate" value="{{ old('name') }}"
