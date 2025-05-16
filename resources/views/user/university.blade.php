@@ -239,29 +239,29 @@ p {
 
 @push('script')
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    linkifyCollegeVihar();
-    const observer = new MutationObserver(linkifyCollegeVihar);
-    observer.observe(document.body, { childList: true, subtree: true });
-});
+// document.addEventListener('DOMContentLoaded', () => {
+//     linkifyCollegeVihar();
+//     const observer = new MutationObserver(linkifyCollegeVihar);
+//     observer.observe(document.body, { childList: true, subtree: true });
+// });
 
-function linkifyCollegeVihar() {
-    const keyword = /(\bcollegevihar\b)/gi;
-    const url = 'https://collegevihar.com';
+// function linkifyCollegeVihar() {
+//     const keyword = /(\bcollegevihar\b)/gi;
+//     const url = 'https://collegevihar.com';
 
-    const elements = document.querySelectorAll('p, h2, h3, h4, h5, h6, li, span');
+//     const elements = document.querySelectorAll('p, h2, h3, h4, h5, h6, li, span');
 
-    elements.forEach(el => {
-        if (/<a\s[^>]*>/.test(el.innerHTML)) return;
+//     elements.forEach(el => {
+//         if (/<a\s[^>]*>/.test(el.innerHTML)) return;
 
-        if (keyword.test(el.innerHTML)) {
-            el.innerHTML = el.innerHTML.replace(keyword, (match) => {
-                console.log("Found in:", el);
-                return `<a href="${url}" target="_blank">${match}</a>`;
-            });
-        }
-    });
-}
+//         if (keyword.test(el.innerHTML)) {
+//             el.innerHTML = el.innerHTML.replace(keyword, (match) => {
+//                 console.log("Found in:", el);
+//                 return `<a href="${url}" target="_blank">${match}</a>`;
+//             });
+//         }
+//     });
+// }
 
 </script>
 @endpush
