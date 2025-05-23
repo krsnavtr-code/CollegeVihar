@@ -147,7 +147,7 @@ header {
 
 /*  */
 .state-container {
-    width: 75%;
+    width: 100%;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     justify-content: end;
@@ -174,8 +174,8 @@ header {
     right: 2rem;
     top: 50%;
     transform: translateY(-50%);
-    width: 25%;
-    height: 300px !important;
+    width: 20%;
+    /* height: 300px !important; */
     display: none;
     border-radius: 6px;
 }
@@ -269,6 +269,12 @@ header {
     } */
     .navbar {
         margin-bottom: 0 !important;
+    }
+}
+@media (min-width: 426px) {
+    .region {
+        margin: 0 15px;
+        width: 10vw;
     }
 }
 
