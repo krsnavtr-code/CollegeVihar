@@ -1,23 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="stylesheet" href="/css/header.css">
-</head>
-
-<body>
-    {{-- @php
-    dd(Request::get('state_univ'));
-    @endphp --}}
-
-    @if(session('message'))
-        <div class="alert alert-success">
-            {{ session('message') }}
-        </div>
-    @endif
+@if(session('message'))
+    <div class="alert alert-success">
+        {{ session('message') }}
+    </div>
+@endif
 
     @if($errors->any())
         <div class="alert alert-danger">
@@ -275,7 +260,6 @@
         <img style="height: 0px;" src="/images/right-bg.png" alt="bg" width="40">
     </header>
 
-    <!-- Rest of your HTML content -->
     <script src="{{ asset('js/state.js') }}"></script>
 
     <script>
@@ -289,7 +273,4 @@
                 document.getElementById('logoutMenu').classList.add('d-none');
             }
         });
-    </script>
-</body>
-
-</html>
+</script>
