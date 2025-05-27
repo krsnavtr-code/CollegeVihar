@@ -1,11 +1,14 @@
 @php
 $permissions = Request::get('admin_permissions');
 @endphp
+
 @extends('admin.components.layout')
+
 @section('main')
-<main>
-    <h2 class="page_title">View Course</h2>
-    <div class="overflow-auto text-nowrap">
+<main class="py-4">
+    <div class="container">
+        <h1 class="mb-4">Course Management</h1>
+        <div class="overflow-auto text-nowrap">
         <table class="table">
             <thead class="text-center">
                 <tr>
@@ -19,7 +22,7 @@ $permissions = Request::get('admin_permissions');
             </thead>
             <tbody>
                 @foreach ($courses as $i => $course)
-                <tr @class(['disable'=> !$course['course_status']])>
+                <tr @class(['disable' => !$course['course_status']])>
                     <td>
                         {{ $i + 1 }}
                         @if (!$course['course_detail_added'] && $course['course_status'])
@@ -36,7 +39,7 @@ $permissions = Request::get('admin_permissions');
                             Uni.</a>
                     </td>
                     @if ( $permissions[0] == '*')
-                    <td onclick="switch_status(this,{{ $course['id'] }})">
+                    <td @class(['disable' => !$course['course_status']])>
                         <button class="disable_btn btn btn-secondary" title="course is disabled">Disabled</button>
                         <button class="active_btn btn btn-success" title="course is active">Active</button>
                     </td>
@@ -78,9 +81,10 @@ $permissions = Request::get('admin_permissions');
                 @endforeach
             </tbody>
         </table>
+        </div>
+        {{-- pagination --}}
+        <x-pagination :paginator="$courses" />
     </div>
-    {{-- pagination --}}
-    <x-pagination :paginator="$courses" />
 </main>
 @push('script')
 <script>

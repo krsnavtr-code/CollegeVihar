@@ -20,7 +20,7 @@ $permissions = Request::get('admin_permissions');
             </thead>
             <tbody>
                 @foreach ($universities as $i => $university)
-                <tr @class(['disable'=> !$university['univ_status']])>
+                <tr @class(['disable' => !$university['univ_status']])>
                     <td>
                         {{ ($universities->currentPage() - 1) * $universities->perPage() + $i + 1 }}
                         @if (!$university['univ_detail_added'])
@@ -40,7 +40,7 @@ $permissions = Request::get('admin_permissions');
                         </a>
                     </td>
                     @if ( $permissions[0] == '*')
-                        <td onclick="switch_status(this,{{ $university['id'] }})">                        
+                        <td @class(['disable' => !$university['univ_status']])>                      
                             <button class="disable_btn btn btn-secondary" title="University is disabled">Disable</button>
                             <button class="active_btn btn btn-success" title="University is active">Active</button>                          
                         </td>
