@@ -11,17 +11,60 @@ use Illuminate\Http\Request;
 
 function get_meta($meta)
 {
-    $title = $meta['meta_title'] ?? "CollegeVihar";
-    $description = $meta['meta_description'] ?? "CollegeVihar";
-    $keywords = $meta['meta_keywords'] ?? "CollegeVihar";
-    $canonical = $meta['meta_canonical'] ?? '';
+    // Set default values
+    $siteName = 'CollegeVihar';
+    $baseUrl = url('/');
+    $currentUrl = url()->current();
+    
+    // Process title
+    $title = $meta['meta_title'] ?? "$siteName - Online Education Courses";
+    $title = mb_strlen($title) > 60 ? mb_substr($title, 0, 57) . '...' : $title;
+    
+    // Process description
+    $description = $meta['meta_description'] ?? "Explore top Online UG/PG courses at CollegeVihar. Compare universities, flexible study options, and career-focused programs.";
+    $description = mb_strlen($description) > 160 ? mb_substr($description, 0, 157) . '...' : $description;
+    
+    // Default image
+    $image = $meta['og_image'] ?? $baseUrl . '/images/web assets/logo_mini.jpeg';
+    
+    // Keywords
+    $keywords = $meta['meta_keywords'] ?? "online courses, distance education, degree programs, online learning, college vihar, online certification";
+    
+    // Other meta
+    $canonical = $meta['meta_canonical'] ?? $currentUrl;
     $other_meta_tags = $meta['other_meta_tags'] ?? "";
-    return [
+    
+    // Generate meta tags
+    $tags = [
+        // Basic Meta
         "<title>$title</title>",
         "<meta name='description' content='$description' />",
         "<meta name='keywords' content='$keywords' />",
+        
+        // Canonical
+        "<link rel='canonical' href='$canonical' />",
+        
+        // Open Graph / Facebook
+        "<meta property='og:type' content='website' />",
+        "<meta property='og:site_name' content='$siteName' />",
+        "<meta property='og:title' content='$title' />",
+        "<meta property='og:description' content='$description' />",
+        "<meta property='og:url' content='$currentUrl' />",
+        "<meta property='og:image' content='$image' />",
+        "<meta property='og:image:width' content='1200' />",
+        "<meta property='og:image:height' content='630' />",
+        
+        // Twitter Card
+        "<meta name='twitter:card' content='summary_large_image' />",
+        "<meta name='twitter:title' content='$title' />",
+        "<meta name='twitter:description' content='$description' />",
+        "<meta name='twitter:image' content='$image' />",
+        
+        // Additional Meta
         $other_meta_tags
     ];
+    
+    return $tags;
 }
 // "<link rel='canonical' href='$canonical' />",
 

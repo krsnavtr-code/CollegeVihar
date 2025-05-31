@@ -365,7 +365,7 @@ $videos = json_decode($competitive->videos);
                                             <img
                                                 src="https://images.pexels.com/photos/16310530/pexels-photo-16310530/free-photo-of-yard-in-traditional-stone-and-wooden-house.jpeg">
                                         </a>
-                                        <a data-type="iframe" class="uk-inline" data-caption="Caption 1"
+                                        <a data-type="iframe" class="uk-inline" data-caption="Caption 1" alt="Video thumbnail for {{ $competitive->exam_name ?? 'competitive exam' }}"
                                             href="https://www.youtube.com/embed/{{  preg_match('/(youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/', $video, $matches) ? $matches[2] : '' }}">
                                             <iframe
                                                 src="https://www.youtube.com/embed/{{ preg_match('/(youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/', $video, $matches) ? $matches[2] : '' }}"></iframe>
@@ -385,7 +385,7 @@ $videos = json_decode($competitive->videos);
                                                                         <li>
                                                                             <!-- Thumbnail Link -->
                                                                             <!-- <a class="uk-inline" href="{{ $videoUrl }}">
-                                                                                                                                                                                                                        <img src="{{ $thumbnailUrl }}" style="width: 300px; height: 200px;">
+                                                                                                                                                                                                                        <img src="{{ $thumbnailUrl }}" alt="Video thumbnail for {{ $competitive->exam_name ?? 'competitive exam' }}" style="width: 300px; height: 200px;">
                                                                                                                                                                                                                     </a> -->
 
                                                                             <!-- Embedded YouTube Video -->
@@ -408,26 +408,29 @@ $videos = json_decode($competitive->videos);
 
 
                                 </ul>
-                                <!-- ye chal raha -->
+                                <!-- this is not working -->
                                 {{-- <div class="uk-child-width-1-3@m" uk-grid uk-lightbox="animation: slide">
                                     <div>
                                         <a class="uk-inline"
                                             href="https://images.pexels.com/photos/16310530/pexels-photo-16310530/free-photo-of-yard-in-traditional-stone-and-wooden-house.jpeg">
                                             <img
-                                                src="https://images.pexels.com/photos/16310530/pexels-photo-16310530/free-photo-of-yard-in-traditional-stone-and-wooden-house.jpeg">
+                                                src="https://images.pexels.com/photos/16310530/pexels-photo-16310530/free-photo-of-yard-in-traditional-stone-and-wooden-house.jpeg"
+                                                alt="Traditional stone and wooden house yard">
                                         </a>
                                     </div>
                                     <div>
                                         <a class="uk-inline"
                                             href="https://images.pexels.com/photos/22027141/pexels-photo-22027141/free-photo-of-farmer-in-hat-sitting-on-field.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1">
                                             <img
-                                                src="https://images.pexels.com/photos/22027141/pexels-photo-22027141/free-photo-of-farmer-in-hat-sitting-on-field.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1">
+                                                src="https://images.pexels.com/photos/22027141/pexels-photo-22027141/free-photo-of-farmer-in-hat-sitting-on-field.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+                                                alt="Farmer in hat sitting on field">
                                         </a>
                                     </div>
                                     <div>
                                         <a class="uk-inline"
                                             href="https://images.pexels.com/photos/12646557/pexels-photo-12646557.jpeg">
-                                            <img src="https://images.pexels.com/photos/12646557/pexels-photo-12646557.jpeg">
+                                            <img src="https://images.pexels.com/photos/12646557/pexels-photo-12646557.jpeg"
+                                                 alt="Scenic landscape view">
                                         </a>
                                     </div>
 
@@ -457,71 +460,44 @@ $answers = json_decode($competitive->answers);
 
                         </div>
 
-                        <!-- Syllabus Section in One page -->
-                        <!-- <div id="syllabus" class="competitive-section competitive-syllabus">
-                                                                                    <h6 class="section-title">Syllabus</h6>
-                                                                                    {!! $competitive->exam_syllabus !!}
-                                                                                </div> -->
-                        <!-- Syllabus Section in multiple pages-->
+                        <!-- Syllabus Section in multiple pages -->
                         <div id="syllabus" class="competitive-section competitive-syllabus">
                             <!-- Page Navigation -->
                             @php
-// $syllabus_lines = explode("\n", strip_tags($competitive->exam_syllabus)); // Content into array line-wise
-$syllabus_text = html_entity_decode(strip_tags($competitive->exam_syllabus));
-$syllabus_text = str_replace(["•", "&bull;", "&nbsp;"], "", $syllabus_text);
-$syllabus_lines = explode("\n", $syllabus_text);
-$total_lines = count($syllabus_lines);
-$lines_per_page = 15; // Ek page par 15 lines
-$total_pages = ceil($total_lines / $lines_per_page);
+                            $syllabus_text = html_entity_decode(strip_tags($competitive->exam_syllabus));
+                            $syllabus_text = str_replace(["•", "&bull;"], "", $syllabus_text);
+                            $syllabus_lines = array_values(array_filter(array_map('trim', explode("\n", $syllabus_text))));
+                            $total_lines = count($syllabus_lines);
+                            $lines_per_page = 15; // Lines per page
+                            $total_pages = max(1, ceil($total_lines / $lines_per_page));
                             @endphp
-                            <!-- Syllabus Pagination Script -->
-                            <script>
-                                let currentPage = 1;
-                                const totalPages = {{ $total_pages }};
-                                const linesPerPage = {{ $lines_per_page }};
-                                const syllabusLines = @json($syllabus_lines);
-                                const totalLines = {{ $total_lines }};
-
-                                function changePage(change) {
-                                    currentPage += change;
-                                    let syllabusContent = document.getElementById('syllabus-content');
-                                    syllabusContent.innerHTML = ''; // Purana content clear karo
-
-                                    for (let i = (currentPage - 1) * linesPerPage; i < Math.min(currentPage * linesPerPage, totalLines); i++) {
-                                        let p = document.createElement("p");
-                                        p.textContent = syllabusLines[i];
-
-                                        // **Agar yeh first line hai, toh alag CSS do**
-                                        if (i === (currentPage - 1) * linesPerPage) {
-                                            p.classList.add("syllabus-first-line");
-                                        } else {
-                                            p.classList.add("syllabus-item");
-                                        }
-
-                                        syllabusContent.appendChild(p);
-                                    }
-
-                                    // Page Number Update Karo
-                                    document.getElementById('page-info').innerText = `Page ${currentPage} of ${totalPages}`;
-
-                                    // Previous/Next Button Enable/Disable
-                                    document.getElementById('prev-btn').disabled = currentPage === 1;
-                                    document.getElementById('next-btn').disabled = currentPage === totalPages;
-                                }
-                            </script>
-
+                            
+                            <!-- Data container for JavaScript -->
+                            <div id="syllabus-data" 
+                                 data-syllabus='@json($syllabus_lines)'
+                                 data-total-pages="{{ $total_pages }}"
+                                 data-lines-per-page="{{ $lines_per_page }}"
+                                 data-total-lines="{{ $total_lines }}">
+                            </div>
+                            
                             <!-- Syllabus Content -->
                             <div id="syllabus-content">
                                 @for ($i = 0; $i < min($lines_per_page, $total_lines); $i++)
-                                    <p class="syllabus-item">{{ $syllabus_lines[$i] }}</p>
+                                    <p class="{{ $i === 0 ? 'syllabus-first-line' : 'syllabus-item' }}">{{ $syllabus_lines[$i] ?? '' }}</p>
                                 @endfor
                             </div>
+                            
+                            @if($total_pages > 1)
                             <!-- Syllabus Pagination Buttons -->
                             <div class="pagination-controls">
-                                <button id="prev-btn" onclick="changePage(-1)" disabled>Previous</button>
-                                <span id="page-info">Page 1 of {{ $total_pages }}</span>
-                                <button id="next-btn" onclick="changePage(1)">Next</button>
+                                <button id="prev-btn" class="btn btn-sm btn-outline-primary" onclick="changePage(-1)" disabled>Previous</button>
+                                <span id="page-info" class="mx-2">Page 1 of {{ $total_pages }}</span>
+                                <button id="next-btn" class="btn btn-sm btn-outline-primary" onclick="changePage(1)" {{ $total_pages <= 1 ? 'disabled' : '' }}>Next</button>
                             </div>
+                            @endif
+                            
+                            <!-- Include the JavaScript file -->
+                            <script src="{{ asset('js/syllabus-pagination.js') }}"></script>
                         </div>
 
 
