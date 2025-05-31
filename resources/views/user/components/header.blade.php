@@ -17,18 +17,16 @@
     @include('user.components.header.modal')
     <!-- top bar -->
     <nav class="top-bar">
-        <h5 style="margin: 0px 10px;">Talk to our career expert:</h5>
+        <h5 class="d-none-mobile" style="margin: 0px 10px;">Talk to our career expert:</h5>
         <div class="flex justify-content-evenly">
             <a title="Request a call" href="#callbackModal" data-bs-toggle="modal" data-bs-target="#callbackModal">
                 <i class="fa-solid fa-bell"></i>
-                <span>Request a callback</span>
+                <span>Callback</span>
             </a>
             <a title="Partner With Us" href="#" data-bs-toggle="modal" data-bs-target="#partnershipModal">
                 <i class="fa-solid fa-handshake-simple"></i>
                 <span>Partner with us</span>
             </a>
-        </div>
-        <div class="flex justify-content-evenly">
             <div class="contact-dropdown">
                 <i class="fa-solid fa-phone-volume"></i>
                 <span>Get In Touch</span>
@@ -41,6 +39,8 @@
                     </a>
                 </div>
             </div>
+        </div>
+        <div class="flex justify-content-evenly">
             <div class="firstvite">
                 <a href="https://firstvite.com" target="_blank" rel="noopener noreferrer">
                     <span style="color: #E97D17">FIRST</span><span style="color: #0897DF">Vite</span>

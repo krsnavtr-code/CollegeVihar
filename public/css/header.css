@@ -120,11 +120,14 @@ header {
     /* text-decoration: underline; */
 }
 
-/*  */
-
-/* .top-bar a i {
-    font-size: 16px;
-} */
+@media (max-width: 1083px) {
+    .d-none-mobile {
+        display: none;
+    }
+    .top-bar {
+        padding-bottom: 7px;
+    }
+}
 
 .bottom-nav {
     flex-wrap: wrap;
