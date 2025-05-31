@@ -46,6 +46,11 @@
                     <span style="color: #E97D17">FIRST</span><span style="color: #0897DF">Vite</span>
                 </a>
             </div>
+            <div class="franchise-register">   
+                <a href="https://genlead.in/agent/register" target="_blank" rel="noopener noreferrer">
+                    <span>Franchise Register</span>
+                </a>
+            </div>
         </div>
     </nav>
 
