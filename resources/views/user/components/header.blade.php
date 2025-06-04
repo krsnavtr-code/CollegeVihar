@@ -41,14 +41,14 @@
             </div>
         </div>
         <div class="flex justify-content-evenly">
-            <div class="firstvite">
+            <!-- <div class="firstvite">
                 <a href="https://firstvite.com" target="_blank" rel="noopener noreferrer">
                     <span style="color: #E97D17">FIRST</span><span style="color: #0897DF">Vite</span>
                 </a>
-            </div>
+            </div> -->
             <div class="franchise-register">   
                 <a href="https://genlead.in/agent/register" target="_blank" rel="noopener noreferrer">
-                    <span>Franchise Register</span>
+                    <span>Agent Register</span>
                 </a>
             </div>
         </div>
