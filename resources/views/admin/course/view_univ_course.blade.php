@@ -35,8 +35,12 @@ $permissions = Request::get('admin_permissions');
                             title="Employee is not activated"></i>
                         @endif
                     </td>
-                    <td title="{{ $course['course']['course_name'] }}">
-                        {{ $course['course']['course_short_name'] . ' (' . $course['course']['course_type'] . ')' }}
+                    <td title="{{ $course['course']['course_name'] ?? 'N/A' }}">
+                        @if(isset($course['course']))
+                            {{ ($course['course']['course_short_name'] ?? 'N/A') . ' (' . ($course['course']['course_type'] ?? 'N/A') . ')' }}
+                        @else
+                            Course not found
+                        @endif
                     </td>
                     <td>{{ $course['univ_course_fee'] }}</td>
                     @if ($permissions && (in_array(1, $permissions) || $permissions[0] == '*'))

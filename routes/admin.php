@@ -232,7 +232,19 @@ Route::middleware('ensurePermission')->group(function () {
 
         Route::prefix("/courses")->group(function () {
             Route::get("/{univ_id}", function (Request $request, $univId) {
-                $data = ["university" => University::find($univId, ['id', 'univ_name', 'univ_address'])->toArray(), "courses" => UniversityCourse::where('university_id', $univId)->with('course')->get()->toArray()];
+                $university = University::findOrFail($univId, ['id', 'univ_name', 'univ_address']);
+                $courses = UniversityCourse::where('university_id', $univId)
+                    ->with(['course' => function($query) {
+                        $query->select('id', 'course_name', 'course_short_name', 'course_type');
+                    }])
+                    ->get()
+                    ->toArray();
+                
+                $data = [
+                    'university' => $university->toArray(),
+                    'courses' => $courses
+                ];
+                
                 return view('admin.course.view_univ_course', $data);
             });
             Route::prefix("edit")->group(function () {
