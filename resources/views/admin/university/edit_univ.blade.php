@@ -37,7 +37,7 @@ $courseCategories = [
             <h3 class="section_title left">University Details</h3>
             <div class="field_group">
                 <div class="field">
-                    <label for="">University Name <i class="text">( Full Name - Chota nhi dalna)</i></label>
+                    <label for="">University Name</label>
                     <input type="text" placeholder="University Name" name="univ_name"
                         value="{{ $university['univ_name'] }}">
                 </div>
@@ -70,7 +70,7 @@ $courseCategories = [
                 </div>
             </div>
         </section>
-        @foreach($courseCategories as $category => $categoryData)
+        <!-- @foreach($courseCategories as $category => $categoryData)
         <section class="card p-2 mb-4">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-xl font-bold">{{ $categoryData['label'] }}</h3>
@@ -136,7 +136,7 @@ $courseCategories = [
                 </div>
             @endif
         </section>
-        @endforeach
+        @endforeach -->
         
         @foreach ($university['courses'] as $course)
         <input type="hidden" name="courses[]" value="{{ $course['id'] }}">

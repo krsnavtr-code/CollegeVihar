@@ -40,6 +40,20 @@
             </div>
 
             <div class="field">
+                <label for="university_id">University</label>
+                <select name="university_id" id="university_id" class="form-control">
+                    <option value="" {{ !isset($course['university_id']) ? 'selected' : '' }}>Select University</option>
+                    @php
+                        $universityCourse = \App\Models\UniversityCourse::where('course_id', $course['id'])->first();
+                        $currentUniversityId = $universityCourse ? $universityCourse->university_id : null;
+                    @endphp
+                    @foreach(\App\Models\University::where('univ_status', 1)->orderBy('univ_name')->get() as $university)
+                        <option value="{{ $university->id }}" {{ $currentUniversityId == $university->id ? 'selected' : '' }}>{{ $loop->iteration }}. {{ $university->univ_name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="field">
                 <label for="course_name">Course Name</label>
                 <input type="text" name="course_name" id="course_name" class="form-control" placeholder="Enter course name" required value="{{ $course['course_name'] ?? '' }}">
             </div>

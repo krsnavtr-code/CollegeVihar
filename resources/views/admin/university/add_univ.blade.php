@@ -1,23 +1,5 @@
 @php
-// Define the course categories and their subcategories
-$courseCategories = [
-    'UG' => [
-        'label' => 'Undergraduate (UG) Courses',
-        'subcategories' => ['TECHNICAL', 'MANAGEMENT', 'MEDICAL', 'TRADITIONAL']
-    ],
-    'PG' => [
-        'label' => 'Postgraduate (PG) Courses',
-        'subcategories' => ['TECHNICAL', 'MANAGEMENT', 'MEDICAL', 'TRADITIONAL']
-    ],
-    'DIPLOMA' => [
-        'label' => 'Diploma Courses',
-        'subcategories' => ['TECHNICAL', 'MANAGEMENT', 'MEDICAL', 'TRADITIONAL']
-    ],
-    'CERTIFICATION' => [
-        'label' => 'Certification Courses',
-        'subcategories' => ['TECHNICAL', 'MANAGEMENT', 'MEDICAL', 'TRADITIONAL']
-    ]
-];
+// Course categories are passed from the controller
 @endphp
 
 @extends('admin.components.layout')
@@ -86,7 +68,7 @@ $courseCategories = [
                     </div>
                 </div>
             </section>
-            @foreach($courseCategories as $category => $categoryData)
+            <!-- @foreach($courseCategories as $category => $categoryData)
             <section class="card p-2 mb-4">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-xl font-bold">{{ $categoryData['label'] }}</h3>
@@ -151,7 +133,7 @@ $courseCategories = [
                     </div>
                 @endif
             </section>
-            @endforeach
+            @endforeach -->
 
             <input type="hidden" name="courses[]" value="">
             <div class="text-center p-4">

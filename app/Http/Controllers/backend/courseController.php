@@ -88,13 +88,26 @@ class courseController extends Controller
             $course->course_slug = $metadata->id;
             $course->save();
 
+            // Create university course association if university_id is provided
+            if ($request->has('university_id') && $request->university_id) {
+                $univCourse = new UniversityCourse();
+                $univCourse->university_id = $request->university_id;
+                $univCourse->course_id = $course->id;
+                $univCourse->univ_course_commision = 0; // Default commission
+                $univCourse->univ_course_fee = 0; // Default fee
+                $univCourse->univ_course_status = 1; // Active
+                $univCourse->univ_course_detail_added = 0; // No details added yet
+                $univCourse->save();
+            }
+
             // Commit the transaction
             DB::commit();
 
             return [
                 'success' => true,
                 'message' => 'Course added successfully!',
-                'course_id' => $course->id
+                'course_id' => $course->id,
+                'university_course_id' => $univCourse->id ?? null
             ];
         } catch (\Exception $e) {
             // Rollback transaction on error
@@ -169,6 +182,30 @@ class courseController extends Controller
             $course->course_online = $request->boolean('course_online');
             $course->course_type = $request->course_category;  // For backward compatibility
             $course->updated_at = now();
+
+            // Handle university course association
+            $universityCourse = UniversityCourse::where('course_id', $course->id)->first();
+            
+            if ($request->has('university_id') && $request->university_id) {
+                if ($universityCourse) {
+                    // Update existing association
+                    $universityCourse->university_id = $request->university_id;
+                    $universityCourse->save();
+                } else {
+                    // Create new association
+                    $universityCourse = new UniversityCourse();
+                    $universityCourse->university_id = $request->university_id;
+                    $universityCourse->course_id = $course->id;
+                    $universityCourse->univ_course_commision = 0; // Default commission
+                    $universityCourse->univ_course_fee = 0; // Default fee
+                    $universityCourse->univ_course_status = 1; // Active
+                    $universityCourse->univ_course_detail_added = 0; // No details added yet
+                    $universityCourse->save();
+                }
+            } elseif ($universityCourse) {
+                // Remove existing association if no university is selected
+                $universityCourse->delete();
+            }
 
             Logger::info('Attempting to save course with data', $course->toArray());
             

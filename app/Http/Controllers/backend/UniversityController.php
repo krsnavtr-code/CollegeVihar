@@ -29,6 +29,26 @@ class UniversityController extends Controller
     {
         $query = University::orderBy('univ_name', 'asc')->with('courses');
         
+        // Define course categories
+        $courseCategories = [
+            'UG' => [
+                'label' => 'Undergraduate (UG) Courses',
+                'subcategories' => ['TECHNICAL', 'MANAGEMENT', 'MEDICAL', 'TRADITIONAL']
+            ],
+            'PG' => [
+                'label' => 'Postgraduate (PG) Courses',
+                'subcategories' => ['TECHNICAL', 'MANAGEMENT', 'MEDICAL', 'TRADITIONAL']
+            ],
+            'DIPLOMA' => [
+                'label' => 'Diploma Courses',
+                'subcategories' => ['TECHNICAL', 'MANAGEMENT', 'MEDICAL', 'TRADITIONAL']
+            ],
+            'CERTIFICATION' => [
+                'label' => 'Certification Courses',
+                'subcategories' => ['TECHNICAL', 'MANAGEMENT', 'MEDICAL', 'TRADITIONAL']
+            ]
+        ];
+        
         // Add search functionality if search parameter exists
         if ($request && $request->has('search') && !empty($request->search)) {
             $search = $request->search;
@@ -49,6 +69,25 @@ class UniversityController extends Controller
     /* Add New University */
     static function addUniversity(Request $request)
     {
+        // Define course categories for the view
+        $courseCategories = [
+            'UG' => [
+                'label' => 'Undergraduate (UG) Courses',
+                'subcategories' => ['TECHNICAL', 'MANAGEMENT', 'MEDICAL', 'TRADITIONAL']
+            ],
+            'PG' => [
+                'label' => 'Postgraduate (PG) Courses',
+                'subcategories' => ['TECHNICAL', 'MANAGEMENT', 'MEDICAL', 'TRADITIONAL']
+            ],
+            'DIPLOMA' => [
+                'label' => 'Diploma Courses',
+                'subcategories' => ['TECHNICAL', 'MANAGEMENT', 'MEDICAL', 'TRADITIONAL']
+            ],
+            'CERTIFICATION' => [
+                'label' => 'Certification Courses',
+                'subcategories' => ['TECHNICAL', 'MANAGEMENT', 'MEDICAL', 'TRADITIONAL']
+            ]
+        ];
 
         $validator = Validator::make($request->all(), [
             'univ_name' => 'required|unique:universities,univ_name',
@@ -71,14 +110,18 @@ class UniversityController extends Controller
         $uni->save();
 
         // Adding University Courses
-        foreach ($request->course as $cor) {
-            courseController::addUnivCourse($uni->id, $cor);
+        if ($request->has('course') && is_array($request->course)) {
+            foreach ($request->course as $cor) {
+                courseController::addUnivCourse($uni->id, $cor);
+            }
         }
 
-        return redirect('/admin/university/add')->with([
-            'success' => true,
-            'message' => 'University added successfully.'
-        ]);   
+        return redirect('/admin/university/add')
+            ->with([
+                'success' => true,
+                'message' => 'University added successfully.'
+            ])
+            ->with('courseCategories', $courseCategories);
         
     }
 

@@ -36,12 +36,22 @@
             </div>
 
             <div class="field">
-                <label for="course_name">Course Name <i class="text">(It can be already there)</i></label>
-                <input type="text" name="course_name" id="course_name" class="form-control" placeholder="Enter course name" required>
+                <label for="university_id">For which University this course is?</label>
+                <select name="university_id" id="university_id" class="form-control" required>
+                    <option value="" selected disabled>Select University</option>
+                    @foreach(\App\Models\University::where('univ_status', 1)->orderBy('univ_name')->get() as $university)
+                        <option value="{{ $university->id }}">{{ $loop->iteration }}. {{ $university->univ_name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="course_name">Course Full Name</label>
+                <input type="text" name="course_name" id="course_name" class="form-control" placeholder="Course full name" required>
             </div>
             <div class="field">
-                <label for="">Course Short Name <i class="text">( Re-check Once )</i></label>
-                <input type="text" name="course_short_name" placeholder="Course Short Name" required>
+                <label for="course_short_name">Course Short Name</label>
+                <input type="text" name="course_short_name" id="course_short_name" class="form-control" placeholder="Course short name" required>
             </div>
 
             <div class="text-end p-4">

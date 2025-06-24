@@ -119,9 +119,30 @@ Route::middleware('ensurePermission')->group(function () {
                     }
                 }
                 
+                // Define course categories for the view
+                $courseCategories = [
+                    'UG' => [
+                        'label' => 'Undergraduate (UG) Courses',
+                        'subcategories' => ['TECHNICAL', 'MANAGEMENT', 'MEDICAL', 'TRADITIONAL']
+                    ],
+                    'PG' => [
+                        'label' => 'Postgraduate (PG) Courses',
+                        'subcategories' => ['TECHNICAL', 'MANAGEMENT', 'MEDICAL', 'TRADITIONAL']
+                    ],
+                    'DIPLOMA' => [
+                        'label' => 'Diploma Courses',
+                        'subcategories' => ['TECHNICAL', 'MANAGEMENT', 'MEDICAL', 'TRADITIONAL']
+                    ],
+                    'CERTIFICATION' => [
+                        'label' => 'Certification Courses',
+                        'subcategories' => ['TECHNICAL', 'MANAGEMENT', 'MEDICAL', 'TRADITIONAL']
+                    ]
+                ];
+                
                 $data = [
                     'courses' => $allCourses,
-                    'coursesByType' => $coursesByType
+                    'coursesByType' => $coursesByType,
+                    'courseCategories' => $courseCategories
                 ];
                 
                 return view("admin.university.add_univ", $data);
