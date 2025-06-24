@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 define("PNG_LOGO_PATH", public_path("icon_png"));
 define("LOGO_PATH", public_path("images/university/logo"));
@@ -24,9 +25,19 @@ class UniversityController extends Controller
     }
 
     /* Get universities data */
-    static function getUniversities()
+    static function getUniversities(Request $request = null)
     {
-        return University::orderBy('univ_name', 'asc')->with('courses')->paginate(30);
+        $query = University::orderBy('univ_name', 'asc')->with('courses');
+        
+        // Add search functionality if search parameter exists
+        if ($request && $request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where('univ_name', 'like', "%{$search}%")
+                  ->orWhere('univ_type', 'like', "%{$search}%")
+                  ->orWhere('univ_category', 'like', "%{$search}%");
+        }
+        
+        return $query->paginate(30);
     }
 
     /* Get university data */
@@ -42,12 +53,8 @@ class UniversityController extends Controller
         $validator = Validator::make($request->all(), [
             'univ_name' => 'required|unique:universities,univ_name',
             'univ_url' => 'required|unique:universities,univ_url',
-            'univ_type' => 'nullable',
-            'univ_category' => 'nullable',
-            'univ_person' => 'nullable',
-            'univ_person_email' => 'nullable',
-            'univ_person_phone' => 'nullable',
-            'univ_payout' => 'nullable|numeric',
+            'univ_type' => 'required',
+            'univ_category' => 'required',
         ]);
         
         if ($validator->fails()) {
@@ -61,12 +68,6 @@ class UniversityController extends Controller
         $uni->univ_url = $request->univ_url;
         $uni->univ_type = $request->univ_type;
         $uni->univ_category = $request->univ_category;
-
-        // University person to contact
-        $uni->univ_person = $request->univ_person;
-        $uni->univ_person_email = $request->univ_person_email;
-        $uni->univ_person_phone = $request->univ_person_phone;
-        $uni->univ_payout = $request->univ_payout;
         $uni->save();
 
         // Adding University Courses
@@ -84,25 +85,42 @@ class UniversityController extends Controller
     /* Update University Details */
     static function editUniversity(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'univ_name' => 'required|unique:universities,univ_name,' . $request->univ_id,
+            'univ_url' => 'required|unique:universities,univ_url,' . $request->univ_id,
+            'univ_type' => 'required',
+            'univ_category' => 'required',
+        ]);
+        
+        if ($validator->fails()) {
+            return ['success' => false, 'errors' => $validator->errors()];
+        }
+        
         $uni = University::find($request->univ_id);
-        // University Basic Details
+        
+        // Update University Basic Details
         $uni->univ_name = $request->univ_name;
         $uni->univ_url = $request->univ_url;
         $uni->univ_type = $request->univ_type;
         $uni->univ_category = $request->univ_category;
-
-        // University person to contact
-        $uni->univ_person = $request->univ_person;
-        $uni->univ_person_email = $request->univ_person_email;
-        $uni->univ_person_phone = $request->univ_person_phone;
+        
         $uni->save();
 
-        // Adding University Courses
-        foreach ($request->course as $cor) {
-            isset($cor['old_id']) ? courseController::editUnivCourse($cor) : courseController::addUnivCourse($uni->id, $cor);
+        // Update University Courses
+        if (isset($request->course) && is_array($request->course)) {
+            foreach ($request->course as $cor) {
+                try {
+                    isset($cor['old_id']) 
+                        ? courseController::editUnivCourse($cor) 
+                        : courseController::addUnivCourse($uni->id, $cor);
+                } catch (\Exception $e) {
+                    // Log error if needed
+                    Log::error("Error updating course: " . $e->getMessage());
+                }
+            }
         }
-        return ["success" => true];
         
+        return ["success" => true, "message" => "University updated successfully"];
     }
 
     /* Add University Detail */
@@ -116,7 +134,6 @@ class UniversityController extends Controller
         $uni->univ_address = $request->univ_address;
         $uni->univ_detail_added = $request->univ_detail_added ?? 0;
         $uni->univ_slug = $request->univ_slug;
-        $uni->univ_payout = $request->univ_payout;
 
         $uni->univ_description = json_encode($request->univ_desc);
         $uni->univ_facts = json_encode($request->univ_facts);

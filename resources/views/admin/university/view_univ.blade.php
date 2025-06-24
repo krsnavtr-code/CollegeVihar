@@ -7,6 +7,38 @@ $permissions = Request::get('admin_permissions');
 <main>
 
     <h2 class="page_title">View University</h2>
+    <!-- Search University -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form action="{{ request()->url() }}" method="GET" class="mb-0">
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <input type="search" 
+                                   name="search" 
+                                   placeholder="Search by university name, type, or category..." 
+                                   class="form-control" 
+                                   value="{{ request('search') }}"
+                                   aria-label="Search universities">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fa-solid fa-search me-1"></i> Search
+                            </button>
+                            @if(request('search'))
+                                <a href="{{ request()->url() }}" class="btn btn-outline-secondary">
+                                    <i class="fa-solid fa-rotate-left me-1"></i> Reset
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
     <div class="overflow-auto text-nowrap">
         <table class="table">
             <thead>
@@ -75,7 +107,7 @@ $permissions = Request::get('admin_permissions');
                             <i class="fa-solid fa-file-arrow-up"></i>
                         </button>
                         @endif
-                        @if ( $permissions[0] == '*')
+                        @if ( in_array(19, $permissions) || $permissions[0] == '*')
                         <!-- Check permission for delete -->
                         <form action="/admin/university/delete/{{ $university['id'] }}" method="GET" style="display:inline;">
                             @csrf

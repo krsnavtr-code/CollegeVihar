@@ -3,7 +3,7 @@
     <main>
         @include('admin.components.response')
         <form action="/admin/course/add/details" method="post">
-            <h2 class="page_title">Add Course </h2>
+            <h2 class="page_title">Add University Course Details</h2>
             @csrf
             <section class="panel">
                 <h3 class="section_title">Course URL slug</h3>

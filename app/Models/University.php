@@ -52,8 +52,7 @@ class University extends Model
 		'univ_state' => 'int',
 		'univ_slug' => 'int',
 		'univ_status' => 'int',
-		'univ_detail_added' => 'int',
-		'univ_payout' => 'int'
+		'univ_detail_added' => 'int'
 	];
 
 	protected $fillable = [
@@ -62,9 +61,6 @@ class University extends Model
 		'univ_logo',
 		'univ_image',
 		'univ_type',
-		'univ_person',
-		'univ_person_email',
-		'univ_person_phone',
 		'univ_state',
 		'univ_address',
 		'univ_description',
@@ -75,8 +71,8 @@ class University extends Model
 		'univ_slug',
 		'univ_status',
 		'univ_detail_added',
-		'univ_payout',
-		'brochure'
+		'brochure',
+		'univ_category'
 	];
 
 	public function state()

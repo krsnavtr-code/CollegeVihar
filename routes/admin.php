@@ -3,6 +3,7 @@
 use App\Http\Controllers\backend\employeeController;
 use App\Http\Controllers\backend\UniversityController;
 use App\Http\Controllers\backend\UtilsController;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\backend\courseController;
 use App\Http\Controllers\backend\FranchiseController;
 use App\Http\Controllers\backend\LeadController;
@@ -36,8 +37,14 @@ use App\Http\Controllers\backend\MetadataConroller;
 
 
 
+
 // Slug update route
 Route::post('/update-slug', [\App\Http\Controllers\backend\MetadataConroller::class, 'updateSlug'])->name('admin.update-slug');
+
+// Course status toggle route (temporarily outside middleware for testing)
+Route::post('admin/course/toggle-status/{id}', function ($id) {
+    return response()->json(\App\Http\Controllers\backend\courseController::toggleCourseStatus($id));
+})->name('admin.course.toggle-status');
 
 Route::prefix('/admin/email')->group(function () {  
     Route::get('/send-email', [EmailController::class, 'showEmailForm'])->name('admin.email');
@@ -79,15 +86,44 @@ Route::withoutMiddleware('admin')->group(function () {
 Route::middleware('ensurePermission')->group(function () {
     // University Routes
     Route::prefix("/university")->group(function () {
-        Route::get("", function () {
-            // $data = ["universities" => UniversityController::getUniversities()];
-            // return view("admin.university.view_univ", ['data'=> $data]);
-            $universities = UniversityController::getUniversities();
-            return view("admin.university.view_univ", ['universities' => $universities]);
+        Route::get("", function (Request $request) {
+            $universities = UniversityController::getUniversities($request);
+            return view("admin.university.view_univ", [
+                'universities' => $universities,
+                'search' => $request->search ?? ''
+            ]);
         });
         Route::prefix("/add")->group(function () {
             Route::get("", function () {
-                $data = ["courses" => Course::all()->toArray()];
+                $allCourses = Course::all()->toArray();
+                
+                // Group courses by their type
+                $groupedCourses = [
+                    'UG' => ['UG'],
+                    'PG' => ['PG'],
+                    'DIPLOMA' => ['Diploma'],
+                    'CERTIFICATION' => ['Certification'],
+                    'TECHNICAL' => ['TECHNICAL COURSES'],
+                    'MANAGEMENT' => ['MANAGEMENT COURSES'],
+                    'MEDICAL' => ['MEDICAL COURSES'],
+                    'TRADITIONAL' => ['TRADITIONAL COURSES']
+                ];
+                
+                $coursesByType = [];
+                foreach ($allCourses as $course) {
+                    foreach ($groupedCourses as $type => $matches) {
+                        if (in_array($course['course_type'], $matches)) {
+                            $coursesByType[$type][] = $course;
+                            break;
+                        }
+                    }
+                }
+                
+                $data = [
+                    'courses' => $allCourses,
+                    'coursesByType' => $coursesByType
+                ];
+                
                 return view("admin.university.add_univ", $data);
             });
             Route::post("" , [UniversityController::class, 'addUniversity'] ) ;
@@ -108,7 +144,37 @@ Route::middleware('ensurePermission')->group(function () {
         });
         Route::prefix("edit")->group(function () {
             Route::get("{univ_id}", function ($univ_id) {
-                $data = ["courses" => Course::all()->toArray(), 'university' => University::with('courses')->find($univ_id)->toArray()];
+                $allCourses = Course::all()->toArray();
+                $university = University::with('courses')->find($univ_id)->toArray();
+                
+                // Group courses by their type
+                $groupedCourses = [
+                    'UG' => ['UG'],
+                    'PG' => ['PG'],
+                    'DIPLOMA' => ['Diploma'],
+                    'CERTIFICATION' => ['Certification'],
+                    'TECHNICAL' => ['TECHNICAL COURSES'],
+                    'MANAGEMENT' => ['MANAGEMENT COURSES'],
+                    'MEDICAL' => ['MEDICAL COURSES'],
+                    'TRADITIONAL' => ['TRADITIONAL COURSES']
+                ];
+                
+                $coursesByType = [];
+                foreach ($allCourses as $course) {
+                    foreach ($groupedCourses as $type => $matches) {
+                        if (in_array($course['course_type'], $matches)) {
+                            $coursesByType[$type][] = $course;
+                            break;
+                        }
+                    }
+                }
+                
+                $data = [
+                    'courses' => $allCourses,
+                    'coursesByType' => $coursesByType,
+                    'university' => $university
+                ];
+                
                 return view("admin.university.edit_univ", $data);
             });
             Route::post("", function (Request $request) {
@@ -150,11 +216,62 @@ Route::middleware('ensurePermission')->group(function () {
             });
             Route::prefix("edit")->group(function () {
                 Route::get("/{courseId}", function ($courseId) {
-                    $data = ['course' => UniversityCourse::with(['university', 'course'])->find($courseId)->toArray()];
-                    // dd($data);
-                    return view('admin.course.edit_univ_course', $data);
+                    try {
+                        // Eager load the relationships
+                        $univCourse = UniversityCourse::with(['university', 'course'])->findOrFail($courseId);
+                        
+                        // Convert to array and ensure all necessary fields are present
+                        $courseData = $univCourse->toArray();
+                        
+                        // Debug: Uncomment to see the data structure
+                        // dd($courseData);
+                        
+                        // Ensure nested relationships are properly set
+                        if (isset($courseData['university'])) {
+                            $courseData['university_name'] = $courseData['university']['univ_name'] ?? '';
+                        }
+                        
+                        if (isset($courseData['course'])) {
+                            $courseData['course_name'] = $courseData['course']['course_name'] ?? '';
+                        }
+                        
+                        // List of all JSON fields that need to be decoded
+                        $jsonFields = [
+                            'uc_about', 'uc_overview', 'uc_cv_help', 'uc_highlight',
+                            'uc_collab', 'uc_expert', 'uc_subjects', 'uc_details', 'uc_job'
+                        ];
+                        
+                        foreach ($jsonFields as $field) {
+                            if (!isset($courseData[$field])) {
+                                $courseData[$field] = [];
+                                continue;
+                            }
+                            
+                            // Skip if already an array
+                            if (is_array($courseData[$field])) {
+                                continue;
+                            }
+                            
+                            // Handle JSON string
+                            if (is_string($courseData[$field]) && !empty($courseData[$field])) {
+                                $decoded = json_decode($courseData[$field], true);
+                                $courseData[$field] = (json_last_error() === JSON_ERROR_NONE) ? $decoded : [];
+                            } else {
+                                $courseData[$field] = [];
+                            }
+                        }
+                        
+                        return view('admin.course.edit_univ_course', ['course' => $courseData]);
+                    } catch (\Exception $e) {
+                        // Log the error for debugging
+                        Log::error('Error loading course data: ' . $e->getMessage());
+                        
+                        // Return to previous page with error message
+                        return back()->with('error', 'Error loading course data: ' . $e->getMessage());
+                    }
                 });
-                Route::post("",function(Request $request){
+                
+                Route::post("", function(Request $request) {
                     $result = courseController::editUnivCourseDetails($request);
                     session()->flash('success', $result['success']);
                     return redirect()->back();
@@ -164,63 +281,175 @@ Route::middleware('ensurePermission')->group(function () {
     });
     // Courses routes
     Route::prefix("course")->group(function () {
+        // Toggle course status
+        Route::post('toggle-status/{id}', function ($id) {
+            return response()->json(\App\Http\Controllers\backend\courseController::toggleCourseStatus($id));
+        })->name('admin.course.toggle-status');
+        
+        // List all courses
         Route::get("", function () {
-            $data = ['courses' => Course::with('universities')->get(['id', 'course_name', 'course_short_name', 'course_type', 'course_slug', 'course_status', 'course_detail_added'])->toArray()];
-            $courses = Course::with('universities')->paginate(30);
-            // dd($courses);
-            $data = ['courses' => $courses, 'com' => $courses];
-            // dd($data);
-            return view("admin.course.courses", $data);
-        });
-        Route::prefix("/add")->group(function () {
+            $courses = Course::with('universities')
+                ->select(['id', 'course_name', 'course_short_name', 'course_type', 'course_slug', 
+                         'course_status', 'course_detail_added', 'course_category', 'course_subcategory',
+                         'course_online', 'course_img', 'created_at'])
+                ->orderBy('created_at', 'desc')
+                ->paginate(100);
+            
+            return view("admin.course.courses", [
+                'courses' => $courses
+            ]);
+        })->name('admin.course.index');
+
+        // Add course routes
+        Route::prefix("add")->group(function () {
+            // Show add course form
             Route::get("", function () {
                 return view("admin.course.add_course");
-            });
+            })->name('admin.course.add.form');
+
+            // Handle course creation
             Route::post("", function (Request $request) {
-                $result = courseController::addCourse($request);
-                session()->flash('success', $result['success']);
-                return redirect()->back();
-            });
-            Route::prefix("/details")->group(function () {
+                try {
+                    $result = courseController::addCourse($request);
+                    
+                    if ($result['success']) {
+                        session()->flash('success', $result['message']);
+                        return redirect()->route('admin.course.edit.form', ['course' => $result['course_id']]);
+                    } else {
+                        // If there are validation errors, redirect back with errors and input
+                        if (isset($result['errors'])) {
+                            return redirect()->back()
+                                ->withErrors($result['errors'])
+                                ->withInput($request->except('_token'));
+                        }
+                        
+                        // For other types of errors
+                        session()->flash('error', $result['message']);
+                        return redirect()->back()->withInput($request->except('_token'));
+                    }
+                } catch (\Exception $e) {
+                    Log::error('Error in course creation route: ' . $e->getMessage());
+                    session()->flash('error', 'An unexpected error occurred. Please try again.');
+                    return redirect()->back()->withInput($request->except('_token'));
+                }
+            })->name('admin.course.add.submit');
+
+            // Course details
+            Route::prefix("details")->name('details.')->group(function () {
+                // Show add course details form
                 Route::get("/{id}", function ($id) {
-                    $data = [
-                        "course" => Course::where('id', $id)->get()->first()->toArray(),
-                    ];
-                    return view("admin.course.add_course_details", $data);
-                });
+                    $course = Course::findOrFail($id);
+                    return view("admin.course.add_course_details", [
+                        'course' => $course->toArray()
+                    ]);
+                })->name('form');
+
+                // Handle course details submission
                 Route::post("", function (Request $request) {
                     $result = courseController::addCourseDetails($request);
-                    session()->flash('success', $result['success']);
-                    return redirect("/admin/course");
-                });
+                    session()->flash('success', $result['success'] ? 'Course details added successfully' : 'Failed to add course details');
+                    return redirect()->route('admin.course.index');
+                })->name('submit');
             });
         });
-        Route::prefix("/edit")->group(function () {
-            Route::get("/{id}", function (Course $id) {
-                $data = ["course" => $id->toArray()];
-                return view("admin.course.edit_course", $data);
-            });
+
+        // Delete course route
+        Route::delete('/{course}', function (Course $course) {
+            try {
+                $result = courseController::deleteCourse($course->id);
+                
+                if ($result['success']) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => $result['message'] ?? 'Course deleted successfully'
+                    ]);
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $result['message'] ?? 'Failed to delete course'
+                    ], 500);
+                }
+            } catch (\Exception $e) {
+                Log::error('Error deleting course: ' . $e->getMessage());
+                return response()->json([
+                    'success' => false,
+                    'message' => 'An error occurred while deleting the course: ' . $e->getMessage()
+                ], 500);
+            }
+        })->name('admin.course.delete');
+
+        // Edit course routes
+        Route::prefix("edit")->name('admin.course.edit.')->group(function () {
+            // Show edit course form
+            Route::get("/{course}", function (Course $course) {
+                return view("admin.course.edit_course", [
+                    'course' => $course->toArray()
+                ]);
+            })->name('form');
+
+            // Handle course update
             Route::post("", function (Request $request) {
                 $result = courseController::editCourse($request);
-                session()->flash('success', $result['success']);
-                return redirect("/admin/course/edit/" . $request->course_id);
-            });
-            Route::prefix("/details")->group(function () {
+                session()->flash('success', $result['success'] ? 'Course updated successfully' : 'Failed to update course');
+                return redirect()->route('admin.course.edit.form', ['course' => $request->course_id]);
+            })->name('submit');
+
+            // Course details
+            Route::prefix("details")->name('details.')->group(function () {
+                // Show edit course details form
                 Route::get("/{id}", function ($id) {
-                    $data = ["course" => Course::with('metadata')->find($id)->toArray()];
-                    return view('admin.course.edit_course_details', $data);
-                });
+                    $course = Course::with('metadata')->findOrFail($id);
+                    return view('admin.course.edit_course_details', [
+                        'course' => $course->toArray()
+                    ]);
+                })->name('form');
+
+                // Handle course details update
                 Route::post("", function (Request $request) {
                     $result = courseController::editCourseDetails($request);
-                    session()->flash('success', $result['success']);
-                    return redirect("/admin/course/edit/details/" . $request->course_id);
-                });
+                    session()->flash('success', $result['success'] ? 'Course details updated successfully' : 'Failed to update course details');
+                    return redirect()->route('admin.course.edit.details.form', $request->course_id);
+                })->name('submit');
             });
         });
-        Route::get("/university/{course_id}", function ($course_id) {
-            $data = ["course" => Course::find($course_id, ['id', 'course_name', 'course_short_name'])->toArray(), "universities" => UniversityCourse::where("course_id", $course_id)->where('univ_course_status', '1')->with('university')->get()->toArray()];
-            // dd($data);
-            return view('admin.university.view_course_univ', $data);
+
+        // Course universities
+        Route::prefix("university")->group(function () {
+            // View universities for a course
+            Route::get("/{course}", function (Course $course) {
+                $universities = UniversityCourse::where("course_id", $course->id)
+                    ->where('univ_course_status', '1')
+                    ->with('university')
+                    ->paginate(10);
+                    
+                return view('admin.university.view_course_univ', [
+                    'course' => $course->only(['id', 'course_name', 'course_short_name']),
+                    'universities' => $universities
+                ]);
+            })->name('university.list');
+
+            // Edit university course relationship
+            Route::get("/edit/{universityCourse}", function (UniversityCourse $universityCourse) {
+                $universityCourse->load('university', 'course');
+                return view('admin.university.edit_course_univ', [
+                    'universityCourse' => $universityCourse,
+                    'course' => $universityCourse->course,
+                    'university' => $universityCourse->university
+                ]);
+            })->name('university.course.edit');
+
+            // Update university course relationship
+            Route::post("/update/{universityCourse}", function (Request $request, UniversityCourse $universityCourse) {
+                $validated = $request->validate([
+                    'univ_course_fee' => 'required|numeric',
+                    'univ_course_commision' => 'required|numeric',
+                ]);
+
+                $universityCourse->update($validated);
+
+                return redirect()->route('university.list', ['course' => $universityCourse->course_id])
+                    ->with('success', 'Course details updated successfully');
+            })->name('university.course.update');
         });
     });
     // Job role routes
@@ -294,8 +523,23 @@ Route::middleware('ensurePermission')->group(function () {
                 $query->where('url_slug', 'like', '%' . $request->search . '%');
             }
             
-            $pages = $query->paginate(30)->withQueryString()->toArray();
-            $data = ["pages" => $pages['data'], 'com' => $pages];
+            $pages = $query->paginate(30);
+            $pages->appends(request()->query());
+            $pagesArray = [
+                'current_page' => $pages->currentPage(),
+                'data' => $pages->items(),
+                'first_page_url' => $pages->url(1),
+                'from' => $pages->firstItem(),
+                'last_page' => $pages->lastPage(),
+                'last_page_url' => $pages->url($pages->lastPage()),
+                'next_page_url' => $pages->nextPageUrl(),
+                'path' => $pages->path(),
+                'per_page' => $pages->perPage(),
+                'prev_page_url' => $pages->previousPageUrl(),
+                'to' => $pages->lastItem(),
+                'total' => $pages->total(),
+            ];
+            $data = ["pages" => $pages->items(), 'com' => $pagesArray];
             return view('admin.seo.pages', $data);
         });
         Route::prefix("/edit")->group(function () {

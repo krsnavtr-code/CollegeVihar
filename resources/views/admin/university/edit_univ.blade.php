@@ -1,8 +1,28 @@
 @php
 $added = [];
 foreach ($university['courses'] as $course) {
-$added[] = $course['id'];
+    $added[] = $course['id'];
 }
+
+// Define the course categories and their subcategories
+$courseCategories = [
+    'UG' => [
+        'label' => 'Undergraduate (UG) Courses',
+        'subcategories' => ['TECHNICAL', 'MANAGEMENT', 'MEDICAL', 'TRADITIONAL']
+    ],
+    'PG' => [
+        'label' => 'Postgraduate (PG) Courses',
+        'subcategories' => ['TECHNICAL', 'MANAGEMENT', 'MEDICAL', 'TRADITIONAL']
+    ],
+    'DIPLOMA' => [
+        'label' => 'Diploma Courses',
+        'subcategories' => ['TECHNICAL', 'MANAGEMENT', 'MEDICAL', 'TRADITIONAL']
+    ],
+    'CERTIFICATION' => [
+        'label' => 'Certification Courses',
+        'subcategories' => ['TECHNICAL', 'MANAGEMENT', 'MEDICAL', 'TRADITIONAL']
+    ]
+];
 @endphp
 @extends('admin.components.layout')
 @section('main')
@@ -29,284 +49,161 @@ $added[] = $course['id'];
             </div>
             <div class="field_group">
                 <div class="field">
-                    <label for="">University Payout <i class="text">(In Months)</i></label>
-                    <input type="number" placeholder="0" min="0" name="univ_payout">
-                </div>
-                <div class="field">
-                    <label for="">University Type</label>
-                    <select name="univ_type" id="" required>
+                    <label for="univ_type">University Type</label>
+                    <select name="univ_type" id="univ_type" required>
                         <option value="" selected disabled>--- Please Select ---</option>
-                        <option @if ($university['univ_type']=='offline' ) selected @endif value="offline">offline</option>
-                        <option @if ($university['univ_type']=='online' ) selected @endif value="online">online</option>
+                        <option value="offline" {{ $university['univ_type'] === 'offline' ? 'selected' : '' }}>Offline</option>
+                        <option value="online" {{ $university['univ_type'] === 'online' ? 'selected' : '' }}>Online</option>
                     </select>
                 </div>
                 <div class="field">
-    <label for="univ_category">University Category</label>
-    <!-- Debug: Show current value -->
-    <!-- <p>Current value: {{ $university['univ_category'] ?? 'Not set' }}</p> -->
-    <select name="univ_category" id="univ_category" required>
-        <option value="" {{ !isset($university['univ_category']) || empty(trim($university['univ_category'])) ? 'selected' : '' }}>-- Please Select --</option>
-        <option value="central university" {{ trim(strtolower($university['univ_category'] ?? '')) === 'central university' ? 'selected' : '' }}>Central University</option>
-        <option value="state university" {{ trim(strtolower($university['univ_category'] ?? '')) === 'state university' ? 'selected' : '' }}>State University</option>
-        <option value="state private university" {{ trim(strtolower($university['univ_category'] ?? '')) === 'state private university' ? 'selected' : '' }}>State Private University</option>
-        <option value="state public university" {{ trim(strtolower($university['univ_category'] ?? '')) === 'state public university' ? 'selected' : '' }}>State Public University</option>
-        <option value="deemed university" {{ trim(strtolower($university['univ_category'] ?? '')) === 'deemed university' ? 'selected' : '' }}>Deemed University</option>
-    </select>
-</div>
-            </div>
-        </section>
-        <section class="panel">
-            <h3 class="section_title">University Person Details</h3>
-            <div class="field">
-                <label for="">Connected Person Name</label>
-                <input type="test" placeholder="Person Name" name="univ_person"
-                    value="{{ $university['univ_person'] }}">
-            </div>
-            <div class="field_group">
-                <div class="field">
-                    <label for="">Connected Person Email</label>
-                    <input type="email" placeholder="Person Email" name="univ_person_email"
-                        value="{{ $university['univ_person_email'] }}">
-                </div>
-                <div class="field">
-                    <label for="">Connected Person Contact</label>
-                    <input type="text" placeholder="Person Contact" name="univ_person_phone"
-                        value="{{ $university['univ_person_phone'] }}">
+                    <label for="univ_category">University Category</label>
+                    <select name="univ_category" id="univ_category" required>
+                        <option value="" {{ empty($university['univ_category']) ? 'selected' : '' }}>-- Please Select --</option>
+                        <option value="central university" {{ strtolower($university['univ_category'] ?? '') === 'central university' ? 'selected' : '' }}>Central University</option>
+                        <option value="state university" {{ strtolower($university['univ_category'] ?? '') === 'state university' ? 'selected' : '' }}>State University</option>
+                        <option value="state private university" {{ strtolower($university['univ_category'] ?? '') === 'state private university' ? 'selected' : '' }}>State Private University</option>
+                        <option value="state public university" {{ strtolower($university['univ_category'] ?? '') === 'state public university' ? 'selected' : '' }}>State Public University</option>
+                        <option value="deemed university" {{ strtolower($university['univ_category'] ?? '') === 'deemed university' ? 'selected' : '' }}>Deemed University</option>
+                        <option value="autonomous institute" {{ strtolower($university['univ_category'] ?? '') === 'autonomous institute' ? 'selected' : '' }}>Autonomous Institute</option>
+                    </select>
                 </div>
             </div>
         </section>
+        @foreach($courseCategories as $category => $categoryData)
         <section class="card p-2 mb-4">
-            <div class="flex">
-                <h3>UG Courses</h3>
-                <input type="search" name="" id="" placeholder="Search UG Courses">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">{{ $categoryData['label'] }}</h3>
+                <input type="search" 
+                       class="search-course form-input rounded-full border-gray-300" 
+                       data-category="{{ $category }}" 
+                       placeholder="Search {{ $category }} Courses">
             </div>
-            <div class="courses">
-                @foreach ($courses as $i => $course)
-                @if ($course['course_type'] == 'UG')
-                <div @class(['disable'=> in_array($course['id'], $added)]) title="{{ $course['course_name'] }}">
-                    <input type="checkbox" value="{{ $course['id'] }}"
-                        data-course="{{ $course['course_name'] . ' (' . $course['course_short_name'] . ')' }}"
-                        id="f{{ $i }}" @if (in_array($course['id'], $added)) checked disabled @endif
-                        onchange="add_commision_field(this,{{ $course['id'] }})">
-                    <label for="f{{ $i }}" class="btn btn-outline-primary rounded-pill m-1">({{ $course['course_short_name'] }}) {{ $course['course_name'] }}</label>
-                </div>
-                @endif
-                @endforeach
-            </div>
-        </section>
-        <section class="card p-2 mb-4">
-            <div class="flex">
-                <h3>PG Courses</h3>
-                <input type="search" name="" id="" placeholder="Search PG Courses">
-            </div>
-            <div class="courses">
-                @foreach ($courses as $i => $course)
-                @if ($course['course_type'] == 'PG')
-                <div @class(['disable'=> in_array($course['id'], $added)]) title="{{ $course['course_name'] }}">
-                    <input type="checkbox" value="{{ $course['id'] }}"
-                        data-course="{{ $course['course_name'] . ' (' . $course['course_short_name'] . ')' }}"
-                        id="f{{ $i }}" @if (in_array($course['id'], $added)) checked disabled @endif
-                        onchange="add_commision_field(this,{{ $course['id'] }})">
-                    <label for="f{{ $i }}" class="btn btn-outline-primary rounded-pill m-1">({{ $course['course_short_name'] }}) {{ $course['course_name'] }}</label>
-                </div>
-                @endif
-                @endforeach
-            </div>
-        </section>
-        <section class="card p-2 mb-4">
-            <div class="flex">
-                <h3>DIPLOMA Courses</h3>
-                <input type="search" name="" id="" placeholder="Search DIPLOMA Courses">
-            </div>
-            <div class="courses">
-                @foreach ($courses as $i => $course)
-                @if ($course['course_type'] == 'Diploma')
-                <div @class(['disable'=> in_array($course['id'], $added)]) title="{{ $course['course_name'] }}">
-                    <input type="checkbox" value="{{ $course['id'] }}"
-                        data-course="{{ $course['course_name'] . ' (' . $course['course_short_name'] . ')' }}"
-                        id="f{{ $i }}" @if (in_array($course['id'], $added)) checked disabled @endif
-                        onchange="add_commision_field(this,{{ $course['id'] }})">
-                    <label for="f{{ $i }}" class="btn btn-outline-primary rounded-pill m-1">({{ $course['course_short_name'] }}) {{ $course['course_name'] }}</label>
-                </div>
-                @endif
-                @endforeach
-            </div>
-        </section>
-        <section class="card p-2 mb-4">
-            <div class="flex">
-                <h3>CERTIFICATION Courses</h3>
-                <input type="search" name="" id="" placeholder="Search CERTIFICATION Courses">
-            </div>
-            <div class="courses">
-                @foreach ($courses as $i => $course)
-                @if ($course['course_type'] == 'Certification')
-                <div @class(['field', 'disable'=> in_array($course['id'], $added)]) title="{{ $course['course_name'] }}">
-                    <input type="checkbox" value="{{ $course['id'] }}"
-                        data-course="{{ $course['course_name'] . ' (' . $course['course_short_name'] . ')' }}"
-                        id="f{{ $i }}" @if (in_array($course['id'], $added)) checked disabled @endif
-                        onchange="add_commision_field(this,{{ $course['id'] }})">
-                    <label for="f{{ $i }}" class="btn btn-outline-primary rounded-pill m-1">({{ $course['course_short_name'] }}) {{ $course['course_name'] }}</label>
-                </div>
-                @endif
-                @endforeach
-            </div>
-        </section>
-
-        <section class="card p-2 mb-4">
-            <div class="flex">
-                <h3>TECHNICAL Courses :</h3>
-                <input type="search" name="" id="searchTECHNICAL" placeholder="Search TECHNICAL Courses" oninput="filterCourses('TECHNICAL')">
-            </div>
-            <div class="courses">
-                @foreach ($courses as $i => $course)
-                @if ($course['course_type'] == 'TECHNICAL COURSES')
-                <div class="course-item-TECHNICAL" title="{{ $course['course_name'] }}"
-                @class(['disable' => in_array($course['id'], $added)])>
-                <input type="checkbox" value="{{ $course['id'] }}"
-                data-course="{{ $course['course_name'] . ' (' . $course['course_short_name'] . ')' }}"
-                id="f{{ $i }}"
-                @if (in_array($course['id'], $added)) checked disabled @endif
-                onchange="add_commision_field(this, {{ $course['id'] }})">
-                <label for="f{{ $i }}" class="btn btn-outline-primary rounded-pill m-1">{{ $course['course_name'] }} ({{ $course['course_short_name'] }})</label>
-            </div>
-            @endif
-            @endforeach
-        </div>
-    </section>
-
-    <section class="card p-2 mb-4">
-        <div class="flex">
-            <h3>MANAGEMENT Courses :</h3>
-            <input type="search" name="" id="searchMANAGEMENT" placeholder="Search MANAGEMENT Courses" oninput="filterCourses('MANAGEMENT')">
-        </div>
-        <div class="courses">
-            @foreach ($courses as $i => $course)
-            @if ($course['course_type'] == 'MANAGEMENT COURSES')
-            <div class="course-item-MANAGEMENT" title="{{ $course['course_name'] }}"
-            @class(['disable' => in_array($course['id'], $added)])>
-            <input type="checkbox" value="{{ $course['id'] }}"
-            data-course="{{ $course['course_name'] . ' (' . $course['course_short_name'] . ')' }}"
-            id="f{{ $i }}"
-            @if (in_array($course['id'], $added)) checked disabled @endif
-            onchange="add_commision_field(this, {{ $course['id'] }})">
-            <label for="f{{ $i }}" class="btn btn-outline-primary rounded-pill m-1">{{ $course['course_name'] }} ({{ $course['course_short_name'] }})</label>
-        </div>
-        @endif
-        @endforeach
-    </div>
-</section>
-
-<section class="card p-2 mb-4">
-    <div class="flex">
-        <h3>MEDICAL Courses :</h3>
-        <input type="search" name="" id="searchMEDICAL" placeholder="Search MEDICAL Courses" oninput="filterCourses('MEDICAL')">
-    </div>
-    <div class="courses">
-        @foreach ($courses as $i => $course)
-        @if ($course['course_type'] == 'MEDICAL COURSES')
-        <div class="course-item-MEDICAL" title="{{ $course['course_name'] }}"
-        @class(['disable' => in_array($course['id'], $added)])>
-        <input type="checkbox" value="{{ $course['id'] }}"
-        data-course="{{ $course['course_name'] . ' (' . $course['course_short_name'] . ')' }}"
-        id="f{{ $i }}"
-        @if (in_array($course['id'], $added)) checked disabled @endif
-        onchange="add_commision_field(this, {{ $course['id'] }})">
-        <label for="f{{ $i }}" class="btn btn-outline-primary rounded-pill m-1">{{ $course['course_name'] }} ({{ $course['course_short_name'] }})</label>
-    </div>
-    @endif
-    @endforeach
-</div>
-</section>
-
-<section class="card p-2 mb-4">
-    <div class="flex">
-        <h3>TRADITIONAL Courses :</h3>
-        <input type="search" name="" id="searchTRADITIONAL" placeholder="Search TRADITIONAL Courses" oninput="filterCourses('TRADITIONAL')">
-    </div>
-    <div class="courses">
-        @foreach ($courses as $i => $course)
-        @if ($course['course_type'] == 'TRADITIONAL COURSES')
-        <div class="course-item-TRADITIONAL" title="{{ $course['course_name'] }}"
-        @class(['disable' => in_array($course['id'], $added)])>
-        <input type="checkbox" value="{{ $course['id'] }}"
-        data-course="{{ $course['course_name'] . ' (' . $course['course_short_name'] . ')' }}"
-        id="f{{ $i }}"
-        @if (in_array($course['id'], $added)) checked disabled @endif
-        onchange="add_commision_field(this, {{ $course['id'] }})">
-        <label for="f{{ $i }}" class="btn btn-outline-primary rounded-pill m-1">{{ $course['course_name'] }} ({{ $course['course_short_name'] }})</label>
-    </div>
-    @endif
-    @endforeach
-</div>
-</section>
-        
-        <section class="card p-2">
-            <h3 class="section_title">Commision</h3>
-            <section id="courses">
-                @foreach ($university['courses'] as $course)
-                <div class="row" id="field{{ $course['id'] }}">
-                    <div class="col-lg-6">
-                        <h6>
-                            {{ $course['course_name'] . ' (' . $course['course_short_name'] . ')' }}
-                        </h6>
-                    </div>
-                    <div class="col-lg-6">
-                        {{-- <input type="hidden" name="course[{{ $course['id'] }}][old]" value="1"> --}}
-                        <input type="hidden" name="course[{{ $course['id'] }}][old_id]"
-                            value="{{ $course['pivot']['id'] }}">
-                        <input type="hidden" name="course[{{ $course['id'] }}][id]" value="{{ $course['id'] }}">
-                        <div class="flex">
-                            <input type="text" name="course[{{ $course['id'] }}][fee]"
-                                placeholder="Fees" value="{{ $course['pivot']['univ_course_fee'] }}">
-                            <input type="text" name="course[{{ $course['id'] }}][commision]"
-                                placeholder="Commision" value="{{ $course['pivot']['univ_course_commision'] }}">
+            
+            @php
+                $hasCourses = false;
+                // Check if any courses exist for this category
+                foreach($categoryData['subcategories'] as $subcategory) {
+                    if(isset($coursesByType[$subcategory]) && count($coursesByType[$subcategory]) > 0) {
+                        $hasCourses = true;
+                        break;
+                    }
+                }
+            @endphp
+            
+            @if($hasCourses)
+                @foreach($categoryData['subcategories'] as $subcategory)
+                    @php
+                        $filteredCourses = [];
+                        if(isset($coursesByType[$subcategory])) {
+                            $filteredCourses = array_filter($coursesByType[$subcategory], function($course) use ($category) {
+                                return $course['course_type'] === $category || 
+                                      ($category === 'DIPLOMA' && $course['course_type'] === 'Diploma') ||
+                                      ($category === 'CERTIFICATION' && $course['course_type'] === 'Certification');
+                            });
+                        }
+                    @endphp
+                    
+                    @if(count($filteredCourses) > 0)
+                    <div class="subcategory-section mb-4 p-4 bg-gray-50 rounded-lg">
+                        <h4 class="text-lg font-semibold mb-3 text-gray-700">
+                            <i class="fas fa-chevron-right mr-2"></i>
+                            {{ ucfirst(strtolower($subcategory)) }} Courses
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                            @foreach($filteredCourses as $course)
+                                <div class="course-item {{ $category }} {{ $subcategory }} flex items-center p-2 hover:bg-gray-100 rounded" 
+                                     title="{{ $course['course_name'] }}">
+                                    <input type="checkbox" 
+                                           class="form-checkbox h-5 w-5 text-blue-600"
+                                           name="courses[]" 
+                                           value="{{ $course['id'] }}" 
+                                           id="f{{ $course['id'] }}" 
+                                           @if(in_array($course['id'], $added)) checked @endif>
+                                    <label for="f{{ $course['id'] }}" class="ml-2 text-sm text-gray-700 cursor-pointer hover:text-blue-600">
+                                        <span class="font-medium">{{ $course['course_short_name'] }}</span> - 
+                                        <span class="text-gray-600">{{ $course['course_name'] }}</span>
+                                    </label>
+                                </div>
+                            @endforeach
                         </div>
                     </div>
-                </div>
+                    @endif
                 @endforeach
-            </section>
+            @else
+                <div class="text-gray-500 italic py-4 text-center">
+                    No courses available for this category
+                </div>
+            @endif
         </section>
+        @endforeach
+        
+        @foreach ($university['courses'] as $course)
+        <input type="hidden" name="courses[]" value="{{ $course['id'] }}">
+        @endforeach
         <div class="text-end p-4">
             <button type="submit" class="btn btn-primary btn-lg">Update University</button>
         </div>
     </form>
 </main>
+@push('style')
+<style>
+    .course-item {
+        display: block;
+        margin: 4px 0;
+    }
+    .course-item.hidden {
+        display: none;
+    }
+    .subcategory-section {
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-radius: 0.5rem;
+    }
+    .search-course {
+        padding: 0.5rem 1rem;
+        border: 1px solid #ced4da;
+        border-radius: 50rem;
+        width: 250px;
+    }
+</style>
+@endpush
+
 @push('script')
 <script>
     function display_pic(node) {
         $(`label[for='${node.id}'] img`)[0].src = URL.createObjectURL(node.files[0]);
     }
-    $(".add_field").perform((n) => {
-        n.addEventListener("click", () => {
-            let parent = n.parentElement;
-            let field_group = parent.$(".field_group")[0];
-            let new_node = field_group.cloneNode(true);
-            field_group.insert(3, new_node);
-        })
-    })
 
-    function add_commision_field(node, no) {
-        if (node.checked) {
-            addField(no, node.get("data-course"), node.get("id"));
-        } else {
-            $("#field" + no).remove();
-        }
-    }
-
-    function addField(no, course, link) {
-        let courses = $("#courses");
-        let fields = courses.$(".field_group").length;
-        let newField =
-            `<div class="field_group head_field" id="field${no}" data-linked="${link}"><h6 style="color:var(--btn_primary);">${course}</h6><div class="field_group"><div class="field"><input type="hidden" name="course[${no}][id]" value="${no}"><input style="border:1px solid var(--btn_primary);" type="text" name="course[${no}][fee]" placeholder="Total Univ-Course Fees"></div><div class="field"><input style="border:1px solid var(--btn_primary);" type="text" name="course[${no}][commision]" placeholder="Commision %"></div><i class="icon delete fa-solid fa-trash" onclick="delete_field(this)"></i></div></div>`;
-        courses.append(newField);
-    }
-
-    function delete_field(n) {
-        let main = n.closest(".head_field");
-        let link = $("#" + main.get("data-linked"));
-        link.checked = false;
-        main.remove();
-    }
+    // Initialize search functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add event listeners to all search inputs
+        document.querySelectorAll('.search-course').forEach(function(searchInput) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const category = this.getAttribute('data-category');
+                
+                // Find all course items in this category
+                const courseItems = document.querySelectorAll(`.course-item.${category}`);
+                
+                courseItems.forEach(function(item) {
+                    const courseName = item.getAttribute('title').toLowerCase();
+                    if (courseName.includes(searchTerm)) {
+                        item.classList.remove('hidden');
+                    } else {
+                        item.classList.add('hidden');
+                    }
+                });
+                
+                // Show/hide subcategory sections based on visible courses
+                document.querySelectorAll(`.subcategory-section`).forEach(function(section) {
+                    const hasVisibleCourses = section.querySelector(`.course-item.${category}:not(.hidden)`);
+                    section.style.display = hasVisibleCourses ? 'block' : 'none';
+                });
+            });
+        });
+    });
 </script>
 @endpush
 @endsection

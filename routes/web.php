@@ -328,6 +328,7 @@ Route::get("/university/raw/{univ_name}", function ($univ_name) {
 
 // University and universities
 Route::get("/course", function () {
+    // The courses view should use the Course model with the active scope
     return view("user.courses");
 });
 
@@ -342,12 +343,23 @@ Route::get("/course", function () {
 // });
 
 Route::get("/course/{course}", function (Request $request) {
-    $course = Course::where('course_slug', $request->raw_meta['id'])->with('universities')->first();
+    $course = Course::where('course_slug', $request->raw_meta['id'])
+        ->where('course_status', true)
+        ->with(['universities' => function($query) {
+            $query->where('universities.univ_status', true);
+        }])
+        ->first();
+        
     if (!empty($course)) {
-        // dd($course, 12);
         return view("user.course", ["course" => $course]);
     } else {
         $universityCourse = UniversityCourse::where('univ_course_slug', $request->raw_meta['id'])
+            ->whereHas('course', function($q) {
+                $q->where('course_status', true);
+            })
+            ->whereHas('university', function($q) {
+                $q->where('univ_status', true);
+            })
                                             ->with(['university:id,univ_name', 'course:id,course_name,course_short_name,course_duration,course_eligibility_short'])
                                             ->first();
         // dd($universityCourse, 24);

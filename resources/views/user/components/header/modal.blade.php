@@ -841,16 +841,16 @@
         });
     });
 
-    {{-- document.addEventListener('DOMContentLoaded', function() {
-        // Check if we're on the homepage
-        if (window.location.pathname === '/') {
-            // Show the query modal after a 3-second delay
-            setTimeout(function() {
-                const queryModal = new bootstrap.Modal(document.getElementById('queryModal'));
-                queryModal.show();
-            }, 3000);
-        }
-    }); --}}
+    // document.addEventListener('DOMContentLoaded', function() {
+    //     // Check if we're on the homepage
+    //     if (window.location.pathname === '/') {
+    //         // Show the query modal after a 3-second delay
+    //         setTimeout(function() {
+    //             const queryModal = new bootstrap.Modal(document.getElementById('queryModal'));
+    //             queryModal.show();
+    //         }, 3000);
+    //     }
+    // });
 </script>
 
 <style>

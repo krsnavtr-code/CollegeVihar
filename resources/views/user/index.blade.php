@@ -341,39 +341,35 @@
                 <p class="university-text">Our best 100 University and 500 Courses</p>
                 <div class="container mt-3">
                     @php
-    $tabs = ['PG', 'UG', 'Diploma', 'Certification', 'online', 'offline', 'International Online', 'International Offline'];
-    $courses = Request::get('courses');
-    $universitiesfil = Request::get('universities');
+                        $tabs = ['PG', 'UG', 'Diploma', 'Certification', 'online', 'offline', 'International Online', 'International Offline'];
+                        $courses = Request::get('courses');
+                        $universitiesfil = Request::get('universities');
 
-    $courseCounts = [];
-    $universityCounts = [];
-    foreach ($tabs as $tab) {
-        if (in_array($tab, ['online', 'offline'])) {
-            // For 'online' and 'offline', filter universities
-            $filteredUniversities = array_filter($universitiesfil, function ($university) use ($tab) {
-                return strtolower($university['univ_type']) === strtolower($tab);
-            });
-            $universityCounts[$tab] = count($filteredUniversities);
-            $courseCounts[$tab] = count($filteredUniversities) > 0 ? 1 : 0; // Just to indicate that there are courses
-        } else {
-            // For other tabs, filter courses based on 'course_type'
-            $filteredCourses = array_filter($courses, function ($course) use ($tab) {
-                return strtolower($course['course_type']) === strtolower($tab);
-            });
+                        $courseCounts = [];
+                        $universityCounts = [];
+                        foreach ($tabs as $tab) {
+                            if (in_array($tab, ['online', 'offline'])) {
+                                // For 'online' and 'offline', filter universities
+                                $filteredUniversities = array_filter($universitiesfil, function ($university) use ($tab) {
+                                    return strtolower($university['univ_type']) === strtolower($tab);
+                                });
+                                $universityCounts[$tab] = count($filteredUniversities);
+                                $courseCounts[$tab] = count($filteredUniversities) > 0 ? 1 : 0; // Just to indicate that there are courses
+                            } else {
+                                // For other tabs, filter courses based on 'course_type'
+                                $filteredCourses = array_filter($courses, function ($course) use ($tab) {
+                                    return strtolower($course['course_type']) === strtolower($tab);
+                                });
+                                $courseCounts[$tab] = count($filteredCourses);
 
-            $courseCounts[$tab] = count($filteredCourses);
-
-            // Calculate the total number of universities
-            $totalUniversities = 0;
-            foreach ($filteredCourses as $course) {
-                $totalUniversities += count($course['universities']);
-            }
-            $universityCounts[$tab] = $totalUniversities;
-        }
-
-        // // Only include tabs with non-zero data
-
-    }
+                                // Calculate the total number of universities
+                                $totalUniversities = 0;
+                                foreach ($filteredCourses as $course) {
+                                    $totalUniversities += count($course['universities']);
+                                }
+                                $universityCounts[$tab] = $totalUniversities;
+                            }
+                        }
                     @endphp
                     <div class="row">
                         <div class="col-lg-3">
@@ -416,86 +412,110 @@
                                     aria-labelledby="nav-home-tab" tabindex="0">
                                     <div class="row">
                                         @php
-    // dd(Request::get('courses')); 
-    // dd($universities);
+                                            // dd(Request::get('courses')); 
+                                            // dd($universities);
                                         @endphp
 
-                                        @foreach ($universities as $university)
-                                                                        @php
-        $course = $university->univCourses->first();
-        // dd($course);
+                                        @if(isset($universities) && $universities->count() > 0)
+                                            @foreach ($universities as $university)
+                                                @php
+                                                    $university = $university ?? null;
+                                                    $course = $university->univCourses->first() ?? null;
+                                                @endphp
+                                                
+                                                @if($course && $course->univ_course_detail_added == 1)
+                                                    <div class="col-lg-4 col-sm-6 p-2">
+                                                        <article class="card filter-card h-100 mx-auto"
+                                                            style="max-width: 300px; border-radius: 26px; border: 5px solid #4166ab; box-shadow: 9px 9px 0px #3b64b1;">
+                                                            <div class="img-box" style="z-index: 1">
+                                                                @if(isset($course->metadata) && $course->metadata)
+                                                                    <a href="{{ $course->metadata->url_slug ?? '#' }}">
+                                                                @endif
+                                                                <img class="img-fluid uni-img"
+                                                                    style="border-top-left-radius: 20px; border-top-right-radius: 18px;"
+                                                                    src="/images/university/campus/{{ $university->univ_image }}"
+                                                                    alt="{{ $university->univ_name }}"
+                                                                    onerror="this.src='/images/web assets/university.png'"
+                                                                    loading="lazy">
+                                                                <img class="uni-badge rounded-1"
+                                                                    src="{{ isset($university->univ_logo) ? '/images/university/logo/' . $university->univ_logo : '' }}" 
+                                                                    alt="{{ $university->univ_name ?? 'University Logo' }}"
+                                                                    height="30" />
+                                                                @if(isset($course->metadata) && $course->metadata)
+                                                                </a>
+                                                                @endif
+                                                            </div>
+                                                            <div class="text-box"
+                                                                style="background-color: #edefef1c;border-bottom-left-radius: 16px;border-bottom-right-radius: 16px; z-index: 1">
+                                                                <h5 class="name blue" style="font-weight: 600;">
+                                                                    @if(isset($course->metadata) && $course->metadata)
+                                                                        <a href="{{ $course->metadata->url_slug ?? '#' }}" style="color: black;">
+                                                                    @endif
+                                                                        {{ $university->univ_name ?? 'University Name' }}
+                                                                    @if(isset($course->metadata) && $course->metadata)
+                                                                        </a>
+                                                                    @endif
+                                                                </h5>
+                                                                <h6 class="course">
+                                                                    <i class="fa-solid fa-graduation-cap"></i>
+                                                                    <span style="font-size:medium; font-weight: 500;">
+                                                                        {{ $course->course->course_name ?? 'Course Name' }}
+                                                                    </span>
+                                                                </h6>
+                                                                <p class="p-1">
+                                                                    <i class="fa-regular fa-calendar-days fa-xs"></i>
+                                                                    <span style="font-weight: 500; font-size: small;">
+                                                                        @php 
+                                                                            $duration = 'N/A';
+                                                                            if(isset($course->uc_details)) {
+                                                                                $ucdetails = json_decode($course->uc_details);
+                                                                                if(is_array($ucdetails) && isset($ucdetails[4]) && is_object($ucdetails[4]) && 
+                                                                                   property_exists($ucdetails[4], 'title') && 
+                                                                                   strtolower($ucdetails[4]->title) == 'duration' && 
+                                                                                   property_exists($ucdetails[4], 'desc')) {
+                                                                                    $duration = $ucdetails[4]->desc;
+                                                                                }
+                                                                            }
+                                                                            echo 'Duration: ' . $duration;
                                                                         @endphp
-                                                                        @if ($course && $course->univ_course_detail_added == 1)
-                                                                                                    <div class="col-lg-4 col-sm-6 p-2">
-                                                                                                        <article class="card filter-card h-100 mx-auto"
-                                                                                                            style="max-width: 300px; border-radius: 26px; border: 5px solid #4166ab; box-shadow: 9px 9px 0px #3b64b1;">
-                                                                                                            <div class="img-box" style="z-index: 1">
-                                                                                                                <a href="{{ $course->metadata->url_slug }}">
-                                                                                                                    <img class="img-fluid uni-img"
-                                                                                                                        style="border-top-left-radius: 20px; border-top-right-radius: 18px;"
-                                                                                                                        src="/images/university/campus/{{ $university->univ_image }}"
-                                                                                                                        alt="{{ $university->univ_name }}"
-                                                                                                                        onerror="this.src='/images/web assets/university.png'"
-                                                                                                                        loading="lazy">
-                                                                                                                    <img class="uni-badge rounded-1"
-                                                                                                                        src="/images/university/logo/{{ $university->univ_logo}}" alt="{{ $university->univ_name }}"
-                                                                                                                        height="30" />
-                                                                                                                </a>
-                                                                                                            </div>
-                                                                                                            <div class="text-box"
-                                                                                                                style="background-color: #edefef1c;border-bottom-left-radius: 16px;border-bottom-right-radius: 16px; z-index: 1">
-                                                                                                                <h5 class="name blue" style="font-weight: 600;">
-                                                                                                                    <a href="{{ $course->metadata->url_slug }}" style="color: black;">
-                                                                                                                        {{ $university->univ_name }}
-
-                                                                                                                    </a>
-                                                                                                                </h5>
-                                                                                                                <h6 class="course">
-                                                                                                                    <i class="fa-solid fa-graduation-cap"></i>
-                                                                                                                    <span
-                                                                                                                        style="font-size:medium; font-weight: 500;">{{ $course['course']['course_name'] }}</span>
-                                                                                                                </h6>
-                                                                                                                <p class="p-1">
-                                                                                                                    <i class="fa-regular fa-calendar-days fa-xs"></i>
-                                                                                                                    <span style=" font-weight: 500; font-size: small;"> Duration:
-                                                                                                                        @php 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            // dd($course->uc_details);
-            $ucdetails = json_decode($course->uc_details);
-            // dd($ucdetails);
-            if (strtolower($ucdetails[4]->title) == 'duration') {
-                echo $ucdetails[4]->desc;
-            } 
-
-                                                                                                                        @endphp
-                                                                                                                    </span>
-                                                                                                                    {{-- @php dd($course);@endphp --}}
-
-                                                                                                                </p>
-                                                                                                                <p class="p-1" style="font-weight: 500; font-size: small;">
-                                                                                                                    {!! $course['course']['course_online']
-                ? " <i class='fa-solid fa-desktop fa-xs'></i> Online Class"
-                : " <i class='fa-solid fa-school fa-xs'></i> Offline Class" !!}
-                                                                                                                </p>
-                                                                                                                <div class="between flex-md-row flex-column gap-2">
-                                                                                                                    <a class="btn btn-danger bg-red"
-                                                                                                                        style="border-bottom-left-radius: 20px;border-bottom-right-radius: 10px;"
-                                                                                                                        href="{{ route('download-pdf', ['filename' => 'prospectus_collegevihar.pdf']) }}">
-                                                                                                                        <span>Download</span>
-                                                                                                                        <i class="fa-solid fa-download fa-xs"></i>
-                                                                                                                    </a>
-                                                                                                                    <a class="btn btn-primary"
-                                                                                                                        style="border-bottom-left-radius: 10px;border-bottom-right-radius: 20px;"
-                                                                                                                        href="#" data-bs-toggle="modal" data-bs-target="#applyModal"
-                                                                                                                        style="border-bottom-left-radius: 10px;border-bottom-right-radius: 20px;">
-                                                                                                                        <span>Apply Now</span>
-                                                                                                                        <i class="fa-solid fa-up-right-from-square fa-xs"></i>
-                                                                                                                    </a>
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                        </article>
-                                                                                                    </div>
-                                                                        @endif
-                                        @endforeach
+                                                                    </span>
+                                                                </p>
+                                                                <p class="p-1" style="font-weight: 500; font-size: small;">
+                                                                    @if(isset($course->course->course_online))
+                                                                        {!! $course->course->course_online
+                                                                            ? "<i class='fa-solid fa-desktop fa-xs'></i> Online Class"
+                                                                            : "<i class='fa-solid fa-school fa-xs'></i> Offline Class" !!}
+                                                                    @else
+                                                                        <i class='fa-solid fa-question-circle fa-xs'></i> Class Type Not Available
+                                                                    @endif
+                                                                </p>
+                                                                <div class="between flex-md-row flex-column gap-2">
+                                                                    <a class="btn btn-danger bg-red"
+                                                                        style="border-bottom-left-radius: 20px;border-bottom-right-radius: 10px;"
+                                                                        href="{{ route('download-pdf', ['filename' => 'prospectus_collegevihar.pdf']) }}">
+                                                                        <span>Download</span>
+                                                                        <i class="fa-solid fa-download fa-xs"></i>
+                                                                    </a>
+                                                                    <a class="btn btn-primary"
+                                                                        style="border-bottom-left-radius: 10px;border-bottom-right-radius: 20px;"
+                                                                        href="#" data-bs-toggle="modal" data-bs-target="#applyModal">
+                                                                        <span>Apply Now</span>
+                                                                        <i class="fa-solid fa-arrow-right fa-xs"></i>
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </article>
+                                                    </div>
+                                                @endif
+                                            @endforeach
+                                        @else
+                                            <div class="col-12 text-center py-5">
+                                                <div class="alert alert-info">
+                                                    <i class="fas fa-info-circle me-2"></i>
+                                                    No courses available at the moment. Please check back later.
+                                                </div>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                                 @foreach ($tabs as $tab)

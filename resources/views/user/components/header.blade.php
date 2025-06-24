@@ -165,23 +165,23 @@
                         </li>
                         <li class="nav-item px-2 position-relative">
                             @if(session('email') || session('phone'))
-                                                        @php
-                                                            $userContact = session('email') ?? session('phone');
-                                                            if (filter_var($userContact, FILTER_VALIDATE_EMAIL)) {
-                                                                $userName = strtoupper(substr($userContact, 0, 1));
-                                                            } else {
-                                                                $userName = $userContact;
-                                                            }
-                                                        @endphp
-                                                        <p title="{{ $userContact }}" style="cursor: pointer;" id="userDropdown"><i
-                                                                class="fa-solid fa-user" style="color: blue"></i></p>
-                                                        <div id="logoutMenu" class="logout-dropdown d-none">
-                                                            <p class="text-center font-weight-bold">{{ $userContact }}</p>
-                                                            <form action="{{ url('/logout') }}" method="POST">
-                                                                @csrf
-                                                                <button type="submit" class="btn btn-danger btn-sm w-100">Logout</button>
-                                                            </form>
-                                                        </div>
+                                @php
+                                    $userContact = session('email') ?? session('phone');
+                                    if (filter_var($userContact, FILTER_VALIDATE_EMAIL)) {
+                                        $userName = strtoupper(substr($userContact, 0, 1));
+                                    } else {
+                                        $userName = $userContact;
+                                    }
+                                @endphp
+                                <p title="{{ $userContact }}" style="cursor: pointer;" id="userDropdown"><i
+                                        class="fa-solid fa-user" style="color: blue"></i></p>
+                                <div id="logoutMenu" class="logout-dropdown d-none">
+                                    <p class="text-center font-weight-bold">{{ $userContact }}</p>
+                                    <form action="{{ url('/logout') }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="btn btn-danger btn-sm w-100">Logout</button>
+                                    </form>
+                                </div>
                             @endif
                         </li>
                     </ul>

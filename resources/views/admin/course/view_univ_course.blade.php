@@ -5,8 +5,10 @@ $permissions = Request::get('admin_permissions');
 @section('main')
 <main>
     <!-- http://127.0.0.1:8000/admin/university/courses/34 -->
+
     <h2 class="page_title">{{ $university['univ_name'] }}</h2>
     <p class="mb-4">{{ $university['univ_address'] }}</p>
+    
     <div class="overflow-auto text-nowrap">
         <table class="table">
             <thead>
@@ -41,8 +43,8 @@ $permissions = Request::get('admin_permissions');
                     <td>{{ $course['univ_course_commision'] }}
                     </td>
                     @endif
-                    @if ( $permissions[0] == '*')
-                    <td onclick="switch_status(this,{{ $course['id'] }})">                       
+                    @if ( in_array(41, $permissions) || $permissions[0] == '*')
+                    <td onclick="switch_status(this, $course['id'] )">                       
                         <button class="disable_btn btn btn-secondary" title="Employee is disabled">Disable</button>
                         <button class="active_btn btn btn-success" title="Employee is active">Active</button>
                     </td>
@@ -53,8 +55,8 @@ $permissions = Request::get('admin_permissions');
                             <i class="fa-solid fa-pencil" title="Edit Details"></i>
                         </a>
                         @endif
-                        @if ( $permissions[0] == '*')
-                        <button title="Delete Course" class="btn btn-danger rounded-circle" onclick="delete_course(this,{{ $course['id'] }})">
+                        @if ( in_array(41, $permissions) || $permissions[0] == '*')
+                        <button title="Delete Course" class="btn btn-danger rounded-circle" onclick="delete_course(this, $course['id'])">
                             <i class="fa-solid fa-trash-can"></i>
                         </button>
                         @endif

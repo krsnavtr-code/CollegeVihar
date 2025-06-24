@@ -2,15 +2,28 @@
 $permissions = Request::get('admin_permissions');
 @endphp
 @extends('admin.components.layout')
+
+@push('styles')
+<style>
+    .table-sm-custom td,
+    .table-sm-custom th {
+        padding: 0.3rem 0.5rem; /* chhoti padding for compact look */
+        font-size: 0.50rem; /* optional: chhoti font size */
+    }
+</style>
+@endpush
+
 @section('main')
-<!-- http://localhost:8000/admin/course/university/5 -->
 <main>
-    <h2 class="page_title">{{ $course['course_name'] }} ({{ $course['course_short_name'] }})</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h5 class="page_title">View Course Universityes</h5>
+        <h6>Course Name: <b>{{ $course['course_name'] }} ({{ $course['course_short_name'] }})</b></h6>
+    </div>
     <div class="panel">
-        <table class="table">
+        <table class="table table-sm-custom table-bordered table-responsive table-hover table-striped align-middle">
             <thead>
-                <tr>
-                    <th>Sr.No.</th>
+                <tr style="font-size: 0.7rem;">
+                    <th width="60" class="text-center">#</th>
                     <th>University Name</th>
                     <th>Course Fee</th>
                     @if ($permissions && (in_array(1, $permissions) || $permissions[0] == '*'))
@@ -19,14 +32,14 @@ $permissions = Request::get('admin_permissions');
                     <th>Action</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody style="font-size: 0.7rem;">
                 @foreach ($universities as $id => $university)
                 <tr @class([ 'disable'=> !(
                     $university['univ_course_status'] &&
                     $university['university']['univ_status']
                     ),
                     ])>
-                    <td>{{ $id + 1 }}</td>
+                    <td>{{ $universities->firstItem() + $loop->index }}</td>
                     <td title="{{ $university['university']['univ_name'] }}">
                         {{ $university['university']['univ_name'] }}
                     </td>
@@ -35,11 +48,11 @@ $permissions = Request::get('admin_permissions');
                     <td>{{ $university['univ_course_commision'] }}</td>
                     @endif
                     <td>
-                        <button class="btn btn-light rounded-circle" title="Edit Details" onclick="edit({{ $university['id'] }})">
+                        <a href="{{ route('university.course.edit', $university['id']) }}" class="btn btn-light rounded-circle" title="Edit Details">
                             <i class="fa-solid fa-pencil"></i>
-                        </button>
+                        </a>
                         @if (in_array(3, $permissions) || in_array(15, $permissions) || $permissions[0] == '*')
-                        <button class="btn btn-danger rounded-circle" title="Delete Course" onclick="delete_course(this,{{ $university['id'] }})">
+                        <button class="btn btn-danger rounded-circle" title="Delete Course" onclick="delete_course(this, $university['id'] )">
                             <i class="fa-solid fa-trash-can"></i>
                         </button>
                         @endif
@@ -74,6 +87,6 @@ $permissions = Request::get('admin_permissions');
             }
         })
     }
-</script>
+    </script>
 @endpush
 @endsection
