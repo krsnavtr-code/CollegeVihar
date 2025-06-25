@@ -1,5 +1,5 @@
 @extends('admin.components.layout')
-
+@section('title', 'Add University Details - CV Admin')
 
 <style>
     body {

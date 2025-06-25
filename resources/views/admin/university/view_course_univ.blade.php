@@ -2,6 +2,7 @@
 $permissions = Request::get('admin_permissions');
 @endphp
 @extends('admin.components.layout')
+@section('title', 'View Course Universityes - CV Admin')
 
 @push('styles')
 <style>

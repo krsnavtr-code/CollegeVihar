@@ -1,4 +1,5 @@
 @extends('admin.components.layout')
+@section('title', 'Send Bulk Emails - CV Admin')
 
 @section('main')
 <div class="container mt-4">

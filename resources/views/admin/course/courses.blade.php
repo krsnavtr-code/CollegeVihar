@@ -4,6 +4,8 @@ $permissions = Request::get('admin_permissions');
 
 @extends('admin.components.layout')
 
+@section('title', 'Manage Courses - CV Admin')
+
 @push('styles')
 <style>
     .badge-category {

@@ -25,6 +25,8 @@ $courseCategories = [
 ];
 @endphp
 @extends('admin.components.layout')
+@section('title', 'Edit University - CV Admin')
+
 @section('main')
 <main>
     <!-- http://localhost:8000/admin/university/edit/34 -->

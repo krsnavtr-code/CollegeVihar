@@ -3,6 +3,8 @@
 @endphp
 
 @extends('admin.components.layout')
+@section('title', 'Add University - CV Admin')
+
 @section('main')
     <main>
         @include('admin.components.response')

@@ -46,12 +46,13 @@
 @endpush
 
 @extends('admin.components.layout')
+@section('title', 'Editor - CV Admin')
 
 @section('main')
 <main>
     @include('admin.components.response')
     <div>
-        <h1 class="page_title">Editor</h1>
+        <h1 class="page_title">Editor </h1>
         <p class="page_sub_title">Let's Create a new blog</p>
     </div>
     <form action="{{ url()->current() }}" method="post" enctype="multipart/form-data">

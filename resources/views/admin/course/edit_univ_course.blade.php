@@ -1,4 +1,6 @@
 @extends('admin.components.layout')
+@section('title', 'Edit University Course - CV Admin')
+
 @section('main')
     <main>
         @include('admin.components.response')

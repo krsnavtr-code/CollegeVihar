@@ -1,5 +1,7 @@
 @extends('admin.components.layout')
 
+@section('title', 'Dashboard - CV Admin')
+
 @section('main')
 <main>
     <section class="admin">

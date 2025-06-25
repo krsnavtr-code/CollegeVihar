@@ -2,6 +2,8 @@
 $permissions = Request::get('admin_permissions');
 @endphp
 @extends('admin.components.layout')
+@section('title', 'View University Courses - CV Admin')
+
 @section('main')
 <main>
     <!-- http://127.0.0.1:8000/admin/university/courses/34 -->

@@ -3,6 +3,8 @@ $permissions = Request::get('admin_permissions');
 @endphp
 
 @extends('admin.components.layout')
+@section('title', 'View University - CV Admin')
+
 @section('main')
 <main>
 

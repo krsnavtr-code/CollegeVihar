@@ -1,4 +1,7 @@
 @extends('admin.components.layout')
+
+@section('title', 'Manage Blogs - CV Admin')
+
 @push('css')
 <style>
     .clamp-2 {
