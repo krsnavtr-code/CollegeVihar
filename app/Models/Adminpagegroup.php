@@ -31,7 +31,8 @@ class Adminpagegroup extends Model
 
 	protected $fillable = [
 		'group_title',
-		'group_index'
+		'group_index',
+		'icon'
 	];
 
 	public function adminpages()

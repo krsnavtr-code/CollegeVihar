@@ -16,6 +16,39 @@
 
 
     <style>
+        /* Custom Scrollbar Styles */
+        #mainSidebarMenu,
+        #mainSidebarMenu > ul.nav {
+            scrollbar-width: thin !important;
+            scrollbar-color: rgba(255, 255, 255, 0.3) transparent !important;
+        }
+        
+        /* For Webkit browsers */
+        #mainSidebarMenu::-webkit-scrollbar,
+        #mainSidebarMenu > ul.nav::-webkit-scrollbar {
+            width: 6px !important;
+            height: 6px !important;
+        }
+        
+        #mainSidebarMenu::-webkit-scrollbar-track,
+        #mainSidebarMenu > ul.nav::-webkit-scrollbar-track {
+            background: transparent !important;
+            margin: 8px 0 !important;
+        }
+        
+        #mainSidebarMenu::-webkit-scrollbar-thumb,
+        #mainSidebarMenu > ul.nav::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.3) !important;
+            border-radius: 10px !important;
+            border: 2px solid transparent !important;
+            background-clip: padding-box !important;
+        }
+        
+        #mainSidebarMenu::-webkit-scrollbar-thumb:hover,
+        #mainSidebarMenu > ul.nav::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(255, 255, 255, 0.5) !important;
+        }
+
         /* ===== Base Styles ===== */
         :root {
             --sidebar-width: 250px;
