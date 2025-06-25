@@ -1,6 +1,5 @@
 <?php
 
-
 use App\Http\Controllers\backend\UtilsController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\CityController;
@@ -346,10 +345,68 @@ Route::get("/university", function () {
     return view("user.universities");
 });
 
-Route::get("/university/{university}", function (Request $request) {
-    $data = University::where('univ_slug', $request->raw_meta['id'])->with('courses')->get()->toArray();
-    return view("user.university", ["university" => $data[0]]);
-});
+Route::get("/university/{identifier}", function ($identifier) {
+    try {
+        // First try to find by ID
+        if (is_numeric($identifier)) {
+            $university = University::find($identifier);
+        }
+        
+        // If not found by ID, try to find by name
+        if (!isset($university) || !$university) {
+            $name = str_replace('-', ' ', $identifier);
+            $university = University::where('univ_name', 'like', '%' . $name . '%')
+                ->orWhere('univ_slug', $identifier)
+                ->first();
+        }
+        
+        if (!$university) {
+            throw new \Illuminate\Database\Eloquent\ModelNotFoundException('University not found');
+        }
+        
+        // Load relationships
+        $university->load('courses');
+        
+        // Convert description to array of paragraphs
+        $desc = !empty($university->univ_description) ? 
+            array_filter(explode("\n\n", $university->univ_description)) : 
+            ['No description available.'];
+        
+        // Convert facts to array
+        $facts = !empty($university->univ_facts) ? 
+            array_filter(explode("\n", $university->univ_facts)) : 
+            ['No facts available.'];
+        
+        // Prepare the university data
+        $universityData = $university->toArray();
+        
+        // Ensure courses is an array
+        if (isset($universityData['courses']) && is_object($universityData['courses'])) {
+            $universityData['courses'] = $university->courses->toArray();
+        } elseif (!isset($universityData['courses'])) {
+            $universityData['courses'] = [];
+        }
+        
+        // Get the URL-friendly name for the university
+        $urlName = strtolower(str_replace(' ', '-', $university->univ_name));
+        $urlName = preg_replace('/[^a-z0-9\-]/', '', $urlName);
+        
+        // If the current URL doesn't match the clean URL, redirect to the clean URL
+        if ($urlName !== $identifier) {
+            return redirect("/university/" . $urlName, 301);
+        }
+        
+        return view("user.university", [
+            "university" => $universityData,
+            "desc" => $desc,
+            "facts" => $facts
+        ]);
+        
+    } catch (\Exception $e) {
+        \Illuminate\Support\Facades\Log::error('University page error: ' . $e->getMessage());
+        abort(404, 'University not found');
+    }
+})->name('university.show');
 
 Route::get("/university/raw/{univ_name}", function ($univ_name) {
     // Query the database to retrieve data based on the provided univ_name

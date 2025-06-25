@@ -10,7 +10,14 @@ class University extends Component
     private $univ;
     public function __construct($univ)
     {
-        $univ['state_name'] = State::where('id', $univ['univ_state'])->get()->first()->toArray()['state_name'];
+        $stateName = 'N/A';
+        if (!empty($univ['univ_state'])) {
+            $state = State::where('id', $univ['univ_state'])->first();
+            if ($state) {
+                $stateName = $state->state_name;
+            }
+        }
+        $univ['state_name'] = $stateName;
         $this->univ = $univ;
     }
     public function render()

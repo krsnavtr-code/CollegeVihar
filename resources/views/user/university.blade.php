@@ -65,20 +65,29 @@ p {
             <div class="row">
                 <article class="p-2">
                     <h2>About {{ $university['univ_name'] }}</h2>
-                    @foreach ($desc as $p)
-                    <p class="p-2">{{ $p }}</p>
-                    @endforeach
+                    @if(!empty($desc) && is_array($desc))
+                        @foreach ($desc as $p)
+                        <p class="p-2">{{ $p }}</p>
+                        @endforeach
+                    @else
+                        <p class="p-2">No description available.</p>
+                    @endif
                 </article>
                 <article class="p-2">
                     <h2>{{ $university['univ_name'] }} Facts</h2>
+                    @if(!empty($facts) && is_array($facts))
                     <ul>
                         @foreach ($facts as $li)
                         <li>{{$li}}</li>
                         @endforeach
                     </ul>
+                    @else
+                        <p>No facts available.</p>
+                    @endif
                 </article>
                 <article>
                     <h2>{{ $university['univ_name'] }} Advantages</h2>
+                    @if(!empty($advantage) && is_array($advantage) && isset($advantage['data']) && is_array($advantage['data']))
                     <div class="row">
                         @foreach ($advantage['data'] as $d)
                         <div class="col-md-3 col-6 p-2"> <!-- Reduced column size -->
@@ -92,6 +101,9 @@ p {
                         </div>
                         @endforeach
                     </div>
+                    @else
+                        <p>No advantages available.</p>
+                    @endif
                 </article>
                 <article class="p-2">
                     <h2>Available Courses</h2>

@@ -397,7 +397,7 @@ class UniversityController extends Controller
         try {
             // Find the state by name or ID
             $stateModel = \App\Models\State::with('country')
-                ->where('name', $state)
+                ->where('state_name', $state)
                 ->orWhere('id', $state)
                 ->firstOrFail();
             
@@ -405,20 +405,21 @@ class UniversityController extends Controller
             $universities = University::with([
                     'country', 
                     'state', 
-                    'city', 
+                    'city',
+                    'metadata',
                     'courses' => function($query) {
-                        $query->select('id', 'course_name', 'course_type', 'course_duration', 'course_fee');
+                        $query->select('courses.id', 'courses.course_name', 'courses.course_type', 'courses.course_duration', 'courses.course_freights as course_fee');
                     }
                 ])
                 ->where('state_id', $stateModel->id)
                 ->where('univ_status', 1) // Only active universities
                 ->withCount('courses')
                 ->orderBy('univ_name')
-                ->get(['id', 'univ_name', 'univ_slug', 'univ_logo', 'state_id', 'univ_image', 'univ_type']);
+                ->get(['universities.id', 'universities.univ_name', 'universities.univ_slug', 'universities.univ_logo', 'universities.state_id', 'universities.univ_image', 'universities.univ_type', 'universities.univ_address']);
                 
             // Get all countries, states, and cities for filters
             $countries = \App\Models\Country::orderBy('name')->get(['id', 'name']);
-            $states = \App\Models\State::orderBy('name')->get(['id', 'name', 'country_id']);
+            $states = \App\Models\State::orderBy('state_name')->get(['id', 'state_name as name', 'country_id']);
             $cities = \App\Models\City::where('state_id', $stateModel->id)
                 ->orderBy('name')
                 ->get(['id', 'name', 'state_id']);

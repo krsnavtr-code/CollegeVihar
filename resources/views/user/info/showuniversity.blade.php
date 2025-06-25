@@ -157,27 +157,32 @@ $current_state = $state->name ?? Request::segment(2);
                                 <h3 class="blue">We have found {{ $university_count }} universities for you in {{ ucfirst($current_state) }} State</h3>
                                 <div id="universityList">
                                     @foreach ($matched_state['universities'] as $univ)
+                                        @php
+                                            $courses = $univ['courses'] ?? [];
+                                            $courseNames = array_column($courses, 'course_name');
+                                            $metadata = $univ['metadata'] ?? [];
+                                        @endphp
                                         <article class="card on-card mb-2 filter-card"
-                                            data-courses="{{ implode(',', collect($univ['courses'])->pluck('course_name')->toArray()) }}"
+                                            data-courses="{{ !empty($courseNames) ? implode(',', $courseNames) : '' }}"
                                             data-category="{{ $univ['univ_category'] ?? '' }}"
                                             data-course-type="{{ $univ['course_type'] ?? '' }}"
                                             data-name="{{ strtolower($univ['univ_name']) }}">
                                             <div class="row">
                                                 <div class="col-md-4">
                                                     <img class="img-fluid rounded-1"
-                                                        src="{{ asset('images/university/campus/' . $univ['univ_image']) }}"
-                                                        alt="{{ $univ['univ_name'] }}">
+                                                        src="{{ asset('images/university/campus/' . ($univ['univ_image'] ?? '')) }}"
+                                                        alt="{{ $univ['univ_name'] ?? '' }}">
                                                 </div>
                                                 <div class="col-md-8">
                                                     <div class="text-box">
                                                         <div class="between">
                                                             <div>
                                                                 <h6>
-                                                                    <a class="blue" href="/{{ $univ['metadata']['url_slug'] }}">
-                                                                        {{ $univ['univ_name'] }}
+                                                                    <a class="blue" href="/{{ $metadata['url_slug'] ?? '#' }}">
+                                                                        {{ $univ['univ_name'] ?? '' }}
                                                                     </a>
                                                                 </h6>
-                                                                <p><i class="fa-solid fa-location-dot"></i> {{ $univ['univ_address'] }}</p>
+                                                                <p><i class="fa-solid fa-location-dot"></i> {{ $univ['univ_address'] ?? '' }}</p>
                                                             </div>
                                                             <div class="flex">
                                                                 <button class="btn btn-outline-secondary rounded-pill com-btn">
@@ -601,7 +606,11 @@ $current_state = $state->name ?? Request::segment(2);
                         universityList.innerHTML = '';
                         
                         if (data.success && data.universities && data.universities.length > 0) {
-                            data.universities.forEach(univ => {
+                            data.universities.forEach((univ, index) => {
+                                // Debug: Log the first university object
+                                if (index === 0) {
+                                    console.log('University object:', JSON.stringify(univ, null, 2));
+                                }
                                 const universityCard = document.createElement('article');
                                 universityCard.className = 'card mb-4';
                                 
@@ -656,7 +665,7 @@ $current_state = $state->name ?? Request::segment(2);
                                             <div class="card-body h-100 d-flex flex-column">
                                                 <div>
                                                     <h5 class="card-title mb-1">
-                                                        <a href="/university/${univ.id}" class="text-decoration-none text-dark">
+                                                        <a href="/university/${univ.univ_name ? univ.univ_name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '') : univ.id}" class="text-decoration-none text-dark">
                                                             ${univ.univ_name || 'University Name Not Available'}
                                                         </a>
                                                     </h5>
@@ -686,7 +695,7 @@ $current_state = $state->name ?? Request::segment(2);
                                                             ${univ.courses_count || 0} ${univ.courses_count === 1 ? 'Course' : 'Courses'}
                                                         </span>
                                                     </div>
-                                                    <a href="/university/${univ.id}" class="btn btn-sm btn-primary">
+                                                    <a href="/university/${univ.univ_name ? univ.univ_name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '') : univ.id}" class="btn btn-sm btn-primary">
                                                         View Details <i class="fas fa-arrow-right ms-1"></i>
                                                     </a>
                                                 </div>
@@ -773,6 +782,40 @@ $current_state = $state->name ?? Request::segment(2);
                 setTimeout(() => {
                     filterForm.dispatchEvent(new Event('submit'));
                 }, 500);
+            }
+        });
+
+        // Handle university detail links
+        document.addEventListener('click', function(e) {
+            const target = e.target.closest('.view-details');
+            if (target) {
+                e.preventDefault();
+                const univId = target.getAttribute('data-univ-id');
+                let univSlug = target.getAttribute('data-univ-slug');
+                
+                // If no slug is provided, use the ID as a fallback
+                if (!univSlug || univSlug === '') {
+                    univSlug = univId;
+                }
+                
+                // Create a clean URL-friendly slug
+                const cleanSlug = univSlug.toString()
+                    .toLowerCase()
+                    .replace(/\s+/g, '-')     // Replace spaces with -
+                    .replace(/[^\w\-]+/g, '') // Remove all non-word chars
+                    .replace(/\-\-+/g, '-')    // Replace multiple - with single -
+                    .replace(/^-+/, '')        // Trim - from start of text
+                    .replace(/-+$/, '');        // Trim - from end of text
+                
+                console.log('Navigating to university:', {
+                    id: univId,
+                    originalSlug: univSlug,
+                    cleanSlug: cleanSlug,
+                    url: `/university/${cleanSlug}`
+                });
+                
+                // Navigate to the university page
+                window.location.href = `/university/${cleanSlug}`;
             }
         });
       </script>

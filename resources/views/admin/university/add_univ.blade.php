@@ -113,7 +113,7 @@
                         @enderror
                     </div>
                 </div>
-                <div class="field_group">
+                <!-- <div class="field_group">
                     <div class="field">
                         <label for="univ_address">University Address</label>
                         <textarea name="univ_address" id="univ_address" placeholder="Full address" required>{{ old('univ_address') }}</textarea>
@@ -121,7 +121,7 @@
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
-                </div>
+                </div> -->
                 <div class="field_group">
                     <div class="field cflex">
                         <label for="address">University Complete Address</label>
