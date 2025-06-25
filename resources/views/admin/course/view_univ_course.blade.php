@@ -1,113 +1,126 @@
 @php
 $permissions = Request::get('admin_permissions');
 @endphp
+
 @extends('admin.components.layout')
 @section('title', 'View University Courses - CV Admin')
 
 @section('main')
 <main>
-    <!-- http://127.0.0.1:8000/admin/university/courses/34 -->
+    <h5 class="page_title mb-3">View University Courses</h5>
+    <h6 class="text-center mb-4">Here are all courses of <b class="text-primary">{{ $university['univ_name'] }}</b></h6>
 
-    <h2 class="page_title">{{ $university['univ_name'] }}</h2>
-    <p class="mb-4">{{ $university['univ_address'] }}</p>
-    
-    <div class="overflow-auto text-nowrap">
-        <table class="table">
-            <thead>
+    <div class="table-responsive shadow-sm rounded">
+        <table class="table table-sm table-bordered table-striped table-hover align-middle text-nowrap">
+            <thead class="table-light">
                 <tr>
-                    <th>Sr.No.</th>
+                    <th width="60" class="text-center">Sr.No.</th>
                     <th>Course Name</th>
-                    <th>Course Fee</th>
-                    @if ($permissions && (in_array(1, $permissions) || $permissions[0] == '*')) <th>Course Commision</th>  @endif
-                    @if ( $permissions[0] == '*') <th>Status</th> @endif
-                    <th>Action</th>
+                    <th>Fee (₹)</th>
+                    @if ($permissions && (in_array(1, $permissions) || $permissions[0] == '*'))
+                        <th>Commission (₹)</th>
+                    @endif
+                    @if (in_array(16, $permissions) || $permissions[0] == '*')
+                        <th>Status</th>
+                    @endif
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($courses as $id => $course)
-                <tr @class(['disable'=> !$course['univ_course_status']])>
-                    <td>
-                        {{  $id + 1 }}
+                <tr @class(['table-danger' => !$course['univ_course_status'], 'table-success' => $course['univ_course_detail_added']])>
+                    <td class="text-center">
+                        {{ $id + 1 }}
                         @if (!$course['univ_course_detail_added'])
-                        <i class="fa-solid fa-triangle-exclamation text-warning"
-                            title="Course details are not uploaded"></i>
+                            <span class="badge bg-warning" title="Details not uploaded">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </span>
                         @endif
                         @if (!$course['univ_course_status'])
-                        <i class="fa-solid fa-circle-xmark text-danger"
-                            title="Employee is not activated"></i>
+                            <span class="badge bg-danger" title="Course is inactive">
+                                <i class="fa-solid fa-circle-xmark"></i>
+                            </span>
                         @endif
                     </td>
                     <td title="{{ $course['course']['course_name'] ?? 'N/A' }}">
                         @if(isset($course['course']))
-                            {{ ($course['course']['course_short_name'] ?? 'N/A') . ' (' . ($course['course']['course_type'] ?? 'N/A') . ')' }}
+                            {{ $course['course']['course_short_name'] ?? 'N/A' }} ({{ $course['course']['course_type'] ?? 'N/A' }})
                         @else
-                            Course not found
+                            <span class="text-danger">Course not found</span>
                         @endif
                     </td>
-                    <td>{{ $course['univ_course_fee'] }}</td>
+                    <td>₹{{ number_format($course['univ_course_fee']) }}</td>
+                    
                     @if ($permissions && (in_array(1, $permissions) || $permissions[0] == '*'))
-                    <td>{{ $course['univ_course_commision'] }}
-                    </td>
+                    <td>₹{{ number_format($course['univ_course_commision']) }}</td>
                     @endif
-                    @if ( in_array(41, $permissions) || $permissions[0] == '*')
-                    <td onclick="switch_status(this, $course['id'] )">                       
-                        <button class="disable_btn btn btn-secondary" title="Employee is disabled">Disable</button>
-                        <button class="active_btn btn btn-success" title="Employee is active">Active</button>
-                    </td>
-                    @endif
+
+                    @if (in_array(16, $permissions) || $permissions[0] == '*')
                     <td>
-                        @if (in_array(40, $permissions) || $permissions[0] == '*')
-                        <a href="/admin/university/courses/edit/{{ $course['id'] }}" class="btn btn-light rounded-circle">
-                            <i class="fa-solid fa-pencil" title="Edit Details"></i>
-                        </a>
-                        @endif
-                        @if ( in_array(41, $permissions) || $permissions[0] == '*')
-                        <button title="Delete Course" class="btn btn-danger rounded-circle" onclick="delete_course(this, $course['id'])">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
-                        @endif
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox"
+                                onclick="switch_status(this, $course['id'])"
+                                {{ $course['univ_course_status'] ? 'checked' : '' }}>
+                            <label class="form-check-label rounded px-2 ms-2">{{ $course['univ_course_status'] ? 'Active' : 'Inactive' }}</label>
+                        </div>
+                    </td>
+                    @endif
+
+                    <td>
+                        <div class="d-flex gap-2 flex-wrap">
+                            @if (in_array(40, $permissions) || $permissions[0] == '*')
+                            <a href="/admin/university/courses/edit/{{ $course['id'] }}" class="btn btn-light btn-sm" title="Edit">
+                                <i class="fa-solid fa-pencil"></i>
+                            </a>
+                            @endif
+
+                            @if (in_array(41, $permissions) || $permissions[0] == '*')
+                            <button title="Delete Course" class="btn btn-danger btn-sm"
+                                onclick="delete_course(this, $course['id'])">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                            @endif
+                        </div>
                     </td>
                 </tr>
                 @endforeach
             </tbody>
         </table>
     </div>
-    {{-- pagination --}}
-    @if(count($courses) >30 )
+
+    {{-- Pagination --}}
+    @if(count($courses) > 30)
     <x-pagination :paginator="$courses" />
     @endif
 </main>
+
 @push('script')
 <script>
     function switch_status(node, courseId) {
-        ajax({
-            url: "/api/course/status/" + courseId,
-            success: (res) => {
-                res = JSON.parse(res);
+        fetch(`/api/course/status/${courseId}`)
+            .then(response => response.json())
+            .then(res => {
                 if (res.success) {
-                    node.closest("tr").toggleClass("disable");
+                    node.closest("tr").classList.toggle("table-danger");
                 }
-            }
-        });
+            });
     }
 
     function delete_course(node, course_id) {
-        if (!confirm("Are You sure to delete?")) return;
-        ajax({
-            url: "/api/univCourse/delete/" + course_id,
-            success: (res) => {
-                res = JSON.parse(res);
-                if (res['success']) {
+        if (!confirm("Are you sure you want to delete this course?")) return;
+        fetch(`/api/univCourse/delete/${course_id}`)
+            .then(response => response.json())
+            .then(res => {
+                if (res.success) {
                     node.closest("tr").remove();
-                    alert("!!! Deleted !!!");
+                    alert("Deleted successfully!");
                 } else {
                     alert("Server Error");
                 }
-            },
-            error: () => {
+            })
+            .catch(() => {
                 alert("Item cannot be deleted");
-            }
-        })
+            });
     }
 </script>
 @endpush

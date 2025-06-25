@@ -157,7 +157,7 @@
             <h6 class="page_title text-center">Now Adding <b class="text-primary">{{ $university['univ_name'] }}</b> Details</h6>
             @csrf
             <section class="panel">
-                <h3 class="section_title">Course URL slug</h3>
+                <h3 class="section_title">University URL slug</h3>
                 <div class="field with_data aic">
                     <h6>https://collegevihar.com/university/</h6>
                     <input type="hidden" name="univ_id" value="{{ $university['id'] }}">
@@ -179,23 +179,23 @@
                     <div class="field">
                         <span>University Campus</span> <br>
                         <label for="c2" class="img_label"><img src="" alt="univ_image" class="img-fluid rounded h-100 w-100 object-fit-cover object-position-center border border-2 border-primary"></label>
-                        <input type="file" onchange="display_pic(this)" name="univ_image" id="c2">
+                        <input type="file" onchange="display_pic(this)" name="univ_image" id="c2"   >
                     </div>
                 </div>
 
             </section>
             <section class="panel">
-                <h3 class="section_title">Description Introduction</h3>
+                <h3 class="section_title">Info: {{ $university['univ_name'] }}</h3>
                 <i class="icon fa-solid fa-plus add_field"
                     data-field='<div class="field cflex"><label for="int__id__">Paragraph __id__</label><textarea oninput="auto_grow(this)" id="int__id__" name="univ_desc[]" placeholder="Write Here..."></textarea></div>'></i>
             </section>
             <section class="panel">
-                <h3 class="section_title">University Facts</h3>
+                <h3 class="section_title">Facts: {{ $university['univ_name'] }}</h3>
                 <i class="icon fa-solid fa-plus add_field"
                     data-field='<div class="field cflex"><label for="over__id__">Paragraph __id__</label><textarea oninput="auto_grow(this)" id="over__id__" name="univ_facts[]" placeholder="Write Here..."></textarea></div>'></i>
             </section>
             <section class="panel">
-                <h3>University Advantages</h3>
+                <h3 class="section_title">Advantages: {{ $university['univ_name'] }}</h3>
                 <div class="field cflex">
                     <label for="cor">About University Advantage (optional)</label>
                     <input type="text" name="univ_adv[about]" placeholder="University Advantage About">
@@ -204,12 +204,12 @@
                     data-field='<div class="field_group"><div class="field aie" style="width:auto;"><label for="advl__id__" class="logo"><img src="" alt="advl__id__"></label><input type="file" id="advl__id__" name="univ_adv[data][__id__][logo]" placeholder="University Advantage Logo" onchange="display_pic(this)"></div><div class="field cflex"><label for="advt__id__">Advantage Title</label><input type="text" id="advt__id__" name="univ_adv[data][__id__][title]" placeholder="University Advantage"></div><div class="field cflex"><label for="advd__id__">Advantage Description</label><input type="text" id="advd__id__" name="univ_adv[data][__id__][description] "placeholder="University Advantage Description"></div></div>'></i>
             </section>
             <section class="panel">
-                <h3 class="section_title">Industry-Ready Programs for Enhanced Career Readiness</h3>
+                <h3 class="section_title">Industry-Ready Programs for Enhanced Career Readiness: {{ $university['univ_name'] }}</h3>
                 <i class="icon fa-solid fa-plus add_field"
                     data-field='<div class="field cflex"><label for="ind__id__">Industry __id__</label><input id="ind__id__" name="industry[data][]" placeholder="Industry Point" /></div>'></i>
             </section>
             <section class="panel">
-                <h3 class="section_title">Carrier Guidance</h3>
+                <h3 class="section_title">Carrier Guidance: {{ $university['univ_name'] }}</h3>
                 <div class="field cflex">
                     <label for="car">About Carrier Guidance (optional)</label>
                     <input type="text" id="car" name="carrier[about]" placeholder="About Carrier">
@@ -218,7 +218,7 @@
                     data-field='<div class="field cflex"><label for="car__id__">carrier __id__</label><input type="text" id="car__id__" name="carrier[data][]" placeholder="Carrier">'></i>
             </section>
             <section class="panel">
-                <h3 class="section_title">Seo Work</h3>
+                <h3 class="section_title">Seo Work: {{ $university['univ_name'] }}</h3>
                 <div class="field cflex">
                     <label for="meta_h1">Text to display in H1 tag</label>
                     <input type="text" id="meta_h1" name="meta_h1" placeholder="meta_h1">

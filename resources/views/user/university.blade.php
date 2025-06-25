@@ -53,6 +53,13 @@ p {
     font-size: 15px; /* Smaller description */
 }
 
+.univ_titles {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--blue);
+}
+
 
 </style>
 @endpush
@@ -64,7 +71,7 @@ p {
         <div class="container">
             <div class="row">
                 <article class="p-2">
-                    <h2>About {{ $university['univ_name'] }}</h2>
+                    <p class="univ_titles">Info</p>
                     @if(!empty($desc) && is_array($desc))
                         @foreach ($desc as $p)
                         <p class="p-2">{{ $p }}</p>
@@ -74,7 +81,7 @@ p {
                     @endif
                 </article>
                 <article class="p-2">
-                    <h2>{{ $university['univ_name'] }} Facts</h2>
+                    <p class="univ_titles">Facts</p>
                     @if(!empty($facts) && is_array($facts))
                     <ul>
                         @foreach ($facts as $li)
@@ -86,7 +93,7 @@ p {
                     @endif
                 </article>
                 <article>
-                    <h2>{{ $university['univ_name'] }} Advantages</h2>
+                    <p class="univ_titles">Advantages</p>
                     @if(!empty($advantage) && is_array($advantage) && isset($advantage['data']) && is_array($advantage['data']))
                     <div class="row">
                         @foreach ($advantage['data'] as $d)
@@ -106,7 +113,7 @@ p {
                     @endif
                 </article>
                 <article class="p-2">
-                    <h2>Available Courses</h2>
+                    <p class="univ_titles">Available Courses</p>
                     @foreach ($university['courses'] as $course)
                     @php
                     $metadata = DB::table('universitycourses')
@@ -122,10 +129,10 @@ p {
                     @endforeach
                 </article>
                 <article class="p-2">
-                    <h2 class="blue">Boost Your Future</h2>
+                    <p class="univ_titles">Boost Your Future</p>
                     <p>Embark on Your Path to Success: Seize the Golden Opportunity Awaiting You! Take a Moment to Fill Out
                         Our Thorough Query Form, and You'll Be Initiating the First Thrilling Steps Towards a Brilliant
-                        Future Filled with Remarkable Achievements and Lifelong Growth.</p>
+                        Future Filled with Remarkable Achievements and Lifelong Growth.</p>
 
                 </article>
             </div>
@@ -136,7 +143,7 @@ p {
             <div class="row">
                 <div class="col-md-6 p-2">
                     <article>
-                        <h2>Admission Process</h2>
+                        <p class="univ_titles">Admission Process</p>
                         <p>There is an online admissions process available at Online {{ $university['univ_name'] }}, therefore there is
                             no need to physically visit the campus to apply for admission. There is no entrance exam required to apply for
                             admission to {{ $university['univ_name'] }} Online because admissions are made directly. The following
@@ -196,7 +203,7 @@ p {
     <section class="Programs p-2">
         <div class="container">
             <div class="row">
-                <h2>Industry-Ready Programs for Enhanced Career Readiness</h2>
+                <p class="univ_titles">Industry-Ready Programs for Enhanced Career Readiness</p>
                 <ul class="list-unstyled row">
                     @foreach (['Communication', 'Self-development & Confidence building', 'Critical thinking & Problem solving', 'Leadership', 'Professionalism', 'Teamwork & Collaboration', 'Cultural fluency', 'Technology'] as $i => $li)
                     <li class="p-2 col-6">
@@ -210,7 +217,7 @@ p {
     <section class="Programs p-2">
         <div class="container">
             <div class="row">
-                <h2>Expert Career Guidance and Placement Services</h2>
+                <p class="univ_titles">Expert Career Guidance and Placement Services</p>
                 <p>Our goal is to increase the employability quotient of students who are eager to pursue careers after
                     completing their programs. We maintain a wide network with the top businesses in India, including both
                     well-established and start-up businesses, to assist our students. Our goal is to match alumni of our
@@ -229,7 +236,7 @@ p {
     <section class="Placement p-2">
         <div class="container">
             <div class="row">
-                <h2>{{ $university['univ_name'] }} Placement Partners</h2>
+                <p class="univ_titles">Placement Partners</p>
                 @php
                 $cards = [['/images/uni-page/placement.png', '1000 + Hiring partners'], ['/images/uni-page/experience.png', 'Enhanced Hands-on Experience'], ['/images/uni-page/hiring.png', 'E-Hire Portal for Exclusive Job Opportunities']];
                 @endphp
@@ -248,32 +255,3 @@ p {
     </section>
 </main>
 @endsection
-
-@push('script')
-<script>
-// document.addEventListener('DOMContentLoaded', () => {
-//     linkifyCollegeVihar();
-//     const observer = new MutationObserver(linkifyCollegeVihar);
-//     observer.observe(document.body, { childList: true, subtree: true });
-// });
-
-// function linkifyCollegeVihar() {
-//     const keyword = /(\bcollegevihar\b)/gi;
-//     const url = 'https://collegevihar.com';
-
-//     const elements = document.querySelectorAll('p, h2, h3, h4, h5, h6, li, span');
-
-//     elements.forEach(el => {
-//         if (/<a\s[^>]*>/.test(el.innerHTML)) return;
-
-//         if (keyword.test(el.innerHTML)) {
-//             el.innerHTML = el.innerHTML.replace(keyword, (match) => {
-//                 console.log("Found in:", el);
-//                 return `<a href="${url}" target="_blank">${match}</a>`;
-//             });
-//         }
-//     });
-// }
-
-</script>
-@endpush

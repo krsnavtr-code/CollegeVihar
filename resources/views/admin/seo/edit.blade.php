@@ -3,7 +3,8 @@
     <main>
         @include('admin.components.response')
         <form action="/admin/web_pages/edit" method="post" enctype="multipart/form-data">
-            <h2 class="page_title">Edit Meta Data</h2>
+            <h5 class="page_title">Edit Meta Data</h5>
+            <h6 class="section_title text-center">You Can Edit Meta Data Here by Filling the Form, <b class="text-primary">College Vihar</b> will update the meta data in the database</h6>
             @csrf
             <section class="">
                 <h3 class="section_title">URL slug</h3>
@@ -35,7 +36,7 @@
                             value="{{ $metadata['meta_description'] }}">
                     </div>
                 </div>
-                <div class="field">
+                <!-- <div class="field">
                     <label for="meta_key">Meta Keywords of Page (key1, key2, key3)</label>
                     <input type="text" id="meta_key" name="meta_keywords" placeholder="meta_keywords"
                         value="{{ $metadata['meta_keywords'] }}">
@@ -43,12 +44,11 @@
                 <div class="field">
                     <label for="om">If any (Write complete tags)</label>
                     <textarea id="om" name="other_meta_tags" placeholder="Write Here...">{{ $metadata['other_meta_tags'] }}</textarea>
-                </div>
+                </div> -->
             </section>
             <div class="text-end p-4">
-            <button type="submit" class="btn btn-primary btn-lg">Update Meta Data</button>
-        </div>
-            <button type="submit"></button>
+                <button type="submit" class="btn btn-primary btn-lg">Update Meta Data</button>
+            </div>
         </form>
     </main>
     @push('script')

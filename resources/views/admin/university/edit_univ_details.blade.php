@@ -168,7 +168,7 @@
         <h6 class="page_title text-center">Now Editing <b class="text-primary">{{ $university['univ_name'] }}</b> Details</h6>
         @csrf
         <section class="panel">
-            <h3 class="section_title">Course URL slug</h3>
+            <h3 class="section_title">University URL slug</h3>
             <div class="field with_data aic">
                 <h6>https://collegevihar.com/university/</h6>
                 <input type="hidden" name="univ_id" value="{{ $university['id'] }}">
@@ -179,7 +179,7 @@
             </div>
         </section>
         <section class="panel">
-            <h3 class="section_title">University Details</h3>
+            <h3 class="section_title">University Details: {{ $university['univ_name'] }}</h3>
             <div class="field_group">
                 <div class="field">
                     <label for="c1" class="img_label">
@@ -208,7 +208,7 @@
         </section>
 
         <section class="panel">
-            <h3 class="section_title">Description Introduction</h3>
+            <h3 class="section_title">Info: {{ $university['univ_name'] }}</h3>
             @php
             $desc = json_decode($university['univ_description'], true);
             @endphp
@@ -229,7 +229,7 @@
             </button>
         </section>
         <section class="panel">
-            <h3 class="section_title">University Facts</h3>
+            <h3 class="section_title">Facts: {{ $university['univ_name'] }}</h3>
             @php
             $desc = json_decode($university['univ_facts'], true);
             @endphp
@@ -250,7 +250,7 @@
             </button>
         </section>
         <section class="panel">
-            <h3>University Advantages</h3>
+            <h3 class="section_title">Advantages: {{ $university['univ_name'] }}</h3>
             @php
             $desc = json_decode($university['univ_advantage'], true);
             @endphp
@@ -294,7 +294,7 @@
             </button>
         </section>
         <section class="panel">
-            <h3 class="section_title">Industry-Ready Programs for Enhanced Career Readiness</h3>
+            <h3 class="section_title">Industry-Ready Programs for Enhanced Career Readiness: {{ $university['univ_name'] }}</h3>
             @php
             $desc = json_decode($university['univ_industry'], true);
             @endphp
@@ -320,7 +320,7 @@
             </button>
         </section>
         <section class="panel">
-            <h3 class="section_title">Carrier Guidance</h3>
+            <h3 class="section_title">Carrier Guidance: {{ $university['univ_name'] }}</h3>
             @php
             $desc = json_decode($university['univ_carrier'], true);
             $i = -1;

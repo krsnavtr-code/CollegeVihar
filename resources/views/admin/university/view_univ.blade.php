@@ -3,12 +3,12 @@ $permissions = Request::get('admin_permissions');
 @endphp
 
 @extends('admin.components.layout')
-@section('title', 'View University - CV Admin')
+@section('title', 'View Universities - CV Admin')
 
 @section('main')
 <main>
-    <h2 class="page_title mb-4">View University</h2>
-
+    <h5 class="page_title mb-4">View all Universities</h5>
+    <h6 class="section_title text-center">Here are all universities added in the <b class="text-primary">College Vihar</b></h6>
     <!-- Search -->
     <div class="card shadow-sm mb-4">
         <div class="card-body">

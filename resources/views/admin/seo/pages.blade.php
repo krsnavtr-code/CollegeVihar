@@ -4,7 +4,7 @@ $permissions = Request::get('admin_permissions');
 @extends('admin.components.layout')
 @section('main')
 <main>
-    <h2 class="page_title">View University</h2>
+    <h5 class="page_title">View all Web Pages <span class="badge bg-primary">Total: {{ $com['total'] ?? count($pages) }}</span></h5>
     <form method="GET" action="/admin/web_pages" class="mb-3 d-flex" style="max-width: 800px;">
         <input type="text" name="search" value="{{ request('search') }}" class="form-control me-2" placeholder="Search by page URL">
         <button type="submit" class="btn btn-primary" style="margin: 0.6rem;">Search</button>
@@ -30,6 +30,11 @@ $permissions = Request::get('admin_permissions');
                         <a class="btn btn-primary rounded-circle" href="/admin/web_pages/edit/{{ $page['id'] }}" title="Edit this page">
                             <i class="icon fa-solid fa-edit"></i>
                         </a>
+                        <button class="btn btn-danger rounded-circle delete-page-btn" 
+                                data-page-id="{{ $page['id'] }}" 
+                                title="Delete this page">
+                            <i class="icon fa-solid fa-trash"></i>
+                        </button>
                     </td>
                 </tr>
                 @endforeach
@@ -65,16 +70,41 @@ $permissions = Request::get('admin_permissions');
 </main>
 @push('script')
 <script>
-    function switch_status(node, univId) {
-        ajax({
-            success: (res) => {
-                res = JSON.parse(res);
-                if (res.success) {
-                    node.closest("tr").toggleClass("disable");
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add click event listeners to all delete buttons
+        document.querySelectorAll('.delete-page-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const pageId = this.getAttribute('data-page-id');
+                const button = this;
+                
+                if (confirm('Are you sure you want to delete this page? This action cannot be undone.')) {
+                    const deleteUrl = new URL('{{ url('/admin/web_pages/delete') }}/' + pageId, window.location.origin);
+                    fetch(deleteUrl, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            button.closest('tr').remove();
+                            alert('Page deleted successfully');
+                        } else {
+                            alert('Error deleting page: ' + (data.message || 'Unknown error'));
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while deleting the page');
+                    });
                 }
-            }
+            });
         });
-    }
+    });
 </script>
 @endpush
 @endsection

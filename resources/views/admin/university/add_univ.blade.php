@@ -9,10 +9,8 @@
     <main>
         @include('admin.components.response')
         <form action="/admin/university/add" method="post">
-            <div class="d-flex justify-content-around mb-3">
-                <h5 class="page_title">Add University</h5>
-                <h6 class="section_title text-danger">University Information</h6>
-            </div>
+            <h5 class="page_title">Add University</h5>
+            <h6 class="section_title text-center">You Can Add University Here by Filling the Form, <b class="text-primary">College Vihar</b> will add the university to the database</h6>
             <section class="panel">
                 @csrf
                 @if (session('success'))

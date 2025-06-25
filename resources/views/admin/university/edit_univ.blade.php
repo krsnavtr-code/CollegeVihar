@@ -32,7 +32,8 @@ $courseCategories = [
     <!-- http://localhost:8000/admin/university/edit/34 -->
     @include('admin.components.response')
     <form action="/admin/university/edit" method="post">
-        <h2 class="page_title">Edit University</h2>
+        <h5 class="page_title">Edit University</h5>
+        <h6 class="section_title text-center">You are editing <b class="text-primary">{{ $university['univ_name'] }}</b></h6>
         <section class="panel">
             @csrf
             <input type="hidden" name="univ_id" value="{{ $university['id'] }}">
@@ -122,15 +123,15 @@ $courseCategories = [
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
-            </div>
-            <div class="field_group">
-                <div class="field cflex">
-                    <label for="address">University Complete Address</label>
-                    <input type="text" id="address" placeholder="University Address" name="univ_address" 
-                           value="{{ $university['univ_address'] ?? '' }}" required>
-                    @error('univ_address')
+                <div class="field_group">
+                    <div class="field cflex">
+                        <label for="address">University Complete Address</label>
+                        <input type="text" id="address" placeholder="University Address" name="univ_address" 
+                        value="{{ $university['univ_address'] ?? '' }}" required>
+                        @error('univ_address')
                         <span class="text-danger">{{ $message }}</span>
-                    @enderror
+                        @enderror
+                    </div>
                 </div>
             </div>
         </section>

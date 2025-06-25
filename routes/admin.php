@@ -577,9 +577,10 @@ Route::middleware('ensurePermission')->group(function () {
             
             $pages = $query->paginate(30);
             $pages->appends(request()->query());
+            
+            // Prepare pagination data for the view
             $pagesArray = [
                 'current_page' => $pages->currentPage(),
-                'data' => $pages->items(),
                 'first_page_url' => $pages->url(1),
                 'from' => $pages->firstItem(),
                 'last_page' => $pages->lastPage(),
@@ -594,6 +595,25 @@ Route::middleware('ensurePermission')->group(function () {
             $data = ["pages" => $pages->items(), 'com' => $pagesArray];
             return view('admin.seo.pages', $data);
         });
+        
+        // Delete page route
+        Route::match(['delete'], '/delete/{id}', function ($id) {
+            try {
+                $metadata = \App\Models\Metadata::findOrFail($id);
+                $metadata->delete();
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Page deleted successfully'
+                ]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to delete page: ' . $e->getMessage()
+                ], 500);
+            }
+        })->name('admin.web_pages.delete');
+        
         Route::prefix("/edit")->group(function () {
             Route::get("/{id}", function (Metadata $id) {
                 $data = ["metadata" => $id->toArray()];
