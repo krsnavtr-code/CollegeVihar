@@ -1,43 +1,56 @@
 <?php
 
-/**
- * Created by Reliese Model.
- */
-
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-/**
- * Class State
- * 
- * @property int $id
- * @property string $state_name
- * @property string $state_short
- * 
- * @property Collection|Employee[] $employees
- * @property Collection|University[] $universities
- *
- * @package App\Models
- */
 class State extends Model
 {
-	protected $table = 'states';
-	public $timestamps = false;
+    protected $table = 'states';
+    public $timestamps = true;
 
-	protected $fillable = [
-		'state_name',
-		'state_short'
-	];
+    protected $fillable = [
+        'state_name',
+        'state_short',
+        'country_id',
+        'is_active'
+    ];
 
-	public function employees()
-	{
-		return $this->hasMany(Employee::class, 'emp_state');
-	}
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
 
-	public function universities()
-	{
-		return $this->hasMany(University::class, 'univ_state')->with(['metadata','courses']);
-	}
+    /**
+     * Get the country that owns the state.
+     */
+    public function country(): BelongsTo
+    {
+        return $this->belongsTo(Country::class);
+    }
+
+    /**
+     * Get the cities for the state.
+     */
+    public function cities(): HasMany
+    {
+        return $this->hasMany(City::class);
+    }
+
+    /**
+     * Get the universities in this state.
+     */
+    public function universities(): HasMany
+    {
+        return $this->hasMany(University::class)->with(['metadata','courses']);
+    }
+
+    /**
+     * Get the employees in this state.
+     */
+    public function employees()
+    {
+        return $this->hasMany(Employee::class, 'emp_state');
+    }
 }

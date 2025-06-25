@@ -94,14 +94,42 @@ class UniversityController extends Controller
             'univ_url' => 'required|unique:universities,univ_url',
             'univ_type' => 'required',
             'univ_category' => 'required',
-            'univ_country' => 'required|string|max:100',
-            'univ_city' => 'required|string|max:100',
+            'country_id' => 'required|exists:countries,id',
+            'state_id' => 'required|exists:states,id',
+            'city_id' => 'required|exists:cities,id',
             'univ_address' => 'required|string|max:255',
-            'univ_state' => 'required|exists:states,id',
+        ], [
+            'country_id.required' => 'The country field is required.',
+            'state_id.required' => 'The state field is required.',
+            'city_id.required' => 'The city field is required.',
         ]);
         
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
+        }
+        
+        // Verify that the state belongs to the selected country
+        $state = DB::table('states')
+            ->where('id', $request->state_id)
+            ->where('country_id', $request->country_id)
+            ->first();
+            
+        if (!$state) {
+            return redirect()->back()
+                ->withErrors(['state_id' => 'The selected state does not belong to the selected country.'])
+                ->withInput();
+        }
+        
+        // Verify that the city belongs to the selected state
+        $city = DB::table('cities')
+            ->where('id', $request->city_id)
+            ->where('state_id', $request->state_id)
+            ->first();
+            
+        if (!$city) {
+            return redirect()->back()
+                ->withErrors(['city_id' => 'The selected city does not belong to the selected state.'])
+                ->withInput();
         }
         
         $uni = new University;
@@ -111,10 +139,10 @@ class UniversityController extends Controller
         $uni->univ_url = $request->univ_url;
         $uni->univ_type = $request->univ_type;
         $uni->univ_category = $request->univ_category;
-        $uni->univ_country = $request->univ_country;
-        $uni->univ_city = $request->univ_city;
+        $uni->country_id = $request->country_id;
+        $uni->state_id = $request->state_id;
+        $uni->city_id = $request->city_id;
         $uni->univ_address = $request->univ_address;
-        $uni->univ_state = $request->univ_state;
         $uni->save();
 
         // Adding University Courses
@@ -145,27 +173,53 @@ class UniversityController extends Controller
             'univ_url' => 'required|unique:universities,univ_url,' . $request->univ_id,
             'univ_type' => 'required',
             'univ_category' => 'required',
-            'univ_country' => 'required|string|max:100',
-            'univ_city' => 'required|string|max:100',
+            'country_id' => 'required|exists:countries,id',
+            'state_id' => 'required|exists:states,id',
+            'city_id' => 'required|exists:cities,id',
             'univ_address' => 'required|string|max:255',
-            'univ_state' => 'required|exists:states,id',
+        ], [
+            'country_id.required' => 'The country field is required.',
+            'state_id.required' => 'The state field is required.',
+            'city_id.required' => 'The city field is required.',
         ]);
-        
+
         if ($validator->fails()) {
-            return ['success' => false, 'errors' => $validator->errors()];
+            return redirect()->back()->withErrors($validator)->withInput();
         }
         
-        $uni = University::find($request->univ_id);
+        // Verify that the state belongs to the selected country
+        $state = DB::table('states')
+            ->where('id', $request->state_id)
+            ->where('country_id', $request->country_id)
+            ->first();
+            
+        if (!$state) {
+            return redirect()->back()
+                ->withErrors(['state_id' => 'The selected state does not belong to the selected country.'])
+                ->withInput();
+        }
         
-        // Update University Basic Details
+        // Verify that the city belongs to the selected state
+        $city = DB::table('cities')
+            ->where('id', $request->city_id)
+            ->where('state_id', $request->state_id)
+            ->first();
+            
+        if (!$city) {
+            return redirect()->back()
+                ->withErrors(['city_id' => 'The selected city does not belong to the selected state.'])
+                ->withInput();
+        }
+
+        $uni = University::find($request->univ_id);
         $uni->univ_name = $request->univ_name;
         $uni->univ_url = $request->univ_url;
         $uni->univ_type = $request->univ_type;
         $uni->univ_category = $request->univ_category;
-        $uni->univ_country = $request->univ_country;
-        $uni->univ_city = $request->univ_city;
+        $uni->country_id = $request->country_id;
+        $uni->state_id = $request->state_id;
+        $uni->city_id = $request->city_id;
         $uni->univ_address = $request->univ_address;
-        $uni->univ_state = $request->univ_state;
         
         $uni->save();
 
@@ -313,56 +367,261 @@ class UniversityController extends Controller
 
     public function show($state)
     {
-        return view ('user.info.showuniversity');
+        try {
+            // Find the state by name or ID
+            $stateModel = \App\Models\State::with('country')
+                ->where('name', $state)
+                ->orWhere('id', $state)
+                ->firstOrFail();
+            
+            // Get universities in this state with their location relationships
+            $universities = University::with([
+                    'country', 
+                    'state', 
+                    'city', 
+                    'courses' => function($query) {
+                        $query->select('id', 'course_name', 'course_type', 'course_duration', 'course_fee');
+                    }
+                ])
+                ->where('state_id', $stateModel->id)
+                ->where('univ_status', 1) // Only active universities
+                ->withCount('courses')
+                ->orderBy('univ_name')
+                ->get(['id', 'univ_name', 'univ_slug', 'univ_logo', 'state_id', 'univ_image', 'univ_type']);
+                
+            // Get all countries, states, and cities for filters
+            $countries = \App\Models\Country::orderBy('name')->get(['id', 'name']);
+            $states = \App\Models\State::orderBy('name')->get(['id', 'name', 'country_id']);
+            $cities = \App\Models\City::where('state_id', $stateModel->id)
+                ->orderBy('name')
+                ->get(['id', 'name', 'state_id']);
+                
+            // Get unique course categories
+            $categories = University::where('univ_status', 1)
+                ->whereNotNull('univ_category')
+                ->distinct()
+                ->orderBy('univ_category')
+                ->pluck('univ_category');
+                
+            // Get unique course types from courses
+            $courseTypes = \App\Models\Course::select('course_type')
+                ->distinct()
+                ->whereNotNull('course_type')
+                ->orderBy('course_type')
+                ->pluck('course_type');
+            
+            return view('user.info.showuniversity', [
+                'state' => $stateModel,
+                'universities' => $universities,
+                'countries' => $countries,
+                'states' => $states,
+                'cities' => $cities,
+                'categories' => $categories,
+                'courseTypes' => $courseTypes
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Error in UniversityController@show: ' . $e->getMessage());
+            abort(404, 'State not found or an error occurred');
+        }
+    }
+    
+    /**
+     * API endpoint for filtering universities
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function filterUniversitiesApi(Request $request)
+    {
+        try {
+            $query = University::query()
+                ->with(['country', 'state', 'city', 'courses'])
+                ->where('univ_status', 1) // Only active universities
+                ->withCount('courses');
+            
+            // Apply filters
+            if ($request->has('country_id') && $request->country_id) {
+                $query->where('country_id', $request->country_id);
+            }
+            
+            if ($request->has('state_id') && $request->state_id) {
+                $query->where('state_id', $request->state_id);
+            }
+            
+            if ($request->has('city_id') && $request->city_id) {
+                $query->where('city_id', $request->city_id);
+            }
+            
+            if ($request->has('univ_category') && $request->univ_category) {
+                $query->where('univ_category', $request->univ_category);
+            }
+            
+            if ($request->has('course_type') && $request->course_type) {
+                $query->whereHas('courses', function($q) use ($request) {
+                    $q->where('course_type', $request->course_type);
+                });
+            }
+            
+            if ($request->has('course_name') && $request->course_name) {
+                $query->whereHas('courses', function($q) use ($request) {
+                    $q->where('course_name', 'like', '%' . $request->course_name . '%');
+                });
+            }
+            
+            // Search by university name
+            if ($request->has('search') && $request->search) {
+                $query->where('univ_name', 'like', '%' . $request->search . '%');
+            }
+            
+            // Sort results
+            $sortBy = $request->input('sort_by', 'univ_name');
+            $sortOrder = $request->input('sort_order', 'asc');
+            $query->orderBy($sortBy, $sortOrder);
+            
+            // Get all results (no pagination for now to match the frontend)
+            $universities = $query->get();
+            
+            // Transform the data to match the frontend's expectations
+            $transformed = $universities->map(function($university) {
+                return [
+                    'id' => $university->id,
+                    'univ_name' => $university->univ_name,
+                    'univ_category' => $university->univ_category,
+                    'univ_type' => $university->univ_type,
+                    'univ_description' => $university->univ_description,
+                    'univ_image' => $university->univ_image,
+                    'courses_count' => $university->courses_count,
+                    'country' => $university->country ? [
+                        'id' => $university->country->id,
+                        'name' => $university->country->name
+                    ] : null,
+                    'state' => $university->state ? [
+                        'id' => $university->state->id,
+                        'name' => $university->state->name
+                    ] : null,
+                    'city' => $university->city ? [
+                        'id' => $university->city->id,
+                        'name' => $university->city->name
+                    ] : null,
+                    'courses' => $university->courses->map(function($course) {
+                        return [
+                            'id' => $course->id,
+                            'course_name' => $course->course_name,
+                            'course_type' => $course->course_type
+                        ];
+                    })
+                ];
+            });
+            
+            return response()->json([
+                'success' => true,
+                'universities' => $transformed,
+                'message' => 'Universities retrieved successfully.'
+            ]);
+            
+        } catch (\Exception $e) {
+            // Log the error using the Log facade
+            Log::error('Error filtering universities: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while filtering universities.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function filterUniversities(Request $request, $state = null)
     {
-        $query = University::query();
+        $query = University::with([
+            'country', 
+            'state', 
+            'city', 
+            'courses' => function($q) {
+                $q->select('id', 'course_name', 'course_type', 'course_duration', 'course_fee');
+            }, 
+            'metadata'
+        ]);
 
+        // Filter by state (URL parameter)
         if ($state) {
-            $stateId = \App\Models\State::where('state_name', $state)->value('id');
-            if ($stateId) {
-                $query->where('univ_state', $stateId); 
-            } else {
-                return response()->json([
-                    'universities' => [],
-                    'courses' => []
-                ]);
-            }
+            $query->whereHas('state', function($q) use ($state) {
+                $q->where('name', 'like', '%' . $state . '%')
+                  ->orWhere('id', $state);
+            });
         }
-        // return($stateId);
 
+        // Filter by country
+        if ($request->has('country_id') && $request->country_id) {
+            $query->where('country_id', $request->country_id);
+        }
 
+        // Filter by state (from request)
+        if ($request->has('state_id') && $request->state_id) {
+            $query->where('state_id', $request->state_id);
+        }
+
+        // Filter by city
+        if ($request->has('city_id') && $request->city_id) {
+            $query->where('city_id', $request->city_id);
+        }
+
+        // Filter by university category
         if ($request->has('univ_category') && $request->univ_category != '') {
             $query->where('univ_category', $request->univ_category);
         }
 
+        // Filter by course type
         if ($request->has('course_type') && $request->course_type != '') {
             $query->whereHas('courses', function ($q) use ($request) {
                 $q->where('course_type', $request->course_type);
             });
         }
 
+        // Filter by specific course
         if ($request->has('courses') && $request->courses != '') {
             $query->whereHas('courses', function ($q) use ($request) {
-                $q->where('course_name', $request->courses);
+                $q->where('course_name', 'like', '%' . $request->courses . '%');
             });
         }
 
+        // Filter by university name
         if ($request->has('univ_name') && $request->univ_name != '') {
-            // if ($state && strtolower($request->univ_name) === strtolower($state)) {
-            // } else {
-                $query->where('univ_name', 'like', '%' . $request->univ_name . '%');
-            // }
+            $query->where('univ_name', 'like', '%' . $request->univ_name . '%');
+        }
+        
+        // Add search parameter for university name (compatibility with frontend)
+        if ($request->has('search') && $request->search != '') {
+            $query->where('univ_name', 'like', '%' . $request->search . '%');
         }
 
-        $universities = $query->with(['courses', 'metadata'])->get();
+        // Only get active universities
+        $query->where('univ_status', 1);
+        
+        // Add course count
+        $query->withCount('courses');
 
+        // Execute the query with specific columns to avoid selecting non-existent columns
+        $universities = $query->get([
+            'id', 
+            'univ_name', 
+            'univ_slug', 
+            'univ_logo', 
+            'state_id', 
+            'city_id',
+            'country_id',
+            'univ_image', 
+            'univ_type',
+            'univ_category',
+            'univ_description'
+        ]);
+
+        // Get courses for the filter (if needed)
         $courses = [];
         if ($request->has('course_type') && $request->course_type != '') {
             $courses = \App\Models\Course::where('course_type', $request->course_type)
-                ->select('course_name')
+                ->select('id', 'course_name')
+                ->orderBy('course_name')
                 ->get()
                 ->toArray();
         }

@@ -78,10 +78,24 @@ class Frontend
         $raw_meta = $raw_meta ? $raw_meta->toArray() : [];
         
         $request->merge([
-            'universities' => University::with(['courses:id,course_name,course_short_name,course_type,course_duration,course_eligibility_short,course_slug,course_status', 'metadata:id,url_slug'])
+            'universities' => University::with([
+                                    'courses:id,course_name,course_short_name,course_type,course_duration,course_eligibility_short,course_slug,course_status', 
+                                    'metadata:id,url_slug',
+                                    'state:id,name'
+                                ])
                                 ->where('univ_status', 1)
                                 ->where('univ_detail_added', 1)
-                                ->get(['id', 'univ_name', 'univ_slug', 'univ_logo', 'univ_state', 'univ_image', 'univ_type'])
+                                ->get([
+                                    'id', 
+                                    'univ_name', 
+                                    'univ_slug', 
+                                    'univ_logo', 
+                                    'state_id', 
+                                    'univ_image', 
+                                    'univ_type',
+                                    'univ_category',
+                                    'univ_description'
+                                ])
                                 ->toArray(),
             'state_univ' => State::with('universities')->get()->toArray(),
             'courses' => Course::with(['metadata:id,url_slug', 'universities:id,univ_type,univ_logo,univ_image,univ_slug,univ_status,univ_detail_added'])

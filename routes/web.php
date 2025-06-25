@@ -61,16 +61,32 @@ Route::post('/submit-query-form', [QueryController::class, 'submitQuery'])->name
 
 # HomePage of website
 Route::get("/", function (Request $request) {
-
+    // Get active universities with their courses
+    $universities = University::with([
+        'univCourses' => function($query) {
+            $query->select('id', 'university_id', 'univ_course_slug', 'univ_course_detail_added', 'course_id', 'uc_details');
+        }
+    ])
+    ->where('univ_status', 1)
+    ->where('univ_detail_added', 1)
+    ->get([
+        'id',
+        'univ_name',
+        'univ_slug',
+        'univ_logo',
+        'state_id',
+        'univ_image',
+        'univ_type',
+        'univ_category',
+        'univ_description'
+    ]);
     
-    $universities = University::with('univCourses:id,university_id,univ_course_slug,univ_course_detail_added,course_id,uc_details')->get(['id','univ_name','univ_image','univ_logo','univ_type','univ_status']);
-    // dd($universities->first()->univCourses->first()->toArray());
-    // dd($universities->toArray());
+    $courseData = Course::get(['id', 'course_name'])->toArray();
     
-    $courseData = Course::get(['id','course_name'])->toArray();
-    // $topCourseData = University::all()->toArray();
-    // // dd($topCourseData);
-     return view("user.index", ["courseData" => $courseData, "universities" => $universities]);
+    return view("user.index", [
+        "courseData" => $courseData, 
+        "universities" => $universities
+    ]);
 })->name("homepage");
 
 
@@ -267,11 +283,32 @@ Route::post('/add-university', [UserController::class, 'addUniversity'])->name('
 
 // Partner University Routes
 
-Route::get('/universities/{state}', [UniversityController::class, 'show'])->name('universities.show');
+// Admin API Routes
+Route::prefix('admin/api')->group(function () {
+    // API route for filtering universities
+    Route::get('/universities/filter', [\App\Http\Controllers\backend\UniversityController::class, 'filterUniversitiesApi'])->name('api.universities.filter');
+    
+    // Get states by country ID
+    Route::get('/states/{country}', function ($countryId) {
+        $states = \App\Models\State::where('country_id', $countryId)
+            ->select('id', 'name')
+            ->orderBy('name')
+            ->get();
+        return response()->json($states);
+    })->name('api.states.by_country');
 
-// Route::get("/universities/{state}",function(){
-//     return view("user.info.showuniversity");
-// });
+    // Get cities by state ID
+    Route::get('/cities/{state}', function ($stateId) {
+        $cities = \App\Models\City::where('state_id', $stateId)
+            ->select('id', 'name')
+            ->orderBy('name')
+            ->get();
+        return response()->json($cities);
+    })->name('api.cities.by_state');
+});
+
+// University Routes
+Route::get('/universities/{state}', [UniversityController::class, 'show'])->name('universities.show');
 
 
 Route::get('/online-programs', function () {

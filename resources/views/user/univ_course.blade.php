@@ -1,13 +1,47 @@
 @extends('user.components.layout')
 @php
-$page_title = $course['university']['univ_name'] . ' - '.$course['course']['course_name'];
+    // Debug: Log the incoming course data
+    // Uncomment the next line to see the full course data in the error log
+    // \Illuminate\Support\Facades\Log::info('Course Data:', is_array($course) ? $course : ['type' => gettype($course)]);
+    
+    // Initialize variables with default values
+    $course = $course ?? [];
+    $university = is_array($course) ? ($course['university'] ?? []) : [];
+    $courseData = is_array($course) ? ($course['course'] ?? []) : [];
+    
+    // Set default values for required fields
+    $univName = is_array($university) ? ($university['univ_name'] ?? 'University') : 'University';
+    $courseName = is_array($courseData) ? ($courseData['course_name'] ?? 'Course') : 'Course';
+    $page_title = "{$univName} - {$courseName}";
+    $ucDetails = (is_array($course) && !empty($course['uc_details'])) ? (json_decode($course['uc_details'], true) ?? []) : [];
+    
+    // Ensure we have valid arrays for the breadcrumb
+    $breadcrumbData = [
+        'page_title' => $page_title,
+        'university' => is_array($university) ? $university : [],
+        'course' => is_array($courseData) ? $courseData : []
+    ];
+    
+    // Debug: Check if we have the required data
+    if (empty($university) || empty($courseData)) {
+        // Log a warning if we're missing expected data
+        \Illuminate\Support\Facades\Log::warning('Missing university or course data in univ_course.blade.php', [
+            'has_university' => !empty($university),
+            'has_course_data' => !empty($courseData),
+            'course_keys' => is_array($course) ? array_keys($course) : 'not an array'
+        ]);
+    }
 @endphp
 @push('css')
 <link rel="stylesheet" href="{{ url('/css/course_page.css') }}">
 @endpush
 @section('main')
 <main>
-    @include('user.components.breadcrumbs.course-breadcrumb')
+    @include('user.components.breadcrumbs.course-breadcrumb', [
+        'page_title' => $page_title,
+        'university' => $university,
+        'course' => $courseData
+    ])
     <section class="text-center p-2">
         <div class="container card py-4 bg-blue">
             <div class="row">
@@ -20,17 +54,21 @@ $page_title = $course['university']['univ_name'] . ' - '.$course['course']['cour
                 <div class="col-4">
                     <article>
                         <h4>Duration</h4>
-                        @foreach (json_decode($course['uc_details'], true) as $detail)
-                            @if (strtolower($detail['title']) == 'duration')
-                                <h5>{{ $detail['desc'] }}</h5>
-                            @endif
-                        @endforeach
+                        @if(!empty($ucDetails))
+                            @foreach ($ucDetails as $detail)
+                                @if (isset($detail['title']) && strtolower($detail['title']) == 'duration' && isset($detail['desc']))
+                                    <h5>{{ $detail['desc'] }}</h5>
+                                @endif
+                            @endforeach
+                        @else
+                            <h5>N/A</h5>
+                        @endif
                     </article>
                 </div>
                 <div class="col-4">
                     <article class="border-start border-end">
                         <h4>Fees</h4>
-                        <h5>{{ $course['univ_course_fee'] }}</h5>
+                        <h5>{{ $course['univ_course_fee'] ?? 'N/A' }}</h5>
                     </article>
                 </div>
                 {{-- <div class="col-4">
@@ -43,11 +81,15 @@ $page_title = $course['university']['univ_name'] . ' - '.$course['course']['cour
                 <div class="col-4">
                     <article>
                         <h4>Eligibility</h4>
-                        @foreach (json_decode($course['uc_details'], true) as $detail)
-                            @if (strtolower($detail['title']) == 'eligibilty')
-                                <h5>{{ $detail['desc'] }}</h5>
-                            @endif
-                        @endforeach
+                        @if(!empty($ucDetails))
+                            @foreach ($ucDetails as $detail)
+                                @if (isset($detail['title']) && strtolower($detail['title']) == 'eligibility' && isset($detail['desc']))
+                                    <h5>{{ $detail['desc'] }}</h5>
+                                @endif
+                            @endforeach
+                        @else
+                            <h5>N/A</h5>
+                        @endif
                     </article>
                 </div>
             </div>
@@ -56,43 +98,73 @@ $page_title = $course['university']['univ_name'] . ' - '.$course['course']['cour
 
     <section class="container" style="text-transform: none;">
         <h4>{{ $page_title }}</h4>
-        @foreach (json_decode($course['uc_about']) as $intro)
-        <p>{{ $intro }}</p>
-        @endforeach
+        @php
+            $aboutContent = !empty($course['uc_about']) ? json_decode($course['uc_about']) : [];
+        @endphp
+        @if(!empty($aboutContent) && is_array($aboutContent))
+            @foreach ($aboutContent as $intro)
+                @if(!empty($intro))
+                    <p>{{ $intro }}</p>
+                @endif
+            @endforeach
+        @else
+            <p>No course description available.</p>
+        @endif
     </section>
     <section class="container" style="text-transform: none;">
         <h4>Course Overview</h4>
-        <ul>
-            @foreach (json_decode($course['uc_overview']) as $li)
-            <li>{{ $li }}</li>
-            @endforeach
-        </ul>
+        @php
+            $overviewContent = !empty($course['uc_overview']) ? json_decode($course['uc_overview']) : [];
+        @endphp
+        @if(!empty($overviewContent) && is_array($overviewContent))
+            <ul>
+                @foreach ($overviewContent as $li)
+                    @if(!empty($li))
+                        <li>{{ $li }}</li>
+                    @endif
+                @endforeach
+            </ul>
+        @else
+            <p>No course overview available.</p>
+        @endif
     </section>
-    <section class="container highlights " style="text-transform: none;">
+    <section class="container highlights" style="text-transform: none;">
         <h4>Course Highlights</h4>
         <p class="p-2">The course's primary highlights cover a variety of academic and professional
             advantages, ensuring that aspiring students have a well-rounded and enriching educational experience.</p>
-        <div class="row">
-            @php
+        @php
             $img = ['cv.png', 'accreditation.png', 'network.png', 'career-path.png', 'directions.png', 'data-analytics.png', 'training.png', 'development.png'];
-            @endphp
-            @foreach (json_decode($course['uc_highlight']) as $i => $highlight)
-            <div class="col-lg-3 col-md-4 col-6 p-2">
-                <figure class="card text-center h-100">
-                    <img src="/univ_course_img/{{ $img[$i%count($img)] }}" alt="course_highlight" class="img-fluid m-auto" width="100">
-                    <h6 class="blue">{{ $highlight }}</h6>
-                </figure>
+            $highlights = !empty($course['uc_highlight']) ? json_decode($course['uc_highlight'], true) : [];
+        @endphp
+        @if(!empty($highlights) && is_array($highlights))
+            <div class="row">
+                @foreach ($highlights as $i => $highlight)
+                    @if(!empty($highlight))
+                        <div class="col-lg-3 col-md-4 col-6 p-2">
+                            <figure class="card text-center h-100">
+                                <img src="{{ asset('univ_course_img/' . ($img[$i % count($img)] ?? 'default.png')) }}" 
+                                     alt="course_highlight" class="img-fluid m-auto" width="100">
+                                <h6 class="blue">{{ $highlight }}</h6>
+                            </figure>
+                        </div>
+                    @endif
+                @endforeach
             </div>
-            @endforeach
-        </div>
+        @else
+            <div class="alert alert-info">No highlights available for this course.</div>
+        @endif
     </section>
     <section class="container" style="text-transform: none;">
         <article>
             <h4>Simplified Approach to Complete Admission Process</h4>
-            <p>There is an online admissions process available at Online {{ $course['course_name'] }}, therefore there is
+            @php
+                $courseName = $course['course_name'] ?? 'this course';
+                $courseNameDisplay = $courseName === 'this course' ? $courseName : "Online {$courseName}";
+            @endphp
+            <p>There is an online admissions process available at {{ $courseNameDisplay }}, therefore there is
                 no need to physically visit the campus to apply for admission. There is no entrance exam required to apply for
-                admission to {{ $course['course_name'] }} Online because admissions are made directly. The following
-                describes the {{ $course['course_name'] }}'s admissions process for online courses:</p>
+                admission to {{ $courseNameDisplay }} because admissions are made directly. The following
+                describes the {{ $courseNameDisplay }}'s admissions process for online courses:</p>
             <a class="btn btn-primary my-2" title="get recommendation" href="#queryModal" data-bs-toggle="modal" data-bs-target="#queryModal">
                 Ask Admission Query
             </a>
@@ -101,85 +173,175 @@ $page_title = $course['university']['univ_name'] . ' - '.$course['course']['cour
     <section class="container" style="text-transform: none;">
         <h4>Course Details</h4>
         <p>This concise course overview includes key features and essential details, offering a comprehensive understanding of the program's offerings.</p>
-        <table class="table table-striped text-capitalize bordered">
-            <thead class="table-primary">
-                <tr class="blue">
-                    <th scope="col">Parameters</th>
-                    <th scope="col">Details</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (json_decode($course['uc_details'], true) as $detail)
-                <tr>
-                    <td>{{ $detail['title'] }}</td>
-                    <td>{{ $detail['desc'] }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-            <tfoot>
-                <tr>
-                    <th scope="col">course Fee</th>
-                    <td>{{ number_format($course['univ_course_fee']) }}</td>
-                </tr>
-            </tfoot>
-        </table>
+        @php
+            $courseDetails = !empty($course['uc_details']) ? json_decode($course['uc_details'], true) : [];
+            $courseFee = isset($course['univ_course_fee']) ? number_format($course['univ_course_fee']) : 'N/A';
+        @endphp
+        
+        @if(!empty($courseDetails) && is_array($courseDetails))
+            <table class="table table-striped text-capitalize bordered">
+                <thead class="table-primary">
+                    <tr class="blue">
+                        <th scope="col">Parameters</th>
+                        <th scope="col">Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($courseDetails as $detail)
+                        @if(isset($detail['title']) || isset($detail['desc']))
+                            <tr>
+                                <td>{{ $detail['title'] ?? 'N/A' }}</td>
+                                <td>{{ $detail['desc'] ?? 'N/A' }}</td>
+                            </tr>
+                        @endif
+                    @endforeach
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th scope="col">Course Fee</th>
+                        <td>{{ $courseFee }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        @else
+            <div class="alert alert-info">No course details available at the moment.</div>
+            <div class="mt-3">
+                <strong>Course Fee:</strong> {{ $courseFee }}
+            </div>
+        @endif
     </section>
     <section class="container" style="text-transform: none;">
         <h4>Course Syllabus</h4>
         <p>A comprehensive breakdown of the course-related syllabus, encompassing subjects
             organized by year or semester, is available for your detailed perusal.</p>
-        <div class="row subject_groups">
-            @foreach (json_decode($course['uc_subjects'], true) as $subject_group)
-            <div class="col-lg-4 col-sm-6">
-                <article class="">
-                    <h5 class="blue">{{ $subject_group['title'] }}</h5>
-                    <h6>Total {{ count($subject_group['subjects']) }} Subjects to study</h6>
-                    <ul>
-                        @foreach ($subject_group['subjects'] as $li)
-                        <li>{{$li}}</li>
-                        @endforeach
-                    </ul>
-                </article>
+        @php
+            $subjectGroups = !empty($course['uc_subjects']) ? json_decode($course['uc_subjects'], true) : [];
+        @endphp
+        
+        @if(!empty($subjectGroups) && is_array($subjectGroups))
+            <div class="row subject_groups">
+                @foreach ($subjectGroups as $subject_group)
+                    @if(!empty($subject_group['title']) && !empty($subject_group['subjects']) && is_array($subject_group['subjects']))
+                        <div class="col-lg-4 col-sm-6 mb-4">
+                            <article class="h-100 p-3 border rounded">
+                                <h5 class="blue">{{ $subject_group['title'] ?? 'Subjects' }}</h5>
+                                @if(!empty($subject_group['subjects']))
+                                    <h6>Total {{ count($subject_group['subjects']) }} Subjects to study</h6>
+                                    <ul class="mb-0">
+                                        @foreach ($subject_group['subjects'] as $subject)
+                                            @if(!empty($subject))
+                                                <li>{{ $subject }}</li>
+                                            @endif
+                                        @endforeach
+                                    </ul>
+                                @else
+                                    <p class="text-muted mb-0">No subjects listed for this group.</p>
+                                @endif
+                            </article>
+                        </div>
+                    @endif
+                @endforeach
             </div>
-            @endforeach
-        </div>
+        @else
+            <div class="alert alert-info">
+                The course syllabus is currently being updated. Please check back later for detailed subject information.
+            </div>
+        @endif
     </section>
     <section class="container" style="text-transform: none;">
         <h4>Course Assignments</h4>
         <p>The course entails a series of assignments designed to foster skill development,
             critical thinking, and practical application of the subject matter.</p>
-        <div class="row">
-            @php
-            $img = ['operations & supply chain.png', 'geopolitics.png', 'organizational behavior.png', 'supply chain management.png', 'inventory management.png'];
-            @endphp
-            @foreach (json_decode($course['uc_assign']) as $i => $assign)
-            <div class="col-lg-3 col-md-4 col-6 p-2">
-                <figure class="card text-center h-100">
-                    <img src="/univ_course_img/{{ $img[$i%count($img)] }}" alt="course_assign" class="img-fluid m-auto" width="100">
-                    <h6 class="blue">{{ $assign }}</h6>
-                </figure>
+        @php
+            $assignments = !empty($course['uc_assign']) ? json_decode($course['uc_assign'], true) : [];
+            $assignmentImages = [
+                'operations & supply chain.png', 
+                'geopolitics.png', 
+                'organizational behavior.png', 
+                'supply chain management.png', 
+                'inventory management.png'
+            ];
+        @endphp
+        
+        @if(!empty($assignments) && is_array($assignments))
+            <div class="row">
+                @foreach ($assignments as $i => $assignment)
+                    @if(!empty($assignment))
+                        <div class="col-lg-3 col-md-4 col-6 p-2">
+                            <figure class="card text-center h-100">
+                                @php
+                                    $imgIndex = $i % count($assignmentImages);
+                                    $imgSrc = asset('univ_course_img/' . ($assignmentImages[$imgIndex] ?? 'default-assignment.png'));
+                                @endphp
+                                @php
+                                    $fallbackImage = asset('univ_course_img/default-assignment.png');
+                                @endphp
+                                <img src="{{ $imgSrc }}" 
+                                     alt="Assignment {{ $i + 1 }}" 
+                                     class="img-fluid m-auto" 
+                                     width="100"
+                                     onerror="this.onerror=null; this.src='{{ $fallbackImage }}'"
+                                >
+                                <h6 class="blue mt-2">{{ $assignment }}</h6>
+                            </figure>
+                        </div>
+                    @endif
+                @endforeach
             </div>
-            @endforeach
-        </div>
+        @else
+            <div class="alert alert-info">
+                Assignment details will be provided at the start of the course.
+            </div>
+        @endif
     </section>
 
-    <section class="container" >
-        <h4>How Collegevihar helps you ?</h4>
-        @foreach (json_decode($course['uc_cv_help']) as $intro)
-        <p style="text-transform: none;">{{ $intro }}</p>
-        @endforeach
-    </section>
-    <section class="container" >
-        <h4>Collaboration to succeed</h4>
-        @foreach (json_decode($course['uc_collab']) as $intro)
-        <p style="text-transform: none;">{{ $intro }}</p>
-        @endforeach
-    </section>
-    <section class="container">
-        <h4>Grouping with experts</h4>
-        @foreach (json_decode($course['uc_expert']) as $intro)
-        <p style="text-transform: none;">{{ $intro }}</p>
-        @endforeach
+    @php
+        // Helper function to safely decode and process JSON content
+        function processContent($content, $defaultMessage = 'Information not available.') {
+            if (empty($content)) {
+                return [];
+            }
+            $decoded = json_decode($content, true);
+            return is_array($decoded) ? array_filter($decoded) : [];
+        }
+
+        $cvHelp = processContent($course['uc_cv_help'] ?? null, 'How CollegeVihar can assist you will be shared during the course orientation.');
+        $collaboration = processContent($course['uc_collab'] ?? null, 'Collaboration details will be provided by your course instructor.');
+        $expertInfo = processContent($course['uc_expert'] ?? null, 'Expert guidance information will be available soon.');
+    @endphp
+
+    @if(!empty($cvHelp))
+        <section class="container">
+            <h4>How CollegeVihar Helps You</h4>
+            @foreach($cvHelp as $item)
+                @if(!empty($item))
+                    <p style="text-transform: none;" class="mb-3">{{ $item }}</p>
+                @endif
+            @endforeach
+        </section>
+    @endif
+
+    @if(!empty($collaboration))
+        <section class="container mt-4">
+            <h4>Collaboration to Succeed</h4>
+            @foreach($collaboration as $item)
+                @if(!empty($item))
+                    <p style="text-transform: none;" class="mb-3">{{ $item }}</p>
+                @endif
+            @endforeach
+        </section>
+    @endif
+
+    @if(!empty($expertInfo))
+        <section class="container mt-4">
+            <h4>Grouping with Experts</h4>
+            @foreach($expertInfo as $item)
+                @if(!empty($item))
+                    <p style="text-transform: none;" class="mb-3">{{ $item }}</p>
+                @endif
+            @endforeach
+        </section>
+    @endif
     </section>
     <section class="container" style="text-transform: none;">
         <div class="content">
@@ -214,12 +376,17 @@ $page_title = $course['university']['univ_name'] . ' - '.$course['course']['cour
     </section>
 
 
+    @php
+        $universityName = $course['university']['univ_name'] ?? 'the University';
+        $universityName = !empty($universityName) ? $universityName : 'the University';
+    @endphp
+    
     <section class="container" style="text-transform: none;">
-        <h4>{{ $course['university']['univ_name'] }} <span>Admission Process</span></h4>
-        <p>There is an online admissions process available at {{ $course['university']['univ_name'] }}, therefore there
+        <h4>{{ $universityName }} <span>Admission Process</span></h4>
+        <p>There is an online admissions process available at {{ $universityName }}, therefore there
             is no need to physically visit the campus to apply for admission. There is no entrance exam required to apply
-            for admission to {{ $course['university']['univ_name'] }} Online because admissions are made directly. The
-            following describes the {{ $course['university']['univ_name'] }}'s admissions process for online courses:</p>
+            for admission to {{ $universityName }} Online because admissions are made directly. The
+            following describes the {{ $universityName }}'s admissions process for online courses:</p>
 
         <div class="row">
             <div class="col-lg-4 p-2">

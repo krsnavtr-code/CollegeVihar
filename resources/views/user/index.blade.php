@@ -522,32 +522,65 @@
                                     <div class="tab-pane fade courses" id="nav-{{ $tab }}" role="tabpanel"
                                         aria-labelledby="nav-{{ $tab }}-tab" tabindex="0">
                                         <div class="row justify-content-center">
-                                            @foreach (Request::get('courses') as $course)
-                                                @if ($course['course_type'] == $tab)
+                                            @php
+                                                $coursesList = Request::get('courses', []);
+                                            @endphp
+                                            @foreach ($coursesList as $course)
+                                                @if (isset($course['course_type']) && $course['course_type'] == $tab && 
+                                                    isset($course['metadata']['url_slug']) && 
+                                                    isset($course['course_img']) && 
+                                                    isset($course['course_name']))
                                                     <div class="col-lg-3 col-md-4 col-sm-6 col-12 p-2">
-                                                        <a class="card course-card h-100 p-3 text-center shadow-sm border-0" href="/{{ $course['metadata']['url_slug'] }}">
+                                                        <a class="card course-card h-100 p-3 text-center shadow-sm border-0" 
+                                                           href="/{{ $course['metadata']['url_slug'] ?? '#' }}">
                                                             <div class="image-container">
-                                                                <img src="{{ File::exists(public_path('images/courses/course_images/' . $course['course_img'])) ? asset('images/courses/course_images/' . $course['course_img']) : $course['course_img'] }}" 
-                                                                    alt="{{ $course['course_name'] }}" class="img-fluid">
-                                                                </div>
-                                                            <p class="blue mt-2 fw-bold">{{ $course['course_name'] }}</p>
+                                                                @php
+                                                                    $imagePath = isset($course['course_img']) && !empty($course['course_img']) 
+                                                                        ? (File::exists(public_path('images/courses/course_images/' . $course['course_img'])) 
+                                                                            ? asset('images/courses/course_images/' . $course['course_img']) 
+                                                                            : $course['course_img'])
+                                                                        : asset('images/web assets/course-placeholder.png');
+                                                                @endphp
+                                                                @php
+                                                                    $fallbackImage = asset('images/web assets/course-placeholder.png');
+                                                                @endphp
+                                                                <img src="{{ $imagePath }}" 
+                                                                    alt="{{ $course['course_name'] ?? 'Course Image' }}" 
+                                                                    class="img-fluid"
+                                                                    onerror="this.onerror=null; this.src='{{ $fallbackImage }}'">
+                                                            </div>
+                                                            <p class="blue mt-2 fw-bold">{{ $course['course_name'] ?? 'Course Name' }}</p>
                                                         </a>
                                                     </div>
                                                 @endif
                                             @endforeach
                                         </div>
                                         <div class="row justify-content-center">
-                                            @foreach (Request::get('universities') as $university)
-                                                @if ($university['univ_type'] == $tab)
+                                            @php
+                                                $universitiesList = Request::get('universities', []);
+                                            @endphp
+                                            @foreach ($universitiesList as $university)
+                                                @if (isset($university['univ_type']) && $university['univ_type'] == $tab && 
+                                                    isset($university['univ_name']) && 
+                                                    isset($university['metadata']['url_slug']))
                                                     <div class="col-lg-3 col-md-4 col-sm-6 col-12 p-2">
-                                                        <a class="card university-card h-100 p-3 text-center shadow-sm border-0" href="/{{ $university['metadata']['url_slug'] }}">
+                                                        <a class="card university-card h-100 p-3 text-center shadow-sm border-0" 
+                                                           href="/{{ $university['metadata']['url_slug'] ?? '#' }}">
                                                             <div class="image-container">
-                                                                <img src="/images/university/logo/{{ $university['univ_logo'] }}" 
-                                                                    alt="{{ $university['univ_name'] }}"
+                                                                @php
+                                                                    $logoPath = isset($university['univ_logo']) && !empty($university['univ_logo'])
+                                                                        ? '/images/university/logo/' . $university['univ_logo']
+                                                                        : '/images/web assets/university.png';
+                                                                @endphp
+                                                                @php
+                                                                    $universityFallback = asset('images/web assets/university.png');
+                                                                @endphp
+                                                                <img src="{{ $logoPath }}" 
+                                                                    alt="{{ $university['univ_name'] ?? 'University' }}"
                                                                     class="img-fluid"
-                                                                    onerror="this.src='/images/web assets/university.png'">
+                                                                    onerror="this.onerror=null; this.src='{{ $universityFallback }}'">
                                                             </div>
-                                                            <p class="blue mt-2 fw-bold">{{ $university['univ_name'] }}</p>
+                                                            <p class="blue mt-2 fw-bold">{{ $university['univ_name'] ?? 'University' }}</p>
                                                         </a>
                                                     </div>
                                                 @endif

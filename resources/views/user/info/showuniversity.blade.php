@@ -1,6 +1,6 @@
 @php
 $page_title = 'University List';
-$current_state = Request::segment(2);
+$current_state = $state->name ?? Request::segment(2);
 @endphp
 
 @extends('user.info.layout')
@@ -20,17 +20,53 @@ $current_state = Request::segment(2);
                         <div class=" mb-3">
                             <!-- <h5 class="p-2 ">Advanced Filter</h5> -->
                             <form id="universityFilterForm" class="row g-3 mb-5">
+                                <!-- Country Dropdown -->
+                                <div class="col-lg-3 col-md-6 col-12">
+                                    <label for="country_id" class="form-label mb-0">Country</label>
+                                    <select class="form-select" id="country_id" name="country_id">
+                                        <option value="">Select Country</option>
+                                        @foreach($countries as $country)
+                                            <option value="{{ $country->id }}" {{ ($state->country_id ?? '') == $country->id ? 'selected' : '' }}>
+                                                {{ $country->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                
+                                <!-- State Dropdown -->
+                                <div class="col-lg-3 col-md-6 col-12">
+                                    <label for="state_id" class="form-label mb-0">State</label>
+                                    <select class="form-select" id="state_id" name="state_id">
+                                        <option value="">Select State</option>
+                                        @foreach($states as $stateItem)
+                                            <option value="{{ $stateItem->id }}" {{ $state->id == $stateItem->id ? 'selected' : '' }}>
+                                                {{ $stateItem->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                
+                                <!-- City Dropdown -->
+                                <div class="col-lg-3 col-md-6 col-12">
+                                    <label for="city_id" class="form-label mb-0">City</label>
+                                    <select class="form-select" id="city_id" name="city_id">
+                                        <option value="">Select City</option>
+                                        @foreach($cities as $city)
+                                            <option value="{{ $city->id }}">
+                                                {{ $city->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                
                                 <!-- University Category Dropdown -->
                                 <div class="col-lg-3 col-md-6 col-12">
-                                    <label for="univCategory" class="form-label mb-0">University Category</label>
-                                    <select class="form-select" id="univCategory" name="univ_category">
+                                    <label for="univ_category" class="form-label mb-0">University Category</label>
+                                    <select class="form-select" id="univ_category" name="univ_category">
                                         <option value="">Select Category</option>
-                                        <option value="Central University">Central University</option>
-                                        <option value="State University">State University</option>
-                                        <option value="State private university">State private university</option>
-                                        <option value="State public university">State public university</option>
-                                        <option value="Deemed University">Deemed University</option>
-                                        <option value="Autonomous Institude">Autonomous Institude</option>
+                                        @foreach($categories as $category)
+                                            <option value="{{ $category }}">{{ $category }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
 
@@ -38,11 +74,16 @@ $current_state = Request::segment(2);
                                 <div class="col-lg-3 col-md-6 col-12">
                                     <label for="courseType" class="form-label mb-0">Course Type</label>
                                     <select class="form-select" id="courseType" name="course_type">
-                                        <option value="">Select Course Type</option>
-                                        <option value="Technical Courses">Technical Courses</option>
-                                        <option value="Management Courses">Management Courses</option>
-                                        <option value="Medical Courses">Medical Courses</option>
-                                        <option value="Traditional Courses">Traditional Courses</option>
+                                        <option value="">All Course Types</option>
+                                        @if(isset($courseTypes) && count($courseTypes) > 0)
+                                            @foreach($courseTypes as $type)
+                                                @if(!empty($type))
+                                                    <option value="{{ $type }}" {{ old('course_type') == $type ? 'selected' : '' }}>
+                                                        {{ ucwords(str_replace('_', ' ', $type)) }}
+                                                    </option>
+                                                @endif
+                                            @endforeach
+                                        @endif
                                     </select>
                                 </div>
 
@@ -57,8 +98,15 @@ $current_state = Request::segment(2);
 
                                 <!-- University Name Input -->
                                 <div class="col-lg-3 col-md-6 col-12">
-                                    <label for="univName" class="form-label mb-0">University Name</label>
-                                    <input type="text" class="form-control" id="univName" name="univ_name" placeholder="Enter university name">
+                                    <label for="search" class="form-label mb-0">Search University</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="search" name="search" 
+                                               placeholder="Search by name..." 
+                                               value="{{ request('search') }}">
+                                        <button class="btn btn-outline-secondary" type="submit">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <!-- Filter Button -->
@@ -146,7 +194,7 @@ $current_state = Request::segment(2);
                                                             <div class="row">
                                                                 <div class="col-6">
                                                                     <p>Courses Offered</p>
-                                                                    <h6>{{ count($univ['courses']) }} Courses</h6>
+                                                                    <h6>{{ $univ->courses_count ?? 0 }} Courses</h6>
                                                                 </div>
                                                                 <div class="col-6">
                                                                     <p>Tuition Fees</p>
@@ -204,160 +252,529 @@ $current_state = Request::segment(2);
         @push('script')
       <script>
          document.addEventListener('DOMContentLoaded', function () {
-        const courseTypeSelect = document.getElementById('courseType');
-        const coursesSelect = document.getElementById('courses');
-        const filterForm = document.getElementById('universityFilterForm');
-        const universityList = document.getElementById('universityList');
-        const resetFilterButton = document.getElementById('resetFilterButton');
-        let initialState = universityList.innerHTML; // Store initial state of university list
-
-        // Define base URL directly in the script using Laravel's url helper
-        window.assetBaseUrl = '{{ url("/") }}'; // This will output http://127.0.0.1:8000/
-
-        // Define asset and route functions or URLs
-        const asset = (path) => `${window.assetBaseUrl}/images/${path}`; // Use full base URL
-        const route = (name, param) => `/download-pdf/${param}`; // Adjust this based on your route setup
-
-        // Get current state from URL (assuming it's segment 2)
-        const currentState = '{{ Request::segment(2) }}'; // Blade syntax to get state from URL
-        console.log('Current State:', currentState); // Debug log
-
-        // Dynamic population of Courses dropdown based on Course Type
-        courseTypeSelect.addEventListener('change', function () {
-            const courseType = this.value;
-            coursesSelect.innerHTML = '<option value="">Select Course</option>'; // Reset options
-
-            if (courseType) {
-                fetch(`/api/universities/${currentState}?course_type=${courseType}`)
+            // DOM Elements
+            const countrySelect = document.getElementById('country_id');
+            const stateSelect = document.getElementById('state_id');
+            const citySelect = document.getElementById('city_id');
+            const courseTypeSelect = document.getElementById('courseType');
+            const coursesSelect = document.getElementById('courses');
+            const filterForm = document.getElementById('universityFilterForm');
+            const resetFilterButton = document.getElementById('resetFilterButton');
+            const universityList = document.getElementById('universityList');
+            
+            // Current state from PHP
+            const currentStateId = '{{ $state->id ?? "" }}';
+            const currentStateName = '{{ $state->name ?? "" }}';
+            
+            // Function to load states based on selected country
+            function loadStates(countryId, selectedStateId = null) {
+                if (!stateSelect) return;
+                
+                stateSelect.innerHTML = '<option value="">Select State</option>';
+                if (citySelect) citySelect.innerHTML = '<option value="">Select City</option>';
+                
+                if (!countryId) return;
+                
+                // Show loading state
+                stateSelect.disabled = true;
+                if (citySelect) citySelect.disabled = true;
+                
+                // Fetch states for the selected country
+                fetch(`/admin/api/states/${countryId}`)
                     .then(response => response.json())
-                    .then(data => {
-                        console.log('Courses Response:', data);
-                        if (data.courses && data.courses.length > 0) {
-                            data.courses.forEach(course => {
-                                const option = document.createElement('option');
-                                option.value = course.course_name;
-                                option.textContent = course.course_name;
-                                coursesSelect.appendChild(option);
-                            });
+                    .then(states => {
+                        states.forEach(state => {
+                            const option = new Option(state.name, state.id);
+                            if (selectedStateId && state.id == selectedStateId) {
+                                option.selected = true;
+                            }
+                            stateSelect.add(option);
+                        });
+                        stateSelect.disabled = false;
+                        
+                        // If a state was previously selected, load its cities
+                        if (selectedStateId) {
+                            loadCities(selectedStateId);
+                        } else if (currentStateId) {
+                            // If we have a current state from the URL, select it
+                            stateSelect.value = currentStateId;
+                            loadCities(currentStateId);
                         }
                     })
-                    .catch(error => console.error('Error fetching courses:', error));
+                    .catch(error => {
+                        console.error('Error loading states:', error);
+                        stateSelect.disabled = false;
+                    });
             }
-        });
-
-        // Filter logic on form submission
-        filterForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            let hasMatches = false;
-
-            fetch('/api/universities/' + (currentState ? currentState : '') + '?' + new URLSearchParams(formData).toString())
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Universities Response:', data); // Debug log
-                    universityList.innerHTML = ''; // Clear current list
-
-                    if (data.universities && data.universities.length > 0) {
-                        data.universities.forEach(univ => {
-                            const univName = univ.univ_name || 'Unknown University';
-                            const univUrl = univ.univ_url || '#';
-                            const univImage = univ.univ_image || 'default.jpg';
-                            const univAddress = univ.univ_address || 'Address not available';
-                            const univType = univ.univ_type || 'offline';
-                            const courses = univ.courses || [];
-                            const courseFee = courses.length > 0 ? courses[0].pivot?.univ_course_fee : 'N/A';
-
-                            const card = `
-                                <article class="card on-card mb-2 filter-card"
-                                    data-courses="${courses.map(course => course.course_name).join(',')}"
-                                    data-category="${univ.univ_category ?? ''}"
-                                    data-course-type="${courses.length > 0 ? courses[0].course_type : ''}"
-                                    data-name="${univName.toLowerCase()}">
-                                    <div class="row">
+            
+            // Function to load cities based on selected state
+            function loadCities(stateId, selectedCityId = null) {
+                if (!citySelect) return;
+                
+                citySelect.innerHTML = '<option value="">Loading cities...</option>';
+                citySelect.disabled = true;
+                
+                if (!stateId) {
+                    citySelect.innerHTML = '<option value="">Select City</option>';
+                    citySelect.disabled = false;
+                    return;
+                }
+                
+                // Fetch cities for the selected state
+                fetch(`/api/states/${stateId}/cities`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to load cities');
+                        }
+                        return response.json();
+                    })
+                    .then(cities => {
+                        citySelect.innerHTML = '<option value="">All Cities</option>';
+                        
+                        cities.forEach(city => {
+                            const option = new Option(city.name, city.id);
+                            
+                            // Check if this city should be selected
+                            if ((selectedCityId && city.id == selectedCityId) || 
+                                (!selectedCityId && citySelect.dataset.selectedCityId == city.id)) {
+                                option.selected = true;
+                            }
+                            
+                            citySelect.add(option);
+                        });
+                        
+                        citySelect.disabled = false;
+                    })
+                    .catch(error => {
+                        console.error('Error loading cities:', error);
+                        citySelect.innerHTML = '<option value="">Error loading cities</option>';
+                        citySelect.disabled = false;
+                    });
+            }
+            
+            // Initialize event listeners
+            function initializeEventListeners() {
+                // Country change event
+                if (countrySelect) {
+                    countrySelect.addEventListener('change', function() {
+                        const countryId = this.value;
+                        loadStates(countryId);
+                        // Reset state and city when country changes
+                        if (stateSelect) stateSelect.innerHTML = '<option value="">Select State</option>';
+                        if (citySelect) citySelect.innerHTML = '<option value="">Select City</option>';
+                        filterForm.dispatchEvent(new Event('submit'));
+                    });
+                }
+                
+                // State change event
+                if (stateSelect) {
+                    stateSelect.addEventListener('change', function() {
+                        const stateId = this.value;
+                        if (citySelect) citySelect.innerHTML = '<option value="">Loading cities...</option>';
+                        loadCities(stateId);
+                        filterForm.dispatchEvent(new Event('submit'));
+                    });
+                }
+                
+                // City change event
+                if (citySelect) {
+                    citySelect.addEventListener('change', function() {
+                        filterForm.dispatchEvent(new Event('submit'));
+                    });
+                }
+                
+                // Other filter changes
+                const filterInputs = filterForm.querySelectorAll('select[name^="univ_"], select[name^="course_"], input[name^="search"]');
+                filterInputs.forEach(input => {
+                    input.addEventListener('change', function() {
+                        filterForm.dispatchEvent(new Event('submit'));
+                    });
+                });
+            }
+            
+            // Handle city change
+            if (citySelect) {
+                citySelect.addEventListener('change', function() {
+                    filterForm.dispatchEvent(new Event('submit'));
+                });
+            }
+            
+            // Handle other filter changes
+            const filterInputs = filterForm.querySelectorAll('select[name^="univ_"], select[name^="course_"], input[name^="search"]');
+            filterInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    filterForm.dispatchEvent(new Event('submit'));
+                });
+            });
+            
+            // Handle form submission with AJAX
+            function handleFormSubmit(e) {
+                e.preventDefault();
+                filterUniversities();
+            }
+            
+            // Initialize the application
+            function init() {
+                // Set up form submission
+                if (filterForm) {
+                    // Set up all event listeners first
+                    initializeEventListeners();
+                    
+                    // Get URL parameters
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const countryId = urlParams.get('country_id');
+                    const stateId = urlParams.get('state_id');
+                    const cityId = urlParams.get('city_id');
+                    
+                    // Set selected values from URL parameters
+                    if (countryId && countrySelect) {
+                        countrySelect.value = countryId;
+                        loadStates(countryId, stateId);
+                    }
+                    
+                    if (stateId && stateSelect) {
+                        stateSelect.value = stateId;
+                        loadCities(stateId, cityId);
+                    }
+                    
+                    // Set other filter values from URL
+                    const filterInputs = {
+                        'univ_category': 'univ_category',
+                        'course_type': 'courseType',
+                        'search': 'search'
+                    };
+                    
+                    Object.entries(filterInputs).forEach(([param, id]) => {
+                        const value = urlParams.get(param);
+                        const element = document.getElementById(id);
+                        if (value && element) {
+                            element.value = value;
+                        }
+                    });
+                    
+                    // Trigger initial filter after a short delay to allow DOM to update
+                    setTimeout(() => {
+                        filterUniversities();
+                    }, 100);
+                }
+            }
+            
+            // Start the application when DOM is fully loaded
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+            
+            // Function to load states based on country
+            function loadStates(countryId, selectedStateId = null) {
+                if (!stateSelect) return;
+                
+                stateSelect.innerHTML = '<option value="">Loading states...</option>';
+                stateSelect.disabled = true;
+                
+                if (!countryId) {
+                    stateSelect.innerHTML = '<option value="">Select State</option>';
+                    stateSelect.disabled = false;
+                    if (citySelect) {
+                        citySelect.innerHTML = '<option value="">Select City</option>';
+                        citySelect.disabled = true;
+                    }
+                    return;
+                }
+                
+                fetch(`/api/countries/${countryId}/states`)
+                    .then(response => response.json())
+                    .then(data => {
+                        stateSelect.innerHTML = '<option value="">All States</option>';
+                        
+                        data.forEach(state => {
+                            const option = new Option(state.name, state.id);
+                            
+                            // Check if this state should be selected
+                            if ((selectedStateId && selectedStateId == state.id) || 
+                                (!selectedStateId && stateSelect.dataset.selectedStateId == state.id)) {
+                                option.selected = true;
+                            }
+                            
+                            stateSelect.add(option);
+                        });
+                        
+                        stateSelect.disabled = false;
+                        
+                        // If we have a selected state, load its cities
+                        const stateId = selectedStateId || (stateSelect.value || null);
+                        if (stateId) {
+                            loadCities(stateId);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading states:', error);
+                        stateSelect.innerHTML = '<option value="">Error loading states</option>';
+                        stateSelect.disabled = false;
+                    });
+            }
+            
+            // Function to load cities based on state
+            function loadCities(stateId) {
+                if (!stateId || !citySelect) {
+                    if (citySelect) citySelect.innerHTML = '<option value="">Select City</option>';
+                    return;
+                }
+                
+                fetch(`/api/states/${stateId}/cities`)
+                    .then(response => response.json())
+                    .then(data => {
+                        citySelect.innerHTML = '<option value="">All Cities</option>';
+                        
+                        data.forEach(city => {
+                            const option = document.createElement('option');
+                            option.value = city.id;
+                            option.textContent = city.name;
+                            
+                            // Check if this city should be selected
+                            const urlParams = new URLSearchParams(window.location.search);
+                            const selectedCityId = urlParams.get('city_id');
+                            if (selectedCityId && selectedCityId == city.id) {
+                                option.selected = true;
+                            }
+                            
+                            citySelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error loading cities:', error);
+                    });
+            }
+            
+            // Function to filter universities
+            function filterUniversities() {
+                if (!filterForm) return;
+                
+                const formData = new FormData(filterForm);
+                const params = new URLSearchParams();
+                
+                // Append all form data to URLSearchParams
+                for (const [key, value] of formData.entries()) {
+                    if (value) {
+                        params.append(key, value);
+                    }
+                }
+                
+                // Update URL without page reload
+                const newUrl = `${window.location.pathname}?${params.toString()}`;
+                window.history.pushState({}, '', newUrl);
+                
+                // Show loading spinner
+                if (universityList) {
+                    universityList.innerHTML = `
+                        <div class="text-center p-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Loading universities...</p>
+                        </div>`;
+                }
+                
+                // Show loading state
+                if (universityList) {
+                    universityList.innerHTML = `
+                        <div class="text-center p-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Searching universities...</p>
+                        </div>`;
+                }
+                
+                fetch(`/admin/api/universities/filter?${params.toString()}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (!universityList) return;
+                        
+                        // Clear current list
+                        universityList.innerHTML = '';
+                        
+                        if (data.success && data.universities && data.universities.length > 0) {
+                            data.universities.forEach(univ => {
+                                const universityCard = document.createElement('article');
+                                universityCard.className = 'card mb-4';
+                                
+                                // Build location string
+                                const location = [];
+                                if (univ.city && univ.city.name) location.push(univ.city.name);
+                                if (univ.state && univ.state.name) location.push(univ.state.name);
+                                
+                                // Build badges
+                                const badges = [];
+                                if (univ.univ_category) {
+                                    badges.push(`<span class="badge bg-primary me-1">${univ.univ_category}</span>`);
+                                }
+                                if (univ.univ_type) {
+                                    badges.push(`<span class="badge bg-secondary">${univ.univ_type}</span>`);
+                                }
+                                
+                                // Build courses list
+                                let coursesHtml = '';
+                                if (univ.courses && univ.courses.length > 0) {
+                                    const courseNames = univ.courses
+                                        .slice(0, 3)
+                                        .map(c => `<span class="badge bg-light text-dark border me-1 mb-1">${c.course_name}</span>`)
+                                        .join('');
+                                    const moreCount = univ.courses.length > 3 ? 
+                                        `<span class="badge bg-light text-dark border">+${univ.courses.length - 3} more</span>` : '';
+                                    
+                                    coursesHtml = `
+                                        <div class="mt-2">
+                                            <small class="d-block text-muted mb-1">Available Courses:</small>
+                                            <div class="d-flex flex-wrap">
+                                                ${courseNames}${moreCount}
+                                            </div>
+                                        </div>`;
+                                }
+                                
+                                // Build the university card HTML
+                                universityCard.innerHTML = `
+                                    <div class="row g-0">
                                         <div class="col-md-4">
-                                            <img class="img-fluid rounded-1" src="${asset('university/campus/' + univImage)}" alt="${univName}">
+                                            ${univ.univ_image ? 
+                                                `<img src="${univ.univ_image.startsWith('http') ? '' : '/images/university/campus/'}${univ.univ_image}" 
+                                                    class="img-fluid rounded-start h-100 w-100" 
+                                                    alt="${univ.univ_name || 'University'}"
+                                                    style="object-fit: cover; min-height: 200px;">` :
+                                                `<div class="bg-light d-flex align-items-center justify-content-center h-100" style="min-height: 200px;">
+                                                    <i class="fas fa-university fa-3x text-muted"></i>
+                                                </div>`
+                                            }
                                         </div>
                                         <div class="col-md-8">
-                                            <div class="text-box">
-                                                <div class="between">
-                                                    <div>
-                                                        <h6><a class="blue" href="${univUrl}">${univName}</a></h6>
-                                                        <p><i class="fa-solid fa-location-dot"></i> ${univAddress}</p>
-                                                    </div>
-                                                    <div class="flex">
-                                                        <button class="btn btn-outline-secondary rounded-pill com-btn"><small>Compare</small><i class="fa-regular fa-window-restore"></i></button>
-                                                        <button class="btn btn-outline-secondary rounded-pill"><i class="fa-solid fa-bookmark"></i></button>
-                                                    </div>
+                                            <div class="card-body h-100 d-flex flex-column">
+                                                <div>
+                                                    <h5 class="card-title mb-1">
+                                                        <a href="/university/${univ.id}" class="text-decoration-none text-dark">
+                                                            ${univ.univ_name || 'University Name Not Available'}
+                                                        </a>
+                                                    </h5>
+                                                    ${location.length > 0 ? `
+                                                    <p class="card-text mb-2">
+                                                        <small class="text-muted">
+                                                            <i class="fas fa-map-marker-alt me-1"></i>
+                                                            ${location.join(', ')}
+                                                        </small>
+                                                    </p>` : ''}
+                                                    ${badges.length > 0 ? `
+                                                    <div class="mb-2">
+                                                        ${badges.join('')}
+                                                    </div>` : ''}
+                                                    ${univ.univ_description ? `
+                                                    <p class="card-text mb-2 text-muted small">
+                                                        ${univ.univ_description.length > 200 ? 
+                                                            univ.univ_description.substring(0, 200) + '...' : 
+                                                            univ.univ_description}
+                                                    </p>` : ''}
+                                                    ${coursesHtml}
                                                 </div>
-                                                <hr>
-                                                <div class="between">
-                                                    <div class="row">
-                                                        <div class="col-6"><p>Courses Offered</p><h6>${courses.length} Courses</h6></div>
-                                                        <div class="col-6"><p>Tuition Fees</p><h6><i class="fa-solid fa-indian-rupee-sign"></i> Starts From ${courseFee}</h6></div>
-                                                        <div class="col-6"><p>Exams Accepted</p><h6>JEE, NEET, +2</h6></div>
-                                                        <div class="col-6"><p>Mode</p><h6>${univType === 'online' ? '<i class="fa-solid fa-desktop fa-xs"></i> Online Class' : '<i class="fa-solid fa-school fa-xs"></i> Offline Class'}</h6></div>
+                                                <div class="mt-auto d-flex justify-content-between align-items-center pt-2">
+                                                    <div>
+                                                        <span class="badge bg-light text-dark border">
+                                                            <i class="fas fa-graduation-cap me-1"></i>
+                                                            ${univ.courses_count || 0} ${univ.courses_count === 1 ? 'Course' : 'Courses'}
+                                                        </span>
                                                     </div>
-                                                    <div class="row p-2">
-                                                        <div class="col-sm-12 col-6"><a href="${route('download-pdf', 'prospectus_collegevihar.pdf')}" class="btn btn-outline-danger rounded-pill w-100"><i class="fa-solid fa-download"></i><small>Brochure</small></a></div>
-                                                        <div class="col-sm-12 col-6"><a class="btn btn-primary rounded-pill w-100" href="#" data-bs-toggle="modal" data-bs-target="#applyModal"><small>Apply Now</small><i class="fa-solid fa-up-right-from-square fa-xs"></i></a></div>
-                                                    </div>
+                                                    <a href="/university/${univ.id}" class="btn btn-sm btn-primary">
+                                                        View Details <i class="fas fa-arrow-right ms-1"></i>
+                                                    </a>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </article>
-                            `;
-                            universityList.innerHTML += card;
-                        });
-                        hasMatches = true;
-                    }
-
-                    if (!hasMatches) {
-                        universityList.innerHTML = `
-                            <div class="text-center p-4">
-                                <p>Nothing Found</p>
-                                <button class="btn btn-secondary mt-2" id="backButton">Back</button>
-                            </div>
-                        `;
-                        document.getElementById('backButton').addEventListener('click', function () {
-                            universityList.innerHTML = initialState;
-                            filterForm.reset();
-                            universityCards.forEach(card => card.style.display = 'block');
-                        });
-                    }
-                })
-                .catch(error => console.error('Error fetching universities:', error));
-        });
-
-        // Reset Filter logic
-        resetFilterButton.addEventListener('click', function () {
-            filterForm.reset();
-            coursesSelect.innerHTML = '<option value="">Select Course</option>';
-            universityList.innerHTML = initialState;
-            universityCards.forEach(card => card.style.display = 'block');
-        });
-
-        // Existing Filter by Course logic (unchanged)
-        const filterButtons = document.querySelectorAll('.filter-btn');
-        filterButtons.forEach(button => {
-            button.addEventListener('click', function () {
-                filterButtons.forEach(btn => btn.classList.remove('active'));
-                this.classList.add('active');
-
-                const filter = this.getAttribute('data-filter');
-                const universityCards = document.querySelectorAll('.filter-card');
-
-                universityCards.forEach(card => {
-                    const courses = card.getAttribute('data-courses').split(',');
-                    if (filter === 'all' || courses.includes(filter)) {
-                        card.style.display = 'block';
-                    } else {
-                        card.style.display = 'none';
+                                    </div>`;
+                                
+                                universityList.appendChild(universityCard);
+                            });
+                        } else {
+                            // No universities found
+                            universityList.innerHTML = `
+                                <div class="text-center p-5">
+                                    <i class="fas fa-university fa-4x text-muted mb-3"></i>
+                                    <h4>No universities found</h4>
+                                    <p class="text-muted mb-4">We couldn't find any universities matching your criteria.</p>
+                                    <button class="btn btn-outline-primary" id="resetFiltersBtn">
+                                        <i class="fas fa-sync-alt me-1"></i> Reset Filters
+                                    </button>
+                                </div>`;
+                            
+                            // Add event listener to reset filters button
+                            const resetBtn = document.getElementById('resetFiltersBtn');
+                            if (resetBtn) {
+                                resetBtn.addEventListener('click', function() {
+                                    // Reset form
+                                    if (filterForm) {
+                                        filterForm.reset();
+                                        
+                                        // Reset URL
+                                        window.history.pushState({}, '', window.location.pathname);
+                                        
+                                        // Reload states and cities if country is selected
+                                        if (countrySelect && countrySelect.value) {
+                                            loadStates(countrySelect.value);
+                                        } else if (stateSelect) {
+                                            stateSelect.innerHTML = '<option value="">Select State</option>';
+                                        }
+                                        if (citySelect) {
+                                            citySelect.innerHTML = '<option value="">Select City</option>';
+                                        }
+                                        
+                                        // Trigger form submission to show all universities
+                                        filterForm.dispatchEvent(new Event('submit'));
+                                    }
+                                });
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching universities:', error);
+                        if (universityList) {
+                            universityList.innerHTML = `
+                                <div class="alert alert-danger">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    An error occurred while loading universities. Please try again later.
+                                    <div class="mt-2 small text-muted">${error.message}</div>
+                                </div>`;
+                        }
+                    });
+            }
+            
+            // Initial load of states if country is pre-selected from URL
+            // Initialize form if there are URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.toString()) {
+                // Populate form fields from URL parameters
+                urlParams.forEach((value, key) => {
+                    const input = filterForm.querySelector(`[name="${key}"]`);
+                    if (input) {
+                        input.value = value;
+                        // If this is a course type select, populate courses
+                        if (key === 'course_type' && value) {
+                            populateCourses(value);
+                        }
+                        // If country is set, load its states
+                        if (key === 'country_id' && value) {
+                            loadStates(value, urlParams.get('state_id'));
+                        }
                     }
                 });
-            });
+                
+                // Trigger form submission after a short delay to allow states/cities to load
+                setTimeout(() => {
+                    filterForm.dispatchEvent(new Event('submit'));
+                }, 500);
+            }
         });
-    });
       </script>
     @endpush
 @endsection

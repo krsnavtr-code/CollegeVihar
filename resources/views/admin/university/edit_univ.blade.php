@@ -73,31 +73,51 @@ $courseCategories = [
             </div>
             <div class="field_group">
                 <div class="field">
-                    <label for="">University Country</label>
-                    <input type="text" placeholder="Country" name="univ_country" 
-                        value="{{ $university['univ_country'] ?? '' }}" required>
-                    @error('univ_country')
-                        <span class="text-danger">{{ $message }}</span>
-                    @enderror
-                </div>
-                <div class="field">
-                    <label for="">University State</label>
-                    <select required name="univ_state">
-                        <option value="" disabled selected>Please Select State</option>
-                        @foreach ($states as $state)
-                            <option value="{{ $state['id'] }}" {{ (isset($university['univ_state']) && $university['univ_state'] == $state['id']) ? 'selected' : '' }}>
-                                {{ $state['state_name'] }}
+                    <label for="country_id">Country</label>
+                    <select name="country_id" id="country_id" required>
+                        <option value="" disabled>--- Select Country ---</option>
+                        @foreach (\App\Models\Country::all() as $country)
+                            <option value="{{ $country->id }}" {{ (isset($university['country_id']) && $university['country_id'] == $country->id) ? 'selected' : '' }}>
+                                {{ $country->name }}
                             </option>
                         @endforeach
                     </select>
-                    @error('univ_state')
+                    @error('country_id')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
                 <div class="field">
-                    <label for="">University City</label>
-                    <input type="text" placeholder="City" name="univ_city" 
-                        value="{{ $university['univ_city'] ?? '' }}" required>
+                    <label for="state_id">State</label>
+                    <select name="state_id" id="state_id" required>
+                        <option value="" disabled selected>--- Select State ---</option>
+                        @if(isset($university['country_id']))
+                            @foreach (\App\Models\State::where('country_id', $university['country_id'])->get() as $state)
+                                <option value="{{ $state->id }}" {{ (isset($university['state_id']) && $university['state_id'] == $state->id) ? 'selected' : '' }}>
+                                    {{ $state->name }}
+                                </option>
+                            @endforeach
+                        @endif
+                    </select>
+                    @error('state_id')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                </div>
+                <div class="field">
+                    <label for="city_id">City</label>
+                    <select name="city_id" id="city_id" required>
+                        <option value="" disabled selected>--- Select City ---</option>
+                        @if(isset($university['state_id']))
+                            @foreach (\App\Models\City::where('state_id', $university['state_id'])->get() as $city)
+                                <option value="{{ $city->id }}" {{ (isset($university['city_id']) && $university['city_id'] == $city->id) ? 'selected' : '' }}>
+                                    {{ $city->name }}
+                                </option>
+                            @endforeach
+                        @endif
+                    </select>
+                    @error('city_id')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                </div>
                     @error('univ_city')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
@@ -220,9 +240,92 @@ $courseCategories = [
         $(`label[for='${node.id}'] img`)[0].src = URL.createObjectURL(node.files[0]);
     }
 
-    // Initialize search functionality
+    // Function to load states based on selected country
+    function loadStates(countryId, selectedStateId = null) {
+        const stateSelect = document.getElementById('state_id');
+        stateSelect.innerHTML = '<option value="" disabled selected>--- Select State ---</option>';
+        
+        if (!countryId) {
+            // Reset city select if no country is selected
+            document.getElementById('city_id').innerHTML = '<option value="" disabled selected>--- Select City ---</option>';
+            return;
+        }
+        
+        // Show loading state
+        stateSelect.disabled = true;
+        
+        // Fetch states for the selected country
+        fetch(`/admin/api/states/${countryId}`)
+            .then(response => response.json())
+            .then(states => {
+                states.forEach(state => {
+                    const option = new Option(state.name, state.id);
+                    if (selectedStateId && state.id == selectedStateId) {
+                        option.selected = true;
+                    }
+                    stateSelect.add(option);
+                });
+                stateSelect.disabled = false;
+                
+                // If a state was previously selected, load its cities
+                if (selectedStateId) {
+                    loadCities(selectedStateId, '{{ $university["city_id"] ?? "" }}');
+                }
+            });
+    }
+    
+    // Function to load cities based on selected state
+    function loadCities(stateId, selectedCityId = null) {
+        const citySelect = document.getElementById('city_id');
+        citySelect.innerHTML = '<option value="" disabled selected>--- Select City ---</option>';
+        
+        if (!stateId) return;
+        
+        // Show loading state
+        citySelect.disabled = true;
+        
+        // Fetch cities for the selected state
+        fetch(`/admin/api/cities/${stateId}`)
+            .then(response => response.json())
+            .then(cities => {
+                cities.forEach(city => {
+                    const option = new Option(city.name, city.id);
+                    if (selectedCityId && city.id == selectedCityId) {
+                        option.selected = true;
+                    }
+                    citySelect.add(option);
+                });
+                citySelect.disabled = false;
+            });
+    }
+
+    // Initialize the form
     document.addEventListener('DOMContentLoaded', function() {
-        // Add event listeners to all search inputs
+        // Set up country change event
+        const countrySelect = document.getElementById('country_id');
+        if (countrySelect) {
+            countrySelect.addEventListener('change', function() {
+                loadStates(this.value);
+            });
+        }
+        
+        // Set up state change event
+        const stateSelect = document.getElementById('state_id');
+        if (stateSelect) {
+            stateSelect.addEventListener('change', function() {
+                loadCities(this.value);
+            });
+        }
+        
+        // If there's a previously selected country (editing existing university), load its states
+        const selectedCountryId = '{{ $university["country_id"] ?? "" }}';
+        const selectedStateId = '{{ $university["state_id"] ?? "" }}';
+        
+        if (selectedCountryId) {
+            loadStates(selectedCountryId, selectedStateId);
+        }
+        
+        // Initialize search functionality for courses
         document.querySelectorAll('.search-course').forEach(function(searchInput) {
             searchInput.addEventListener('input', function() {
                 const searchTerm = this.value.toLowerCase();
