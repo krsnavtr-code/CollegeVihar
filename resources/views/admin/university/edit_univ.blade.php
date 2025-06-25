@@ -255,7 +255,7 @@ $courseCategories = [
         stateSelect.disabled = true;
         
         // Fetch states for the selected country
-        fetch(`/admin/api/states/${countryId}`)
+        fetch(`/api/states/${countryId}`)
             .then(response => response.json())
             .then(states => {
                 states.forEach(state => {
@@ -285,7 +285,7 @@ $courseCategories = [
         citySelect.disabled = true;
         
         // Fetch cities for the selected state
-        fetch(`/admin/api/cities/${stateId}`)
+        fetch(`/api/cities/${stateId}`)
             .then(response => response.json())
             .then(cities => {
                 cities.forEach(city => {

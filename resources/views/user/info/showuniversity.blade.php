@@ -21,7 +21,8 @@ $current_state = $state->name ?? Request::segment(2);
                             <!-- <h5 class="p-2 ">Advanced Filter</h5> -->
                             <form id="universityFilterForm" class="row g-3 mb-5">
                                 <!-- Country Dropdown -->
-                                <div class="col-lg-3 col-md-6 col-12">
+                                 <!-- University Lisr are comming Uning These Filters, So Do not remove it -->
+                                <div class="col-lg-3 col-md-6 col-12 d-none">
                                     <label for="country_id" class="form-label mb-0">Country</label>
                                     <select class="form-select" id="country_id" name="country_id">
                                         <option value="">Select Country</option>
@@ -34,7 +35,8 @@ $current_state = $state->name ?? Request::segment(2);
                                 </div>
                                 
                                 <!-- State Dropdown -->
-                                <div class="col-lg-3 col-md-6 col-12">
+                                <!-- University Lisr are comming Uning These Filters, So Do not remove it -->
+                                <div class="col-lg-3 col-md-6 col-12 d-none">
                                     <label for="state_id" class="form-label mb-0">State</label>
                                     <select class="form-select" id="state_id" name="state_id">
                                         <option value="">Select State</option>
@@ -60,6 +62,7 @@ $current_state = $state->name ?? Request::segment(2);
                                 </div>
                                 
                                 <!-- University Category Dropdown -->
+                                <!-- University Lisr are comming Uning These Filters, So Do not remove it -->
                                 <div class="col-lg-3 col-md-6 col-12">
                                     <label for="univ_category" class="form-label mb-0">University Category</label>
                                     <select class="form-select" id="univ_category" name="univ_category">
@@ -97,6 +100,7 @@ $current_state = $state->name ?? Request::segment(2);
                                 </div>
 
                                 <!-- University Name Input -->
+                                <!-- University Lisr are comming Uning These Filters, So Do not remove it -->
                                 <div class="col-lg-3 col-md-6 col-12">
                                     <label for="search" class="form-label mb-0">Search University</label>
                                     <div class="input-group">
@@ -125,10 +129,10 @@ $current_state = $state->name ?? Request::segment(2);
                 </div>
                     <div class="row">
                         @php
-    $state_univ = Request::get('state_univ', []);
-    $matched_state = collect($state_univ)->firstWhere('state_name', $current_state);
-    $courses = $matched_state ? collect($matched_state['universities'])->pluck('courses.*.course_name')->flatten()->unique() : [];
-    $university_count = $matched_state ? count($matched_state['universities']) : 0;
+                            $state_univ = Request::get('state_univ', []);
+                            $matched_state = collect($state_univ)->firstWhere('state_name', $current_state);
+                            $courses = $matched_state ? collect($matched_state['universities'])->pluck('courses.*.course_name')->flatten()->unique() : [];
+                            $university_count = $matched_state ? count($matched_state['universities']) : 0;
                         @endphp
 
                         @if ($matched_state && $university_count > 0)
@@ -156,7 +160,8 @@ $current_state = $state->name ?? Request::segment(2);
                             <div class="col-md-9">
                                 <h3 class="blue">We have found {{ $university_count }} universities for you in {{ ucfirst($current_state) }} State</h3>
                                 <div id="universityList">
-                                    @foreach ($matched_state['universities'] as $univ)
+                                    <!-- University List are generated dynamically -->
+                                    <!-- @foreach ($matched_state['universities'] as $univ)
                                         @php
                                             $courses = $univ['courses'] ?? [];
                                             $courseNames = array_column($courses, 'course_name');
@@ -241,7 +246,7 @@ $current_state = $state->name ?? Request::segment(2);
                                                 </div>
                                             </div>
                                         </article>
-                                    @endforeach
+                                    @endforeach -->
                                 </div>
                             </div>
                         @else

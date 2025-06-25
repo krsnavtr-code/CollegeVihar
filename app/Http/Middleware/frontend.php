@@ -81,7 +81,7 @@ class Frontend
             'universities' => University::with([
                                     'courses:id,course_name,course_short_name,course_type,course_duration,course_eligibility_short,course_slug,course_status', 
                                     'metadata:id,url_slug',
-                                    'state:id,name'
+                                    'state:id,state_name as name'
                                 ])
                                 ->where('univ_status', 1)
                                 ->where('univ_detail_added', 1)
