@@ -250,9 +250,18 @@
             stateSelect.disabled = true;
             
             // Fetch states for the selected country
-            fetch(`/admin/api/states/${countryId}`)
-                .then(response => response.json())
+            fetch(`/api/states/${countryId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to load states');
+                    }
+                    return response.json();
+                })
                 .then(states => {
+                    // Clear existing options
+                    stateSelect.innerHTML = '<option value="" disabled selected>--- Select State ---</option>';
+                    
+                    // Add states to the select
                     states.forEach(state => {
                         const option = new Option(state.name, state.id);
                         if (selectedStateId && state.id == selectedStateId) {
@@ -260,12 +269,17 @@
                         }
                         stateSelect.add(option);
                     });
+                    
                     stateSelect.disabled = false;
                     
                     // If a state was previously selected, load its cities
                     if (selectedStateId) {
                         loadCities(selectedStateId, '{{ old("city_id") }}');
                     }
+                })
+                .catch(error => {
+                    console.error('Error loading states:', error);
+                    stateSelect.disabled = false;
                 });
         }
         
@@ -274,22 +288,52 @@
             const citySelect = document.getElementById('city_id');
             citySelect.innerHTML = '<option value="" disabled selected>--- Select City ---</option>';
             
-            if (!stateId) return;
+            if (!stateId) {
+                citySelect.disabled = false;
+                return;
+            }
             
             // Show loading state
             citySelect.disabled = true;
             
             // Fetch cities for the selected state
-            fetch(`/admin/api/cities/${stateId}`)
-                .then(response => response.json())
+            fetch(`/api/cities/${stateId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to load cities');
+                    }
+                    return response.json();
+                })
                 .then(cities => {
-                    cities.forEach(city => {
-                        const option = new Option(city.name, city.id);
-                        if (selectedCityId && city.id == selectedCityId) {
-                            option.selected = true;
-                        }
+                    // Clear existing options
+                    citySelect.innerHTML = '<option value="" disabled selected>--- Select City ---</option>';
+                    
+                    // Add cities to the select
+                    if (cities && cities.length > 0) {
+                        cities.forEach(city => {
+                            const option = new Option(city.name, city.id);
+                            if (selectedCityId && city.id == selectedCityId) {
+                                option.selected = true;
+                            }
+                            citySelect.add(option);
+                        });
+                    } else {
+                        // Add a disabled option if no cities are found
+                        const option = new Option('No cities found', '');
+                        option.disabled = true;
                         citySelect.add(option);
-                    });
+                    }
+                    
+                    citySelect.disabled = false;
+                })
+                .catch(error => {
+                    console.error('Error loading cities:', error);
+                    
+                    // Add error message
+                    const option = new Option('Error loading cities', '');
+                    option.disabled = true;
+                    citySelect.innerHTML = '';
+                    citySelect.add(option);
                     citySelect.disabled = false;
                 });
         }

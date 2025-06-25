@@ -45,8 +45,20 @@ Route::post("/admin/login", function (Request $request) {
     $result = employeeController::login($request);
     return $result;
 });
-Route::get("/states", function () {
-    return UtilsController::getStates();
+// Get all states or states by country ID
+Route::get("/states", function (Request $request) {
+    $countryId = $request->query('country_id');
+    return UtilsController::getStates($countryId);
+});
+
+// Get states by country ID (for backward compatibility with existing frontend code)
+Route::get("/states/{countryId}", function ($countryId) {
+    return UtilsController::getStates($countryId);
+});
+
+// Get cities by state ID
+Route::get("/cities/{stateId}", function ($stateId) {
+    return UtilsController::getCities($stateId);
 });
 
 Route::get('/getstates', [UtilsController::class, 'apigetStates']);

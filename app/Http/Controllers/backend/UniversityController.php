@@ -23,6 +23,33 @@ class UniversityController extends Controller
     {
         return University::where('univ_status', '1')->orderBy('univ_name', 'asc')->get()->toArray();
     }
+    
+    /**
+     * Toggle university status (active/inactive)
+     *
+     * @param int $univId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public static function toggleUniversityStatus($univId)
+    {
+        try {
+            $university = University::findOrFail($univId);
+            $university->univ_status = $university->univ_status == 1 ? 0 : 1;
+            $university->save();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'University status updated successfully',
+                'status' => $university->univ_status
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update university status',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 
     /* Get universities data */
     static function getUniversities(Request $request = null)

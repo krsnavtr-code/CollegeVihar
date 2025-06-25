@@ -11,9 +11,23 @@ use Illuminate\Support\Facades\Http;
 
 class UtilsController extends Controller
 {
-    static function getStates()
+    /**
+     * Get states, optionally filtered by country_id
+     *
+     * @param int|null $countryId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    static function getStates($countryId = null)
     {
-        return State::all(['id', 'state_name'])->toArray();
+        $query = State::query();
+        
+        if ($countryId) {
+            $query->where('country_id', $countryId);
+        }
+        
+        $states = $query->select(['id', 'state_name as name'])->get();
+        
+        return response()->json($states);
     }
 
 
@@ -36,6 +50,22 @@ class UtilsController extends Controller
             return $response->json(); // Return JSON response
         }
         return response()->json(['error' => 'Unable to fetch districts'], 500);
+    }
+    
+    /**
+     * Get cities by state ID
+     *
+     * @param int $stateId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    static function getCities($stateId)
+    {
+        $cities = \App\Models\City::where('state_id', $stateId)
+            ->select(['id', 'name'])
+            ->orderBy('name')
+            ->get();
+            
+        return response()->json($cities);
     }
     static function add_metadata(Request $request)
     {
