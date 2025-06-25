@@ -1,19 +1,29 @@
+<style>
+    .admin-navbar {
+        z-index: 100;
+        padding: 0 1.5rem;
+        background: linear-gradient(180deg, #1e3c72 0%, #2a5298 100%);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+
 <!-- Admin Navbar -->
-<nav class="admin-navbar navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm" style="z-index: 100; padding: 0.5rem 1.5rem;">
+<nav class="admin-navbar navbar navbar-expand-lg navbar-light border-bottom shadow-sm">
     <div class="container-fluid px-0">
         <!-- Sidebar Toggle Button (Visible on mobile) -->
-        <button class="btn btn-link text-dark p-0 me-3 d-lg-none" id="mobileSidebarToggle">
+        <button class="btn btn-link text-white p-0 me-3 d-lg-none" id="mobileSidebarToggle">
             <i class="fas fa-bars fa-lg"></i>
         </button>
         
         <!-- Sidebar Toggle Button (Visible on desktop) -->
-        <button class="btn btn-link text-dark p-0 me-3 d-none d-lg-block" id="desktopSidebarToggle">
+        <button class="btn btn-link text-white p-0 me-3 d-none d-lg-block" id="desktopSidebarToggle">
             <i class="fas fa-bars fa-lg"></i>
         </button>
 
         <!-- Brand/Logo (Visible on all screens) -->
         <a class="navbar-brand me-4" href="{{ route('admin_home') }}">
-            <img src="{{ asset('images/web assets/logo_full.jpeg') }}" alt="Logo" height="30" class="d-inline-block align-text-top">
+            <img src="{{ asset('images/web assets/logo_full.jpeg') }}" alt="Logo" height="30" class="d-inline-block align-text-top rounded">
         </a>
 
         <!-- Search Bar (Visible on large screens) -->

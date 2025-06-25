@@ -52,7 +52,7 @@
         /* ===== Base Styles ===== */
         :root {
             --sidebar-width: 250px;
-            --sidebar-collapsed-width: 90px;
+            --sidebar-collapsed-width: 70px;
             --primary-bg: #f5f7fa;
             --white: #ffffff;
             --text-dark: #2c3e50;
@@ -387,8 +387,6 @@
             position: sticky;
             top: 0;
             z-index: 1000;
-            background: var(--white);
-            box-shadow: var(--shadow-sm);
         }
 
         /* ===== Content Components ===== */
