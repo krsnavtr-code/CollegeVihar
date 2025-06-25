@@ -72,7 +72,9 @@ class University extends Model
 		'univ_status',
 		'univ_detail_added',
 		'brochure',
-		'univ_category'
+		'univ_category',
+		'univ_country',
+		'univ_city'
 	];
 
 	public function state()

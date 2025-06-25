@@ -94,6 +94,10 @@ class UniversityController extends Controller
             'univ_url' => 'required|unique:universities,univ_url',
             'univ_type' => 'required',
             'univ_category' => 'required',
+            'univ_country' => 'required|string|max:100',
+            'univ_city' => 'required|string|max:100',
+            'univ_address' => 'required|string|max:255',
+            'univ_state' => 'required|exists:states,id',
         ]);
         
         if ($validator->fails()) {
@@ -107,6 +111,10 @@ class UniversityController extends Controller
         $uni->univ_url = $request->univ_url;
         $uni->univ_type = $request->univ_type;
         $uni->univ_category = $request->univ_category;
+        $uni->univ_country = $request->univ_country;
+        $uni->univ_city = $request->univ_city;
+        $uni->univ_address = $request->univ_address;
+        $uni->univ_state = $request->univ_state;
         $uni->save();
 
         // Adding University Courses
@@ -116,12 +124,16 @@ class UniversityController extends Controller
             }
         }
 
+        // Get states for the form
+        $states = DB::table('states')->get();
+        
         return redirect('/admin/university/add')
             ->with([
                 'success' => true,
                 'message' => 'University added successfully.'
             ])
-            ->with('courseCategories', $courseCategories);
+            ->with('courseCategories', $courseCategories)
+            ->with('states', $states);
         
     }
 
@@ -133,6 +145,10 @@ class UniversityController extends Controller
             'univ_url' => 'required|unique:universities,univ_url,' . $request->univ_id,
             'univ_type' => 'required',
             'univ_category' => 'required',
+            'univ_country' => 'required|string|max:100',
+            'univ_city' => 'required|string|max:100',
+            'univ_address' => 'required|string|max:255',
+            'univ_state' => 'required|exists:states,id',
         ]);
         
         if ($validator->fails()) {
@@ -146,6 +162,10 @@ class UniversityController extends Controller
         $uni->univ_url = $request->univ_url;
         $uni->univ_type = $request->univ_type;
         $uni->univ_category = $request->univ_category;
+        $uni->univ_country = $request->univ_country;
+        $uni->univ_city = $request->univ_city;
+        $uni->univ_address = $request->univ_address;
+        $uni->univ_state = $request->univ_state;
         
         $uni->save();
 

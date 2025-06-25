@@ -71,6 +71,48 @@ $courseCategories = [
                     </select>
                 </div>
             </div>
+            <div class="field_group">
+                <div class="field">
+                    <label for="">University Country</label>
+                    <input type="text" placeholder="Country" name="univ_country" 
+                        value="{{ $university['univ_country'] ?? '' }}" required>
+                    @error('univ_country')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                </div>
+                <div class="field">
+                    <label for="">University State</label>
+                    <select required name="univ_state">
+                        <option value="" disabled selected>Please Select State</option>
+                        @foreach ($states as $state)
+                            <option value="{{ $state['id'] }}" {{ (isset($university['univ_state']) && $university['univ_state'] == $state['id']) ? 'selected' : '' }}>
+                                {{ $state['state_name'] }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('univ_state')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                </div>
+                <div class="field">
+                    <label for="">University City</label>
+                    <input type="text" placeholder="City" name="univ_city" 
+                        value="{{ $university['univ_city'] ?? '' }}" required>
+                    @error('univ_city')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                </div>
+            </div>
+            <div class="field_group">
+                <div class="field cflex">
+                    <label for="address">University Complete Address</label>
+                    <input type="text" id="address" placeholder="University Address" name="univ_address" 
+                           value="{{ $university['univ_address'] ?? '' }}" required>
+                    @error('univ_address')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                </div>
+            </div>
         </section>
         <!-- @foreach($courseCategories as $category => $categoryData)
         <section class="card p-2 mb-4">

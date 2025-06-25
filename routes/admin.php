@@ -27,6 +27,7 @@ use App\Models\Metadata;
 use App\Models\University;
 use App\Models\UniversityCourse;
 use App\Models\State;
+use Illuminate\Support\Facades\DB;
 use App\Models\Blog;
 use App\Models\UrlLinksLead;
 use Illuminate\Http\Request;
@@ -96,6 +97,9 @@ Route::middleware('ensurePermission')->group(function () {
         Route::prefix("/add")->group(function () {
             Route::get("", function () {
                 $allCourses = Course::all()->toArray();
+                $states = DB::table('states')->get()->map(function($state) {
+                    return (array)$state;
+                })->toArray();
                 
                 // Group courses by their type
                 $groupedCourses = [
@@ -119,33 +123,16 @@ Route::middleware('ensurePermission')->group(function () {
                     }
                 }
                 
-                // Define course categories for the view
-                $courseCategories = [
-                    'UG' => [
-                        'label' => 'Undergraduate (UG) Courses',
-                        'subcategories' => ['TECHNICAL', 'MANAGEMENT', 'MEDICAL', 'TRADITIONAL']
+                return view("admin.university.add_univ", [
+                    'courseCategories' => [
+                        'UG' => ['label' => 'Undergraduate (UG) Courses', 'subcategories' => ['TECHNICAL', 'MANAGEMENT', 'MEDICAL', 'TRADITIONAL']],
+                        'PG' => ['label' => 'Postgraduate (PG) Courses', 'subcategories' => ['TECHNICAL', 'MANAGEMENT', 'MEDICAL', 'TRADITIONAL']],
+                        'DIPLOMA' => ['label' => 'Diploma Courses', 'subcategories' => ['TECHNICAL', 'MANAGEMENT', 'MEDICAL', 'TRADITIONAL']],
+                        'CERTIFICATION' => ['label' => 'Certification Courses', 'subcategories' => ['TECHNICAL', 'MANAGEMENT', 'MEDICAL', 'TRADITIONAL']]
                     ],
-                    'PG' => [
-                        'label' => 'Postgraduate (PG) Courses',
-                        'subcategories' => ['TECHNICAL', 'MANAGEMENT', 'MEDICAL', 'TRADITIONAL']
-                    ],
-                    'DIPLOMA' => [
-                        'label' => 'Diploma Courses',
-                        'subcategories' => ['TECHNICAL', 'MANAGEMENT', 'MEDICAL', 'TRADITIONAL']
-                    ],
-                    'CERTIFICATION' => [
-                        'label' => 'Certification Courses',
-                        'subcategories' => ['TECHNICAL', 'MANAGEMENT', 'MEDICAL', 'TRADITIONAL']
-                    ]
-                ];
-                
-                $data = [
-                    'courses' => $allCourses,
                     'coursesByType' => $coursesByType,
-                    'courseCategories' => $courseCategories
-                ];
-                
-                return view("admin.university.add_univ", $data);
+                    'states' => $states
+                ]);
             });
             Route::post("" , [UniversityController::class, 'addUniversity'] ) ;
             Route::prefix("/details")->group(function () {
@@ -190,10 +177,15 @@ Route::middleware('ensurePermission')->group(function () {
                     }
                 }
                 
+                $states = DB::table('states')->get()->map(function($state) {
+                    return (array)$state;
+                })->toArray();
+                
                 $data = [
                     'courses' => $allCourses,
                     'coursesByType' => $coursesByType,
-                    'university' => $university
+                    'university' => $university,
+                    'states' => $states
                 ];
                 
                 return view("admin.university.edit_univ", $data);

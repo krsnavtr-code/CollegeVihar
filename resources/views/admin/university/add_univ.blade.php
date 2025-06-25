@@ -9,10 +9,12 @@
     <main>
         @include('admin.components.response')
         <form action="/admin/university/add" method="post">
-            <h2 class="page_title">Add University</h2>
+            <div class="d-flex justify-content-around mb-3">
+                <h5 class="page_title">Add University</h5>
+                <h6 class="section_title text-danger">University Information</h6>
+            </div>
             <section class="panel">
                 @csrf
-                <h3 class="section_title left">University Details</h3>
                 @if (session('success'))
                     <div class="alert alert-success">
                         {{ session('message') }}
@@ -67,6 +69,43 @@
                             <option value="deemed university">Deemed University</option>
                             <option value="autonomous institude">Autonomous Institute</option>
                         </select>
+                    </div>
+                </div>
+                <div class="field_group">
+                    <div class="field">
+                        <label for="">University Country</label>
+                        <input type="text" placeholder="Country" name="univ_country" required>
+                        @error('univ_country')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div class="field">
+                        <label for="">University State</label>
+                        <select required name="univ_state">
+                            <option value="" disabled selected>Please Select State</option>
+                            @foreach ($states as $state)
+                                <option value="{{ $state['id'] }}">{{ $state['state_name'] }}</option>
+                            @endforeach
+                        </select>
+                        @error('univ_state')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div class="field">
+                        <label for="">University City</label>
+                        <input type="text" placeholder="City" name="univ_city" required>
+                        @error('univ_city')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+                <div class="field_group">
+                    <div class="field cflex">
+                        <label for="address">University Complete Address</label>
+                        <input type="text" id="address" placeholder="University Address" name="univ_address" required>
+                        @error('univ_address')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
                     </div>
                 </div>
             </section>

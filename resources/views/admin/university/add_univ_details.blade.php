@@ -182,19 +182,7 @@
                         <input type="file" onchange="display_pic(this)" name="univ_image" id="c2">
                     </div>
                 </div>
-                <div class="field cflex">
-                    <label for="address">University Complete Address</label>
-                    <input type="text" id="address" placeholder="University Address" name="univ_address">
-                </div>
-                <div class="field cflex">
-                    <label for="address">University State</label>
-                    <select required name="univ_state">
-                        <option value="" disabled selected>Please Select State</option>
-                        @foreach ($states as $state)
-                            <option value="{{ $state['id'] }}">{{ $state['state_name'] }}</option>
-                        @endforeach
-                    </select>
-                </div>
+
             </section>
             <section class="panel">
                 <h3 class="section_title">Description Introduction</h3>
