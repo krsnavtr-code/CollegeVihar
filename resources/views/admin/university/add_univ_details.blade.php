@@ -152,9 +152,9 @@
 @section('main')
     <main>
         @include('admin.components.response')
-        <h5>Add University Details</h5>
         <form action="/admin/university/add/details" method="post" enctype="multipart/form-data">
-            <h2 class="page_title">{{ $university['univ_name'] }}</h2>
+            <h5>Add University Details</h5>
+            <h6 class="page_title text-center">Now Adding <b class="text-primary">{{ $university['univ_name'] }}</b> Details</h6>
             @csrf
             <section class="panel">
                 <h3 class="section_title">Course URL slug</h3>
@@ -171,14 +171,14 @@
                 <h3 class="section_title">University Details</h3>
                 <div class="field_group">
                     <div class="field">
-                        <label for="c1" class="img_label"><img src="" alt="univ_logo"><span>University
-                                Logo</span></label>
+                        <span>University Logo</span> <br>
+                        <label for="c1" class="img_label"><img src="" alt="univ_logo" class="img-fluid rounded h-100 w-100 object-fit-cover object-position-center border border-2 border-primary"></label>
                         <input type="file" onchange="display_pic(this)" name="univ_logo" id="c1"
                             accept="image/png,image/webp">
                     </div>
                     <div class="field">
-                        <label for="c2" class="img_label"><img src="" alt="univ_image"><span>University
-                                Campus</span></label>
+                        <span>University Campus</span> <br>
+                        <label for="c2" class="img_label"><img src="" alt="univ_image" class="img-fluid rounded h-100 w-100 object-fit-cover object-position-center border border-2 border-primary"></label>
                         <input type="file" onchange="display_pic(this)" name="univ_image" id="c2">
                     </div>
                 </div>

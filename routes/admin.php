@@ -197,10 +197,37 @@ Route::middleware('ensurePermission')->group(function () {
             });
             Route::prefix("details")->group(function () {
                 Route::get("{id}", function ($id) {
+                    $university = University::with('metadata')->find($id);
+                    
+                    if (!$university) {
+                        return redirect('/admin/university')->with('error', 'University not found');
+                    }
+                    
+                    $universityData = $university->toArray();
+                    
+                    // Ensure metadata is always an array
+                    if (!isset($universityData['metadata']) || !is_array($universityData['metadata'])) {
+                        $universityData['metadata'] = [];
+                    }
+                    
+                    // Ensure url_slug exists in metadata
+                    if (!isset($universityData['metadata']['url_slug'])) {
+                        $universityData['metadata']['url_slug'] = '';
+                    }
+                    
+                    // Get states with the correct field name
+                    $states = State::select(['id', 'state_name'])->get()->toArray();
+                    
+                    // Ensure univ_state is set in university data
+                    if (!isset($universityData['univ_state'])) {
+                        $universityData['univ_state'] = '';
+                    }
+                    
                     $data = [
-                        "university" => University::with('metadata')->find($id)->toArray(),
-                        "states" => UtilsController::getStates(),
+                        "university" => $universityData,
+                        "states" => $states,
                     ];
+                    
                     return view("admin.university.edit_univ_details", $data);
                 });
                 Route::post("", function (Request $request) {
