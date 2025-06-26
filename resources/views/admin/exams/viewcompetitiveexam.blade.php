@@ -6,51 +6,61 @@
     .modal {
         display: none;
         position: fixed;
-        z-index: 1;
+        z-index: 1000;
         left: 0;
         top: 0;
         width: 100%;
         height: 100%;
         overflow: auto;
-        background-color: rgb(0, 0, 0);
         background-color: rgba(0, 0, 0, 0.4);
         padding-top: 60px;
         box-sizing: border-box;
     }
 
     .modal-content {
-        background-color: #fefefe;
+        background-color: #fff;
         margin: auto;
         padding: 20px;
         border: 1px solid #888;
-        width: 50%;
-        max-width: 500px;
+        width: 90%;
+        max-width: 600px;
         position: relative;
         box-sizing: border-box;
+        border-radius: 8px;
     }
 
     .close {
-        width: 20px;
-        height: 20px;
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 24px;
+        font-weight: bold;
+        color: #888;
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
         display: flex;
         justify-content: center;
         align-items: center;
-        font-size: 20px;
-        color: #aaa;
-        position: absolute;
-        top: 0;
-        right: 0;
-        margin: 1rem;
         cursor: pointer;
-        border: 1px solid gray;
-        border-radius: 50%;
     }
 
-    .close:hover,
-    .close:focus {
-        color: black;
-        text-decoration: none;
-        cursor: pointer;
+    .close:hover {
+        color: #000;
+        border-color: #000;
+    }
+
+    #modal-detail {
+        max-height: 70vh;
+        overflow-y: auto;
+        text-align: left;
+    }
+
+    .table th,
+    .table td {
+        vertical-align: top;
     }
 </style>
 @endpush
@@ -58,136 +68,111 @@
 @section('main')
 <main>
     <div>
-        <h1>View Competitive Exam</h1>
+        <h1>View Competitive Exams</h1>
         <p class="mb-4">All Competitive Exams Written by our team</p>
     </div>
-    <div class="overflow-auto text-nowrap">
-        <table class="table">
-            <thead>
+
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle">
+            <thead class="table-light">
                 <tr>
                     <th>S.No</th>
                     <th>Exam Type</th>
-                    <th>Exam Opening Date</th>
-                    <th>Exam Closing Date</th>
+                    <th>Opening Date</th>
+                    <th>Closing Date</th>
                     <th>Videos</th>
-                    <th>Questions & Answers</th>
+                    <th>Q&A</th>
                     <th>Mock Test</th>
-                    <th>Exam Syllabus</th>
-                    <th>Exam Info</th>
+                    <th>Syllabus</th>
+                    <th>Info</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($exams as $index => $exam)
                 <tr>
-                    <td>{{ $index + 1 }}.</td>
+                    <td>{{ $index + 1 }}</td>
                     <td>{{ $exam->exam_type }}</td>
                     <td class="text-success">{{ \Carbon\Carbon::parse($exam->exam_opening_date)->format('d-M-Y h:i A') }}</td>
                     <td class="text-secondary">{{ \Carbon\Carbon::parse($exam->exam_closing_date)->format('d-M-Y h:i A') }}</td>
-                    <!-- videos -->
+
+                    {{-- Videos --}}
                     <td>
-                        @php
-                        $videos = json_decode($exam->videos, true);
-                        @endphp
-                        @if(is_array($videos) && !empty($videos))
-                        @foreach($videos as $video)
-                        <div>
-                            @if(isset($video['video_url']) && !empty($video['video_url']))
-                            <a href="{{ $video['video_url'] }}" target="_blank">
-                                @if(isset($video['thumbnail_url']) && !empty($video['thumbnail_url']))
-                                <img src="{{ $video['thumbnail_url'] }}" alt="Thumbnail" class="img-fluid">
-                                @else
-                                {{ $video['video_url'] }}
+                        @php $videos = json_decode($exam->videos, true); @endphp
+                        @if(is_array($videos) && count($videos))
+                            @foreach($videos as $video)
+                                @if(!empty($video['video_url']))
+                                    <a href="{{ $video['video_url'] }}" target="_blank" class="d-block mb-1">
+                                        @if(!empty($video['thumbnail_url']))
+                                            <img src="{{ $video['thumbnail_url'] }}" alt="Video" width="100">
+                                        @else
+                                            {{ $video['video_url'] }}
+                                        @endif
+                                    </a>
                                 @endif
-                            </a>
-                            @else
-                            <small class="text-danger">Invalid video entry</small>
-                            @endif
-                        </div>
-                        @endforeach
+                            @endforeach
                         @else
-                        <small class="text-danger">
-                            No videos available
-                        </small>
-                        @endif
-                    </td>
-                    <!-- questions -->
-                    <td>
-                        @php
-                        $questions = json_decode($exam->questions, true);
-                        $answers = json_decode($exam->answers, true);
-                        @endphp
-                        @if(is_array($questions) && is_array($answers))
-                        @foreach($questions as $i => $question)
-                        <h6 class="text-primary">
-                            <strong>Q{{ $i + 1 }}:</strong>
-                            {{ $question }}
-                        </h6>
-                        <p class="text-wrap text-secondary text-sm">
-                            <strong class="text-danger">A:</strong>
-                            {{ $answers[$i] }}
-                        </p>
-                        @endforeach
-                        @else
-                        <small class="text-danger">
-                            No questions available
-                        </small>
+                            <span class="text-danger">No videos</span>
                         @endif
                     </td>
 
+                    {{-- Q&A --}}
                     <td>
                         @php
-                        $mockTestQuestions = json_decode($exam->mock_test_questions, true);
-                        $mockTestAnswers = json_decode($exam->mock_test_answers, true);
+                            $questions = json_decode($exam->questions, true);
+                            $answers = json_decode($exam->answers, true);
                         @endphp
-                        @if(is_array($mockTestQuestions) && is_array($mockTestAnswers))
-                        @foreach($mockTestQuestions as $i => $question)
-                        <h6 class="text-primary">
-                            <strong>Q{{ $i + 1 }}:</strong>
-                            {{ $question }}
-                        </h6>
-                        <p class="text-wrap text-secondary text-sm">
-                            <strong class="text-danger">A:</strong>
-                            {{ $mockTestAnswers[$i] }}
-                        </p>
-                        @endforeach
+                        @if(is_array($questions) && is_array($answers))
+                            @foreach($questions as $i => $q)
+                                <strong>Q{{ $i+1 }}:</strong> {{ $q }}<br>
+                                <span class="text-danger">A:</span> {{ $answers[$i] ?? '' }}<br><br>
+                            @endforeach
                         @else
-                        <small class="text-danger">
-                            No questions available
-                        </small>
+                            <span class="text-danger">No Q&A</span>
                         @endif
                     </td>
-                    <!-- buttons -->
+
+                    {{-- Mock Test --}}
                     <td>
-                        <button type="button" class="open-modal btn btn-primary" data-detail="{{ $exam->exam_syllabus }}">View Syllabus</button>
-                    </td>
-                    <td>
-                        <button type="button" class="open-modal btn btn-light" data-detail="{{ $exam->exam_info }}">View Details</button>
-                    </td>
-                    <td>
-                        <!-- link -->
                         @php
-                        $examUrls = is_string($exam->exam_urls) ? json_decode($exam->exam_urls, true) : [];
+                            $mockQ = json_decode($exam->mock_test_questions, true);
+                            $mockA = json_decode($exam->mock_test_answers, true);
+                        @endphp
+                        @if(is_array($mockQ) && is_array($mockA))
+                            @foreach($mockQ as $i => $q)
+                                <strong>Q{{ $i+1 }}:</strong> {{ $q }}<br>
+                                <span class="text-danger">A:</span> {{ $mockA[$i] ?? '' }}<br><br>
+                            @endforeach
+                        @else
+                            <span class="text-danger">No Mock Test</span>
+                        @endif
+                    </td>
+
+                    {{-- Syllabus --}}
+                    <td><button class="btn btn-primary btn-sm open-modal" data-detail="{{ $exam->exam_syllabus }}">View</button></td>
+
+                    {{-- Info --}}
+                    <td><button class="btn btn-light btn-sm open-modal" data-detail="{{ $exam->exam_info }}">View</button></td>
+
+                    {{-- Action --}}
+                    <td>
+                        @php
+                            $examUrls = is_string($exam->exam_urls) ? json_decode($exam->exam_urls, true) : [];
                         @endphp
                         @if(is_array($examUrls))
-                        @foreach($examUrls as $url)
-                        <a href="{{ $url }}" target="_blank" class="btn btn-primary rounded-circle">
-                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                        </a>
-                        @endforeach
-                        @else
-                        <small class="text-danger">
-                            No URLs available
-                        </small>
+                            @foreach($examUrls as $url)
+                                <a href="{{ $url }}" target="_blank" class="btn btn-sm btn-outline-primary mb-1">
+                                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                </a>
+                            @endforeach
                         @endif
-                        <!-- edit -->
-                        <a href="{{ route('competitive-exam.edit', $exam->id) }}" class="btn btn-light rounded-circle">
-                            <i class="fa-solid fa-pencil"></i></a>
-                        <!-- delete -->
-                        <form action="{{ route('competitive-exam.destroy', $exam->id) }}" method="POST" style="display:inline;">
+                        <a href="{{ route('competitive-exam.edit', $exam->id) }}" class="btn btn-sm btn-warning">
+                            <i class="fa-solid fa-pencil"></i>
+                        </a>
+                        <form action="{{ route('competitive-exam.destroy', $exam->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure?')">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" onclick="return confirm('Are you sure you want to delete this exam?')" class="btn btn-danger rounded-circle">
+                            <button class="btn btn-sm btn-danger">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         </form>
@@ -198,11 +183,11 @@
         </table>
     </div>
 
-    <!-- The Modal -->
+    <!-- Modal -->
     <div id="myModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <p id="modal-detail"></p>
+            <div id="modal-detail"></div>
         </div>
     </div>
 </main>
@@ -210,31 +195,23 @@
 
 @push('script')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var modal = document.getElementById("myModal");
-        var btns = document.getElementsByClassName("open-modal");
-        var span = document.getElementsByClassName("close")[0];
-        var modalDetail = document.getElementById("modal-detail");
+    document.addEventListener('DOMContentLoaded', function () {
+        const modal = document.getElementById("myModal");
+        const modalDetail = document.getElementById("modal-detail");
+        const closeBtn = document.querySelector(".close");
 
-        Array.from(btns).forEach(function(btn) {
-            btn.onclick = function() {
+        document.querySelectorAll(".open-modal").forEach(button => {
+            button.addEventListener('click', function () {
+                const detailHTML = this.getAttribute("data-detail") || "No details available";
+                modalDetail.innerHTML = detailHTML;
                 modal.style.display = "block";
-                var detail = this.getAttribute("data-detail");
-                var tempDiv = document.createElement("div");
-                tempDiv.innerHTML = detail;
-                modalDetail.textContent = tempDiv.textContent || tempDiv.innerText || "";
-            }
+            });
         });
 
-        span.onclick = function() {
-            modal.style.display = "none";
-        }
-
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
+        closeBtn.addEventListener('click', () => modal.style.display = "none");
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) modal.style.display = "none";
+        });
     });
 </script>
 @endpush

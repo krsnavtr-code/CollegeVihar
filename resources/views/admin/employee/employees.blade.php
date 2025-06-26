@@ -1,147 +1,79 @@
 @extends('admin.components.layout')
+
 @section('main')
-    <!-- Job Employee -->
-    <!-- <main class="container py-4">
-        <h2 class="text-center mb-4">View Employees</h2>
+<main class="container py-4">
+    <h5 class="mb-4">View Employees</h5>
+    <p class="text-center text-muted mb-4">Now viewing <b class="text-primary">All Employees</b> here and manage them, add new employee or edit existing employee.</p>
 
-        <div class="table-responsive shadow-lg p-3 bg-white rounded">
-            <table class="table table-striped table-hover align-middle">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Sr.No.</th>
-                        <th>Name</th>
-                        <th>Username</th>
-                        <th>Role</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($employees as $i => $employee)
-                        <tr class="{{ !$employee['emp_status'] ? 'table-danger' : '' }}">
-                            <td>
-                                {{ $i + 1 }}
-                                @if(!$employee['emp_status'])
-                                    <i class="text-danger fa-solid fa-circle-xmark" title="Employee is not activated"></i>
-                                @endif
-                            </td>
-                            <td class="fw-bold">{{ $employee['emp_name'] }}</td>
-                            <td>{{ $employee['emp_username'] }}</td>
-                            <td class="text-capitalize">{{ $employee['jobrole']['job_role_title'] }}</td>
-                            <td>
-                                <button class="btn btn-sm {{ $employee['emp_status'] ? 'btn-success' : 'btn-danger' }}"
-                                    onclick="switch_status(this, {{ $employee['id'] }})">
-                                    {{ $employee['emp_status'] ? 'Active' : 'Disabled' }}
-                                </button>
-                            </td>
-                            <td class="text-nowrap">
-                                <a href="tel:+{{ $employee['emp_contact'] }}" class="text-primary me-2" title="Call">
-                                    <i class="fa-solid fa-phone"></i>
-                                </a>
-                                <a href="mailto:{{ $employee['emp_email'] }}" class="text-secondary me-2" title="Email">
-                                    <i class="fa-solid fa-envelope"></i>
-                                </a>
-                                <a href="https://wa.me/91{{ $employee['emp_contact'] }}" target="_blank"
-                                    class="text-success me-2" title="WhatsApp">
-                                    <i class="fa-brands fa-whatsapp"></i>
-                                </a>
-                                <a href="/admin/employee/edit/{{ $employee['id'] }}" class="text-warning" title="Edit">
-                                    <i class="fa-solid fa-pencil"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    </main>
-
-    @push('script')
-    <script>
-        function switch_status(node, empId) {
-            ajax({
-                url: "/api/employee/status/" + empId,
-                success: (res) => {
-                    res = JSON.parse(res);
-                    if (res.success) {
-                        node.closest("tr").toggleClass("disable");
-                    }
-                }
-            });
-        }
-    </script>
-    @endpush -->
-
-
-
-
-    <!-- By krishna -->
-     <main class="container py-4">
-    <h2 class="text-center mb-4">View Employees</h2>
-
-    <div class="table-responsive shadow-lg p-3 bg-white rounded">
-        <table class="table table-striped table-hover align-middle">
+    <div class="table-responsive shadow-sm p-3 bg-white rounded">
+        <table class="table table-bordered table-hover align-middle">
             <thead class="table-dark">
                 <tr>
                     <th>Sr.No.</th>
                     <th>Name</th>
                     <th>Username</th>
-                    <th>Password</th> <!-- New Column -->
+                    <th>Password</th>
                     <th>Role</th>
                     <th>Status</th>
-                    <th>Action</th>
+                    <th class="text-center">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($employees as $i => $employee)
-                    <tr class="{{ !$employee['emp_status'] ? 'table-danger' : '' }}">
-                        <td>
-                            {{ $i + 1 }}
-                            @if(!$employee['emp_status'])
-                                <i class="text-danger fa-solid fa-circle-xmark" title="Employee is not activated"></i>
-                            @endif
-                        </td>
-                        <td class="fw-bold">{{ $employee['emp_name'] }}</td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-secondary" onclick="changeUser({{ $employee['id'] }})">
-                                <i class="fa-solid fa-key"></i>
-                            </button>    
+                <tr class="{{ !$employee['emp_status'] ? 'table-danger' : '' }}">
+                    <td>
+                        {{ $i + 1 }}
+                        @if(!$employee['emp_status'])
+                            <i class="text-danger fa-solid fa-circle-xmark" title="Employee is not activated"></i>
+                        @endif
+                    </td>
+                    <td class="fw-semibold">{{ $employee['emp_name'] }}</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="changeUser($employee['id'])" title="Change Username">
+                                <i class="fa-solid fa-user-pen"></i>
+                            </button>
                             <span class="user-field">{{ $employee['emp_username'] }}</span>
-                        </td>
-                        <td style="width: 200px;">
-                            <button class="btn btn-sm btn-outline-primary" onclick="changePassword({{ $employee['id'] }})">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <button class="btn btn-sm btn-outline-primary" onclick="changePassword($employee['id'])" title="Change Password">
                                 <i class="fa-solid fa-key"></i>
                             </button>
                             <span class="password-field">{{ $employee['emp_password'] }}</span>
-                        </td>
-                        <td class="text-capitalize">{{ $employee['jobrole']['job_role_title'] }}</td>
-                        <td>
-                            <button class="btn btn-sm {{ $employee['emp_status'] ? 'btn-success' : 'btn-danger' }}"
-                                onclick="switch_status(this, {{ $employee['id'] }})">
-                                {{ $employee['emp_status'] ? 'Active' : 'Disabled' }}
-                            </button>
-                        </td>
-                        <td class="text-nowrap">
-                            <a href="tel:+{{ $employee['emp_contact'] }}" class="text-primary me-2" title="Call">
-                                <i class="fa-solid fa-phone"></i>
-                            </a>
-                            <a href="mailto:{{ $employee['emp_email'] }}" class="text-secondary me-2" title="Email">
-                                <i class="fa-solid fa-envelope"></i>
-                            </a>
-                            <a href="https://wa.me/91{{ $employee['emp_contact'] }}" target="_blank"
-                                class="text-success me-2" title="WhatsApp">
-                                <i class="fa-brands fa-whatsapp"></i>
-                            </a>
-                            <a href="/admin/employee/edit/{{ $employee['id'] }}" class="text-warning" title="Edit">
-                                <i class="fa-solid fa-pencil"></i>
-                            </a>
-                        </td>
-                    </tr>
+                        </div>
+                    </td>
+                    <td class="text-capitalize">{{ $employee['jobrole']['job_role_title'] }}</td>
+                    <td>
+                        <button 
+                            class="btn btn-sm {{ $employee['emp_status'] ? 'btn-success' : 'btn-danger' }}" 
+                            onclick="switch_status(this, $employee['id'])"
+                        >
+                            {{ $employee['emp_status'] ? 'Active' : 'Disabled' }}
+                        </button>
+                    </td>
+                    <td class="text-nowrap text-center">
+                        <a href="tel:+{{ $employee['emp_contact'] }}" class="text-primary me-2" title="Call">
+                            <i class="fa-solid fa-phone"></i>
+                        </a>
+                        <a href="mailto:{{ $employee['emp_email'] }}" class="text-secondary me-2" title="Email">
+                            <i class="fa-solid fa-envelope"></i>
+                        </a>
+                        <a href="https://wa.me/91{{ $employee['emp_contact'] }}" target="_blank" class="text-success me-2" title="WhatsApp">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </a>
+                        <a href="/admin/employee/edit/{{ $employee['id'] }}" class="text-warning" title="Edit Employee">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </a>
+                    </td>
+                </tr>
                 @endforeach
             </tbody>
         </table>
     </div>
 </main>
+@endsection
 
 @push('script')
 <script>
@@ -151,7 +83,11 @@
             success: (res) => {
                 res = JSON.parse(res);
                 if (res.success) {
-                    node.closest("tr").toggleClass("disable");
+                    const row = node.closest("tr");
+                    row.classList.toggle("table-danger");
+                    node.classList.toggle("btn-success");
+                    node.classList.toggle("btn-danger");
+                    node.textContent = node.textContent === 'Active' ? 'Disabled' : 'Active';
                 }
             }
         });
@@ -170,16 +106,16 @@
             })
             .then(response => response.json())
             .then(data => {
-                console.log(data);
                 if (data.success) {
                     alert("Password updated successfully!");
+                    location.reload();
                 } else {
                     alert("Error updating password.");
                 }
             })
             .catch(error => {
                 console.error("Error:", error);
-                alert("Error updating password.");
+                alert("Server Error");
             });
         }
     }
@@ -197,20 +133,18 @@
             })
             .then(response => response.json())
             .then(data => {
-                console.log(data);
                 if (data.success) {
                     alert("Username updated successfully!");
+                    location.reload();
                 } else {
                     alert("Error updating username.");
                 }
             })
             .catch(error => {
                 console.error("Error:", error);
-                alert("Error updating username.");
+                alert("Server Error");
             });
         }
     }
 </script>
 @endpush
-
-@endsection

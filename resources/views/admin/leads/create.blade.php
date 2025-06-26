@@ -1,58 +1,71 @@
 @extends('admin.components.layout')
+
 @section('main')
-<main>
+<main class="container py-4">
     @include('admin.components.response')
-    <form action="/admin/lead/create" method="post">
+
+    <form action="/admin/lead/create" method="POST">
         @csrf
-        <h2 class="page_title">Add Leads</h2>
-        <section class="panel">
-            <div class="field">
-                <label for="">Agent Name</label>
-                <input type="text" name="agent_name" placeholder="Agent Name">
 
-            </div>
+        <h5 class="page_title mb-3">Add New Lead</h5>
+        <p class="text-muted mb-4 text-center">Fill the form below to add a new lead.</p>
 
-            <h3 class="section_title">Lead Details</h3>
-            <div class="field_group">
-                <div class="field">
-                    <label for="">Lead Name</label>
-                    <input type="text" name="lead_name" placeholder="Lead Name">
-                </div>
-                <div class="field">
-                    <label for="">Lead D.O.B. <i>( If Available )</i></label>
-                    <input type="date" name="lead_dob" placeholder="Lead DOB">
+        <!-- Agent Info -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Agent Name</label>
+                    <input type="text" class="form-control" name="agent_name" placeholder="Agent Name" required>
                 </div>
             </div>
-            <div class="field_group">
-                <div class="field">
-                    <label for="">Lead Contact</label>
-                    <input type="text" name="lead_contact" placeholder="Lead Contact">
-                </div>
-                <div class="field">
-                    <label for="">Lead E-mail <i>( If Available )</i></label>
-                    <input type="text" name="lead_email" placeholder="Lead E-mail">
-                </div>
-            </div>
-            <div class="field_group">
-                <div class="field">
-                    <label for="">Previous Qualification <i>( If Available
-                            )</i></label>
-                    <input type="text" name="lead_old_qualification" placeholder="Previous Qualification">
-                </div>
-                <div class="field">
-                    <label for="state">Select State</label>
-                    <select name="state" id="state">
+        </div>
 
-                        @foreach ($states as $state)
-                        <option value="{{ $state['id'] }}">{{ $state['state_name'] }}</option>
-                        @endforeach
-                    </select>
+        <!-- Lead Details -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h5 class="mb-3">Lead Details</h5>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Lead Name</label>
+                        <input type="text" class="form-control" name="lead_name" placeholder="Lead Name" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Date of Birth <small class="text-muted">(optional)</small></label>
+                        <input type="date" class="form-control" name="lead_dob">
+                    </div>
                 </div>
-            </div>
-            <div class="field_group">
-                <div class="field">
-                    <label for="mode_of_admission">Mode of Admission</label>
-                    <select name="mode_of_admission" id="mode_of_admission">
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Contact Number</label>
+                        <input type="text" class="form-control" name="lead_contact" placeholder="Phone Number" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Email <small class="text-muted">(optional)</small></label>
+                        <input type="email" class="form-control" name="lead_email" placeholder="example@mail.com">
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Previous Qualification <small class="text-muted">(optional)</small></label>
+                        <input type="text" class="form-control" name="lead_old_qualification" placeholder="e.g. 12th Pass, B.Sc., etc.">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">State</label>
+                        <select class="form-select" name="state" required>
+                            <option disabled selected value="">-- Select State --</option>
+                            @foreach ($states as $state)
+                                <option value="{{ $state['id'] }}">{{ $state['state_name'] }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Mode of Admission</label>
+                    <select class="form-select" name="mode_of_admission" required>
                         <option value="Online">Online</option>
                         <option value="Offline">Offline</option>
                         <option value="Single-Seating">Single-Seating</option>
@@ -61,67 +74,74 @@
                         <option value="International">International</option>
                     </select>
                 </div>
-
             </div>
-        </section>
-        <section>
-            <h3 class="section_title">Interested In</h3>
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class="field">
-                        <label for="">University <i>( Don't Select for short Courses
-                                )</i></label>
-                        <select name="lead_university" onchange="load_courses(this)">
-                            <option value="" selected>-- Select --</option>
-                            @foreach ($universities as $university)
-                            <option value="{{ $university['id'] }}">{{ $university['univ_name'] }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="field">
-                        <label for="">Course <i>( Auto update with university)</i></label>
-                        <select name="lead_course" id="courses">
-                            <option value="" selected disabled>-- Select --</option>
-                            @foreach ($courses as $course)
-                            <option value="{{ $course['id'] }}">{{ $course['course_name'] }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-
-        </section>
-        <div class="field">
-            <input type="checkbox" name="send_mail" id="">
-            <label for="">Send Welcome Mail</label>
         </div>
-        <div class="text-end p-4">
-            <button type="submit" class="btn btn-primary btn-lg">Upload Lead</button>
+
+        <!-- Interested In -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h5 class="mb-3">Interested In</h5>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">University <small class="text-muted">(Don't select for short courses)</small></label>
+                        <select class="form-select" name="lead_university" onchange="load_courses(this)">
+                            <option selected value="">-- Select University --</option>
+                            @foreach ($universities as $university)
+                                <option value="{{ $university['id'] }}">{{ $university['univ_name'] }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Course</label>
+                        <select class="form-select" name="lead_course" id="courses">
+                            <option selected disabled>-- Select Course --</option>
+                            @foreach ($courses as $course)
+                                <option value="{{ $course['id'] }}">{{ $course['course_name'] }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Send Mail -->
+        <div class="form-check mb-4">
+            <input type="checkbox" class="form-check-input" name="send_mail" id="send_mail">
+            <label class="form-check-label" for="send_mail">Send Welcome Mail</label>
+        </div>
+
+        <!-- Submit -->
+        <div class="text-end">
+            <button type="submit" class="btn btn-primary btn-lg">
+                <i class="fa-solid fa-upload me-1"></i> Upload Lead
+            </button>
         </div>
     </form>
 </main>
 @endsection
+
 @push('script')
 <script>
-    let default_courses = courses.innerHTML;
+    let default_courses = document.getElementById("courses").innerHTML;
 
     function load_courses(node) {
         let univ = node.value;
-        if (univ == '') {
-            courses.innerHTML = default_courses;
+        const courseSelect = document.getElementById("courses");
+        if (!univ) {
+            courseSelect.innerHTML = default_courses;
             return;
         }
+
         ajax({
             url: "/api/univCourses/" + univ,
             success: (res) => {
                 res = JSON.parse(res);
-                let options = `<option value="" selected disabled>-- Select --</option>`;
+                let options = `<option value="" selected disabled>-- Select Course --</option>`;
                 res.forEach(c => {
-                    options +=
-                        `<option value='${c['course']['id']}'>${c['course']['course_name']} ( ${c['course']['course_short_name']} )</option>`
+                    const course = c.course;
+                    options += `<option value="${course.id}">${course.course_name} (${course.course_short_name})</option>`;
                 });
-                courses.innerHTML = options;
+                courseSelect.innerHTML = options;
             }
         });
     }

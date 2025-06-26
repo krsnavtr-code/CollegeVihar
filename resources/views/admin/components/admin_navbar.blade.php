@@ -32,7 +32,7 @@
                 <!-- <span class="input-group-text bg-light border-0">
                     <i class="fas fa-search text-muted"></i>
                 </span> -->
-                <input type="text" class="form-control border-0 bg-light m-0" placeholder="Search..." aria-label="Search">
+                <input type="text" id="globalSearch" class="form-control border-0 bg-light m-0" placeholder="Search..." aria-label="Search">
             </div>
         </div>
 

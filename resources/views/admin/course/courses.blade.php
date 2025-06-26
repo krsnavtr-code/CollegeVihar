@@ -47,12 +47,8 @@ $permissions = Request::get('admin_permissions');
 @section('main')
 <main class="py-4">
     <div class="container">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>Course Management (View Courses)</h1>
-            <a href="{{ route('admin.course.add.form') }}" class="btn btn-primary">
-                <i class="fas fa-plus me-1"></i> Add New Course
-            </a>
-        </div>
+        <h5>Course Management (View Courses)</h5>
+        <p class="text-muted mb-4 text-center">View all courses here and manage them</p>
         
         <!-- Search and Filters -->
         <div class="card mb-3">

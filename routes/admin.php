@@ -84,6 +84,94 @@ Route::withoutMiddleware('admin')->group(function () {
     })->name('admin_logout');
 });
 
+// Report Routes
+Route::prefix('reports')->name('admin.reports.')->group(function () {
+    Route::get('/students', function() {
+        return response()->streamDownload(function() {
+            // Generate and stream CSV
+            $handle = fopen('php://output', 'w');
+            
+            // Add CSV headers
+            fputcsv($handle, ['ID', 'Name', 'Email', 'Phone', 'Course', 'Status', 'Created At']);
+            
+            // Add sample data - replace with actual database query
+            $students = []; // Add your student data query here
+            
+            foreach ($students as $student) {
+                fputcsv($handle, [
+                    $student->id,
+                    $student->name,
+                    $student->email,
+                    $student->phone,
+                    $student->course->name ?? 'N/A',
+                    ucfirst($student->status),
+                    $student->created_at->format('Y-m-d H:i:s')
+                ]);
+            }
+            
+            fclose($handle);
+        }, 'students_report_' . date('Y-m-d') . '.csv');
+    })->name('students');
+    
+    Route::get('/courses', function() {
+        return response()->streamDownload(function() {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, ['ID', 'Course Name', 'University', 'Duration', 'Fee', 'Status', 'Created At']);
+            
+            $courses = []; // Add your course data query here
+            
+            foreach ($courses as $course) {
+                fputcsv($handle, [
+                    $course->id,
+                    $course->name,
+                    $course->university->name ?? 'N/A',
+                    $course->duration,
+                    $course->fee,
+                    $course->is_active ? 'Active' : 'Inactive',
+                    $course->created_at->format('Y-m-d H:i:s')
+                ]);
+            }
+            
+            fclose($handle);
+        }, 'courses_report_' . date('Y-m-d') . '.csv');
+    })->name('courses');
+    
+    Route::get('/admissions', function() {
+        return response()->streamDownload(function() {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, ['ID', 'Student', 'Course', 'University', 'Status', 'Applied At', 'Status Updated At']);
+            
+            $admissions = []; // Add your admission data query here
+            
+            foreach ($admissions as $admission) {
+                fputcsv($handle, [
+                    $admission->id,
+                    $admission->student->name ?? 'N/A',
+                    $admission->course->name ?? 'N/A',
+                    $admission->university->name ?? 'N/A',
+                    ucfirst($admission->status),
+                    $admission->created_at->format('Y-m-d H:i:s'),
+                    $admission->updated_at->format('Y-m-d H:i:s')
+                ]);
+            }
+            
+            fclose($handle);
+        }, 'admissions_report_' . date('Y-m-d') . '.csv');
+    })->name('admissions');
+    
+    Route::post('/custom', function(Request $request) {
+        $request->validate([
+            'type' => 'required|in:students,courses,admissions,leads',
+            'format' => 'required|in:csv,pdf,excel',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date'
+        ]);
+        
+        // Add your custom report generation logic here
+        return response()->download(storage_path('app/reports/custom_report.' . $request->format));
+    })->name('custom');
+});
+
 Route::middleware('ensurePermission')->group(function () {
     // University Routes
     Route::prefix("/university")->group(function () {
@@ -539,30 +627,75 @@ Route::middleware('ensurePermission')->group(function () {
     // Employee routes
     Route::prefix("/employee")->group(function () {
         Route::get("", function () {
-            $data = ['employees' => Employee::where('emp_type', 'office')->orWhere('emp_type', 'field')->with('jobrole')->get()->toArray()];
+            $data = ['employees' => Employee::where('emp_type', 'office')
+                ->orWhere('emp_type', 'field')
+                ->with('jobrole')
+                ->get()
+                ->toArray()];
             return view("admin.employee.employees", $data);
         });
+        
         Route::prefix("/add")->group(function () {
             Route::get("", function () {
-                $data = ['job_roles' => employeeController::job_roles(), "states" => UtilsController::getStates()];
+                $statesResponse = UtilsController::getStates();
+                $states = [];
+                
+                // Check if the response is a JSON response and get the data
+                if ($statesResponse instanceof \Illuminate\Http\JsonResponse) {
+                    $states = $statesResponse->getData(true);
+                } elseif (is_array($statesResponse)) {
+                    $states = $statesResponse;
+                } elseif (is_object($statesResponse) && method_exists($statesResponse, 'toArray')) {
+                    $states = $statesResponse->toArray();
+                }
+                
+                $data = [
+                    'job_roles' => employeeController::job_roles(),
+                    'states' => $states
+                ];
                 return view("admin.employee.add_employee", $data);
             });
+            
             Route::post("", function (Request $request) {
                 $result = employeeController::add($request);
                 session()->flash('success', $result['success']);
-                return redirect("/admin/employee/add");
+                return redirect("/admin/employee");
             });
         });
+        
         Route::prefix("/edit")->group(function () {
             Route::get("/{empId}", function (Employee $empId) {
-                $data = ['job_roles' => employeeController::job_roles(), "states" => UtilsController::getStates(), 'emp_data' => $empId->toArray()];
+                $statesResponse = UtilsController::getStates();
+                $states = [];
+                
+                // Check if the response is a JSON response and get the data
+                if ($statesResponse instanceof \Illuminate\Http\JsonResponse) {
+                    $states = $statesResponse->getData(true);
+                } elseif (is_array($statesResponse)) {
+                    $states = $statesResponse;
+                } elseif (is_object($statesResponse) && method_exists($statesResponse, 'toArray')) {
+                    $states = $statesResponse->toArray();
+                }
+                
+                $data = [
+                    'job_roles' => employeeController::job_roles(),
+                    'states' => $states,
+                    'emp_data' => $empId->toArray()
+                ];
                 return view("admin.employee.edit_employee", $data);
             });
+            
             Route::post("", function (Request $request) {
                 $result = employeeController::edit($request);
                 session()->flash('success', $result['success']);
                 return redirect("/admin/employee/edit/" . $request->empId);
             });
+        });
+        
+        // Toggle employee status
+        Route::post("/toggle-status/{empId}", function ($empId) {
+            $result = employeeController::toggleEmployeeStatus($empId);
+            return response()->json($result);
         });
     });
     // Seo Routes
@@ -683,7 +816,19 @@ Route::middleware('ensurePermission')->group(function () {
         });
         Route::prefix("/add")->group(function () {
             Route::get("", function () {
-                $data = ["states" => UtilsController::getStates()];
+                $statesResponse = UtilsController::getStates();
+                $states = [];
+                
+                // Check if the response is a JSON response and get the data
+                if ($statesResponse instanceof \Illuminate\Http\JsonResponse) {
+                    $states = $statesResponse->getData(true);
+                } elseif (is_array($statesResponse)) {
+                    $states = $statesResponse;
+                } elseif (is_object($statesResponse) && method_exists($statesResponse, 'toArray')) {
+                    $states = $statesResponse->toArray();
+                }
+                
+                $data = ["states" => $states];
                 return view("admin.franchise.add", $data);
             });
             Route::post("", function (Request $request) {

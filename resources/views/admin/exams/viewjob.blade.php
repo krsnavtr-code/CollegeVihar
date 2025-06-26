@@ -2,48 +2,50 @@
 
 @push('css')
 <style>
-    /* Modal styles */
     .modal {
         display: none;
         position: fixed;
-        z-index: 1;
+        z-index: 1050;
         left: 0;
         top: 0;
         width: 100%;
         height: 100%;
         overflow: auto;
-        background-color: rgb(0, 0, 0);
         background-color: rgba(0, 0, 0, 0.4);
         padding-top: 60px;
-        box-sizing: border-box;
     }
 
     .modal-content {
-        background-color: #fefefe;
+        background-color: #fff;
         margin: auto;
         padding: 20px;
-        border: 1px solid #888;
-        width: 50%;
-        max-width: 500px;
+        border-radius: 8px;
+        width: 80%;
+        max-width: 600px;
         position: relative;
-        box-sizing: border-box;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     }
 
     .close {
-        color: #aaa;
         position: absolute;
+        right: 15px;
         top: 10px;
-        right: 25px;
         font-size: 28px;
         font-weight: bold;
+        color: #aaa;
         cursor: pointer;
     }
 
     .close:hover,
     .close:focus {
-        color: black;
-        text-decoration: none;
-        cursor: pointer;
+        color: #000;
+    }
+
+    @media (max-width: 576px) {
+        .modal-content {
+            width: 90%;
+            padding: 15px;
+        }
     }
 </style>
 @endpush
@@ -51,22 +53,22 @@
 @section('main')
 <main>
     <div>
-        <h1>View Job Openings</h1>
+        <h5>View Job Openings</h5>
         <p class="mb-3">All Job openings listed by our team</p>
     </div>
     <div class="overflow-auto text-nowrap">
-        <table class="table">
+        <table class="table table-bordered table-striped align-middle">
             <thead>
                 <tr>
                     <th>Sr.No</th>
                     <th>Job Profile</th>
                     <th>Company</th>
-                    <th>Company Email</th>
-                    <th>Company Phone</th>
-                    <th>Job Experience</th>
-                    <th>Job Logo</th>
-                    <th>Job Detail</th>
-                    <th>Job Status</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Experience</th>
+                    <th>Logo</th>
+                    <th>Details</th>
+                    <th>Status</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -76,40 +78,32 @@
                     <td>{{ $index + 1 }}.</td>
                     <td>{{ $job->job_profile }}</td>
                     <td>{{ $job->company_name }}</td>
-                    <td>
-                        <a href="mailto:{{ $job->company_email }}">
-                            {{ $job->company_email }}
-                        </a>
-                    </td>
-                    <td>
-                        <a href="tel:+91{{ $job->company_phone }}">
-                            {{ $job->company_phone }}
-                        </a>
-                    </td>
+                    <td><a href="mailto:{{ $job->company_email }}">{{ $job->company_email }}</a></td>
+                    <td><a href="tel:+91{{ $job->company_phone }}">{{ $job->company_phone }}</a></td>
                     <td>{{ $job->job_experience }}</td>
                     <td>
-                        <img src="{{ asset('uploads/logos/'. $job->logo) }}" alt="job" width="100" class="img-fluid">
+                        <img src="{{ asset('uploads/logos/' . $job->logo) }}" alt="Logo" width="80" class="img-thumbnail">
                     </td>
                     <td>
-                        <button type="button" class="btn btn-primary open-modal" data-detail="{{ strip_tags($job->job_detail) }}">View Details</button>
+                        <button type="button" class="btn btn-sm btn-primary open-modal" data-detail="{{ htmlentities($job->job_detail) }}">
+                            View Details
+                        </button>
                     </td>
                     <td>
                         @if ($job->job_status == 1)
-                        <button class="btn btn-success">Active</button>
+                            <span class="badge bg-success">Active</span>
                         @else
-                        <button class="btn btn-secondary">Inactive</button>
+                            <span class="badge bg-secondary">Inactive</span>
                         @endif
                     </td>
-                    <td>
-                        <a href="{{ route('jobopenings.edit', $job->id) }}" class="btn btn-light rounded-circle">
+                    <td class="d-flex gap-2">
+                        <a href="{{ route('jobopenings.edit', $job->id) }}" class="btn btn-light rounded-circle" title="Edit">
                             <i class="fa-solid fa-pencil"></i>
                         </a>
-                        <!-- Check permission for delete -->
-                        <form action="{{ route('jobopenings.destroyjob', $job->id) }}" method="POST" style="display:inline;">
+                        <form action="{{ route('jobopenings.destroyjob', $job->id) }}" method="POST" onsubmit="return confirm('Are you sure?')">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" title="Delete Job" onclick="return confirm('Are you sure you want to delete this job?')"
-                                class="btn btn-danger rounded-circle">
+                            <button type="submit" class="btn btn-danger rounded-circle" title="Delete">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         </form>
@@ -119,11 +113,13 @@
             </tbody>
         </table>
     </div>
-    <!-- The Modal -->
-    <div id="myModal" class="modal">
+
+    <!-- Modal -->
+    <div id="myModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-hidden="true">
         <div class="modal-content">
-            <span class="close">&times;</span>
-            <p id="modal-detail"></p>
+            <span class="close" aria-label="Close">&times;</span>
+            <h5 id="modalTitle" class="mb-3">Job Description</h5>
+            <div id="modal-detail" style="white-space: pre-wrap;"></div>
         </div>
     </div>
 </main>
@@ -131,26 +127,27 @@
 
 @push('script')
 <script>
-    var modal = document.getElementById("myModal");
-    var btns = document.getElementsByClassName("open-modal");
-    var span = document.getElementsByClassName("close")[0];
-    var modalDetail = document.getElementById("modal-detail");
+    const modal = document.getElementById("myModal");
+    const modalDetail = document.getElementById("modal-detail");
+    const closeModalBtn = document.querySelector(".close");
 
-    Array.from(btns).forEach(function(btn) {
-        btn.onclick = function() {
+    // Open modal
+    document.querySelectorAll(".open-modal").forEach(btn => {
+        btn.addEventListener("click", function () {
             modal.style.display = "block";
-            modalDetail.textContent = this.getAttribute("data-detail");
-        }
+            modalDetail.innerHTML = this.getAttribute("data-detail");
+        });
     });
 
-    span.onclick = function() {
+    // Close modal
+    closeModalBtn.addEventListener("click", () => {
         modal.style.display = "none";
-    }
+    });
 
-    window.onclick = function(event) {
-        if (event.target == modal) {
+    window.addEventListener("click", function (event) {
+        if (event.target === modal) {
             modal.style.display = "none";
         }
-    }
+    });
 </script>
 @endpush
