@@ -6,10 +6,22 @@
 @section('title', 'Add University - CV Admin')
 
 @section('main')
+    <style>
+        .page_title {
+            font-size: 1.6rem;
+            font-weight: 600;
+        }
+
+        .section_title {
+            font-size: 1.1rem;
+            color: #6c757d;
+        }
+    </style>
+
     <main class="container py-4">
         @include('admin.components.response')
 
-        <form action="/admin/university/add" method="post">
+        <form action="/admin/university/add" method="post" enctype="multipart/form-data">
             @csrf
             <h5 class="page_title mb-3">Add University</h5>
             <p class="text-muted text-center mb-4">You can add a university here by filling out the form. <b
@@ -30,6 +42,7 @@
             @endif
 
             <section class="panel">
+                <h5 class="section_title">University Basic Details</h5>
                 {{-- Name & URL --}}
                 <div class="row g-3 mb-3">
                     <div class="col-md-6">
@@ -119,6 +132,53 @@
                     @error('univ_address') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
             </section>
+            <section class="panel">
+                <h5 class="section_title">University Other Info</h5>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Established Year <span class="text-danger">*</span></label>
+                        <input type="number" min="1800" max="{{ date('Y') }}" class="form-control" name="univ_established_year" 
+                               value="{{ old('univ_established_year') }}" placeholder="e.g., 1990" required>
+                        @error('univ_established_year') <small class="text-danger">{{ $message }}</small> @enderror
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Approved/Recognised by <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="univ_approved_by" 
+                               value="{{ old('univ_approved_by') }}" placeholder="e.g., UGC, AICTE" required>
+                        @error('univ_approved_by') <small class="text-danger">{{ $message }}</small> @enderror
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Accreditation <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="univ_accreditation" 
+                               value="{{ old('univ_accreditation') }}" placeholder="e.g., NAAC A+" required>
+                        @error('univ_accreditation') <small class="text-danger">{{ $message }}</small> @enderror
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Programs Offered</label>
+                        <textarea class="form-control" name="univ_programs_offered" rows="3" 
+                                 placeholder="List of programs offered by the university">{{ old('univ_programs_offered') }}</textarea>
+                        @error('univ_programs_offered') <small class="text-danger">{{ $message }}</small> @enderror
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">University Logo <span class="text-danger">*</span></label>
+                        <input type="file" class="form-control" name="univ_logo" accept="image/*" required>
+                        <small class="text-muted">Recommended size: 200x200px, Max size: 2MB</small>
+                        @error('univ_logo') <small class="text-danger d-block">{{ $message }}</small> @enderror
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">University Banner <span class="text-danger">*</span></label>
+                        <input type="file" class="form-control" name="univ_image" accept="image/*" required>
+                        <small class="text-muted">Recommended size: 1200x400px, Max size: 5MB</small>
+                        @error('univ_image') <small class="text-danger d-block">{{ $message }}</small> @enderror
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Gallery Images</label>
+                        <input type="file" class="form-control" name="univ_gallery[]" multiple accept="image/*">
+                        <small class="text-muted">You can select multiple images. Max size per image: 5MB</small>
+                        @error('univ_gallery.*') <small class="text-danger d-block">{{ $message }}</small> @enderror
+                    </div>
+                </div>
+            </section>
 
             <input type="hidden" name="courses[]" value="">
 
@@ -127,21 +187,6 @@
             </div>
         </form>
     </main>
-
-    @push('style')
-        <style>
-            .page_title {
-                font-size: 1.6rem;
-                font-weight: 600;
-            }
-
-            .section_title {
-                font-size: 1.1rem;
-                color: #6c757d;
-            }
-        </style>
-    @endpush
-
 
     @push('script')
         <script>

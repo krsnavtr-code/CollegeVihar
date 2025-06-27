@@ -40,6 +40,10 @@ class University extends Model
         'univ_slug',
         'univ_detail_added',
         'brochure',
+        'univ_established_year',
+        'univ_approved_by',
+        'univ_accreditation',
+        'univ_programs_offered'
     ];
 
     protected $casts = [
@@ -98,6 +102,14 @@ class University extends Model
     {
         return $this->hasMany(UniversityCourse::class, 'university_id')
             ->with(['metadata:id,url_slug', 'course:id,course_name,course_duration,course_online,course_status']);
+    }
+
+    /**
+     * Get the gallery images for the university.
+     */
+    public function gallery()
+    {
+        return $this->hasMany(UniversityGallery::class, 'university_id');
     }
 
     /**

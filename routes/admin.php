@@ -231,11 +231,7 @@ Route::middleware('ensurePermission')->group(function () {
                     ];
                     return view("admin.university.add_univ_details", $data);
                 });
-                Route::post("", function (Request $request) {
-                    $result = UniversityController::addUniversityDetail($request);
-                    session()->flash('success', $result['success']);
-                    return redirect("/admin/university");
-                });
+                Route::post("", [UniversityController::class, 'editUniversity']);
             });
         });
         Route::prefix("edit")->group(function () {
@@ -269,19 +265,25 @@ Route::middleware('ensurePermission')->group(function () {
                     return (array)$state;
                 })->toArray();
                 
+                // Load gallery images for the university
+                $university_galleries = DB::table('university_galleries')
+                    ->where('university_id', $univ_id)
+                    ->get();
+                    
                 $data = [
                     'courses' => $allCourses,
                     'coursesByType' => $coursesByType,
                     'university' => $university,
-                    'states' => $states
+                    'states' => $states,
+                    'university_galleries' => $university_galleries
                 ];
                 
                 return view("admin.university.edit_univ", $data);
             });
             Route::post("", function (Request $request) {
                 $result = UniversityController::editUniversity($request);
-                session()->flash('success', $result['success']);
-                return redirect()->back();
+                // The editUniversity method now returns a redirect response directly
+                return $result;
             });
             Route::prefix("details")->group(function () {
                 Route::get("{id}", function ($id) {

@@ -207,6 +207,97 @@
             </div>
         </section>
 
+        <!-- University Other Info Section -->
+        <section class="panel">
+            <h3 class="section_title">University Other Info</h3>
+            <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">Established Year</label>
+                    <input type="number" min="1800" max="{{ date('Y') }}" class="form-control" 
+                           name="univ_established_year" placeholder="e.g., 1990" required
+                           value="{{ $university['univ_established_year'] ?? '' }}">
+                    @error('univ_established_year') <small class="text-danger">{{ $message }}</small> @enderror
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Approved/Recognised by</label>
+                    <input type="text" class="form-control" name="univ_approved_by" 
+                           placeholder="e.g., UGC, AICTE" required
+                           value="{{ $university['univ_approved_by'] ?? '' }}">
+                    @error('univ_approved_by') <small class="text-danger">{{ $message }}</small> @enderror
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Accreditation <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="univ_accreditation" 
+                           placeholder="e.g., NAAC A+" required
+                           value="{{ $university['univ_accreditation'] ?? '' }}">
+                    @error('univ_accreditation') <small class="text-danger">{{ $message }}</small> @enderror
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Programs Offered</label>
+                    <textarea class="form-control" name="univ_programs_offered" rows="3" 
+                             placeholder="List of programs offered by the university">{{ $university['univ_programs_offered'] ?? '' }}</textarea>
+                    @error('univ_programs_offered') <small class="text-danger">{{ $message }}</small> @enderror
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">University Logo</label>
+                    @if($university['univ_logo'])
+                        <div class="mb-2">
+                            <img src="{{ asset($university['univ_logo']) }}" alt="University Logo" 
+                                 style="max-height: 100px; max-width: 200px;" class="img-thumbnail">
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" name="remove_logo" id="remove_logo">
+                                <label class="form-check-label" for="remove_logo">Remove current logo</label>
+                            </div>
+                        </div>
+                    @endif
+                    <input type="file" class="form-control" name="univ_logo" accept="image/*">
+                    <small class="text-muted">Leave blank to keep current. Recommended size: 200x200px, Max size: 2MB</small>
+                    @error('univ_logo') <small class="text-danger d-block">{{ $message }}</small> @enderror
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">University Banner</label>
+                    @if($university['univ_image'])
+                        <div class="mb-2">
+                            <img src="{{ asset($university['univ_image']) }}" alt="University Banner" 
+                                 style="max-height: 100px; max-width: 100%;" class="img-thumbnail">
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" name="remove_banner" id="remove_banner">
+                                <label class="form-check-label" for="remove_banner">Remove current banner</label>
+                            </div>
+                        </div>
+                    @endif
+                    <input type="file" class="form-control" name="univ_image" accept="image/*">
+                    <small class="text-muted">Leave blank to keep current. Recommended size: 1200x400px, Max size: 5MB</small>
+                    @error('univ_image') <small class="text-danger d-block">{{ $message }}</small> @enderror
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Gallery Images</label>
+                    @if($university->gallery->count() > 0)
+                        <div class="row mb-3">
+                            @foreach($university->gallery as $image)
+                                <div class="col-md-3 mb-2 position-relative">
+                                    <img src="{{ asset($image->image_path) }}" alt="Gallery Image" 
+                                         class="img-thumbnail" style="height: 100px; width: 100%; object-fit: cover;">
+                                    <div class="form-check position-absolute" style="top: 5px; right: 5px;">
+                                        <input class="form-check-input" type="checkbox" 
+                                               name="deleted_gallery[]" value="{{ $image->id }}" 
+                                               id="delete_gallery_{{ $image->id }}">
+                                        <label class="form-check-label" for="delete_gallery_{{ $image->id }}" 
+                                               title="Delete this image" style="cursor: pointer;">
+                                            <i class="fas fa-times text-danger"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                    <input type="file" class="form-control" name="univ_gallery[]" multiple accept="image/*">
+                    <small class="text-muted">Upload additional images. You can select multiple images. Max size per image: 5MB</small>
+                    @error('univ_gallery.*') <small class="text-danger d-block">{{ $message }}</small> @enderror
+                </div>
+            </div>
+        </section>
+
         <section class="panel">
             <h3 class="section_title">Info: {{ $university['univ_name'] }}</h3>
             @php
