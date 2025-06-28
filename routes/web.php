@@ -196,16 +196,17 @@ Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 Route::get('/employment-details/{id}', [UserController::class, 'showEmploymentForm'])->name('employment.details');
 Route::post('/employment-details-submit', [UserController::class, 'submitEmploymentDetails']);
 
+// Test route - remove after testing
+Route::get('/test-university-store', function() {
+    return 'University store test route is working';
+})->name('test.university.store');
 
-// Route::middleware(['check_user_active'])->group(function () {
- 
-   
-    
-// });
+// Test form submission
+Route::get('/test-university-form', function() {
+    return view('admin.university.test_form');
+});
 
-Route::get('/universal-login', function() {
-    return view('user.info.universal-login');
-})->name('universal-login');
+Route::post('/test-university-submit', [\App\Http\Controllers\backend\UniversityController::class, 'testStore'])->name('test.university.submit');
 
 Route::post('/return-to-login', [UserController::class, 'returnToLogin']);
 

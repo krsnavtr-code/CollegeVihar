@@ -645,6 +645,138 @@ class UniversityController extends Controller
             ->with('success', 'University details updated successfully!');
     }
 
+    /**
+     * Store University Details
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function storeUniversityDetails(Request $request)
+    {
+        try {
+            // Debug: Log the request data
+            Log::info('University Details Form Submitted', [
+                'request_data' => $request->except(['_token'])
+            ]);
+            
+            $validator = Validator::make($request->all(), [
+                'univ_id' => 'required|exists:universities,id',
+                'univ_desc' => 'nullable|array',
+                'univ_campus_area' => 'nullable|array',
+                'univ_student_strength' => 'nullable|array',
+                'univ_faculty_strength' => 'nullable|array',
+                'univ_highlights' => 'nullable|array',
+                'univ_admission' => 'nullable|array',
+                'univ_important_dates' => 'nullable|array',
+                'univ_placement' => 'nullable|array',
+                'univ_scholarship' => 'nullable|array',
+                'univ_facilities' => 'nullable|array',
+                'univ_gallery' => 'nullable|array',
+                'univ_career_guidance' => 'nullable|array',
+                'univ_top_recruiters' => 'nullable|array',
+                'univ_why_this_university' => 'nullable|array',
+                'univ_faqs' => 'nullable|array',
+                'univ_facts' => 'nullable|array',
+                'univ_adv' => 'nullable|array',
+                'industry' => 'nullable|array',
+                'carrier' => 'nullable|array',
+                'meta_title' => 'nullable|string|max:60',
+                'meta_description' => 'nullable|string|max:160',
+                'meta_keywords' => 'nullable|string',
+                'meta_h1' => 'nullable|string',
+                'univ_detail_added' => 'nullable|boolean',
+            ]);
+
+            if ($validator->fails()) {
+                // Debug: Log validation errors
+                Log::error('Validation failed', [
+                    'errors' => $validator->errors()->toArray(),
+                    'input' => $request->except(['_token'])
+                ]);
+                
+                return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+
+            $university = University::findOrFail($request->univ_id);
+            
+            // Get all input data except files
+            $input = $request->except(['_token']);
+            
+            // Clean up any file references in the input arrays
+            $cleanArray = function(&$array) use (&$cleanArray) {
+                if (is_array($array)) {
+                    foreach ($array as $key => &$value) {
+                        if (is_array($value)) {
+                            $cleanArray($value);
+                        } elseif ($value instanceof \Illuminate\Http\UploadedFile) {
+                            unset($array[$key]);
+                        }
+                    }
+                }
+                return $array;
+            };
+            
+            // Clean the input array
+            $input = $cleanArray($input);
+
+            // Prepare data for JSON fields using the processed input array
+            $university->univ_description = $input['univ_desc'] ?? [];
+            $university->univ_campus_area = $input['univ_campus_area'] ?? [];
+            $university->univ_student_strength = $input['univ_student_strength'] ?? [];
+            $university->univ_faculty_strength = $input['univ_faculty_strength'] ?? [];
+            $university->univ_highlights = $input['univ_highlights'] ?? [];
+            $university->univ_admission = $input['univ_admission'] ?? [];
+            $university->univ_important_dates = $input['univ_important_dates'] ?? [];
+            $university->univ_placement = $input['univ_placement'] ?? [];
+            $university->univ_scholarship = $input['univ_scholarship'] ?? [];
+            $university->univ_facilities = $input['univ_facilities'] ?? [];
+            $university->univ_gallery = $input['univ_gallery'] ?? [];
+            $university->univ_career_guidance = $input['univ_career_guidance'] ?? [];
+            $university->univ_top_recruiters = $input['univ_top_recruiters'] ?? [];
+            $university->univ_why_this_university = $input['univ_why_this_university'] ?? [];
+            $university->univ_faqs = $input['univ_faqs'] ?? [];
+            $university->univ_facts = $input['univ_facts'] ?? [];
+            $university->univ_advantage = $input['univ_adv'] ?? [];
+            $university->univ_industry = $input['industry'] ?? [];
+            $university->univ_carrier = $input['carrier'] ?? [];
+            
+            // Update or create metadata
+            $metadata = [
+                'meta_title' => $request->input('meta_title', $university->univ_name),
+                'meta_description' => $request->input('meta_description', $university->univ_name . ' - University Details'),
+                'meta_keywords' => $request->input('meta_keywords', $university->univ_name . ', University, Education'),
+                'meta_h1' => $request->input('meta_h1', $university->univ_name),
+                'url_slug' => Str::slug($university->univ_name),
+            ];
+            
+            $university->metadata()->updateOrCreate(
+                ['url_slug' => $metadata['url_slug']],
+                $metadata
+            );
+            
+            // Update university status
+            $university->univ_detail_added = 1;
+            $university->save();
+            
+            return redirect()->route('admin.university.details.edit', $university->id)
+                ->with('success', 'University details updated successfully!');
+                
+        } catch (\Exception $e) {
+            // Debug: Log the exception
+            Log::error('Error saving university details', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'input' => $request->except(['_token'])
+            ]);
+            
+            return redirect()->back()
+                ->with('error', 'An error occurred while saving the university details: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
+
     /* Permanent Delete University */
     static function deleteUniversity($univId)
     {
@@ -931,7 +1063,63 @@ class UniversityController extends Controller
         ]);
     }
 
+    
+    /**
+     * Handle test form submission
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function testStore(Request $request)
+    {
+        try {
+            Log::info('Test form submitted', $request->all());
+            
+            $validator = Validator::make($request->all(), [
+                'univ_id' => 'required|exists:universities,id',
+                'univ_name' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+
+            if ($validator->fails()) {
+                Log::error('Validation failed', $validator->errors()->toArray());
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+
+            $university = University::find($request->univ_id);
+            
+            if (!$university) {
+                Log::error('University not found', ['id' => $request->univ_id]);
+                return redirect()->back()->with('error', 'University not found')->withInput();
+            }
+
+            $university->univ_name = $request->univ_name;
+            $university->description = $request->description;
+            
+            if ($request->hasFile('logo')) {
+                $logo = $request->file('logo');
+                $logoName = time() . '_' . $logo->getClientOriginalName();
+                $logo->move(public_path('images/university/logo'), $logoName);
+                $university->logo = 'images/university/logo/' . $logoName;
+            }
+            
+            $university->save();
+            
+            Log::info('University updated successfully', ['id' => $university->id]);
+            
+            return redirect()->back()->with('success', 'University details updated successfully!');
+            
+        } catch (\Exception $e) {
+            Log::error('Error in testStore', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'input' => $request->except(['_token'])
+            ]);
+            
+            return redirect()->back()
+                ->with('error', 'An error occurred: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
 }
-
-
-

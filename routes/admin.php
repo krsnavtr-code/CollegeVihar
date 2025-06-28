@@ -43,9 +43,10 @@ use App\Http\Controllers\backend\MetadataConroller;
 Route::post('/update-slug', [\App\Http\Controllers\backend\MetadataConroller::class, 'updateSlug'])->name('admin.update-slug');
 
 // Course status toggle route (temporarily outside middleware for testing)
-Route::post('admin/course/toggle-status/{id}', function ($id) {
+Route::post('course/toggle-status/{id}', function ($id) {
     return response()->json(\App\Http\Controllers\backend\courseController::toggleCourseStatus($id));
 })->name('admin.course.toggle-status');
+
 
 Route::prefix('/admin/email')->group(function () {  
     Route::get('/send-email', [EmailController::class, 'showEmailForm'])->name('admin.email');
@@ -172,9 +173,18 @@ Route::prefix('reports')->name('admin.reports.')->group(function () {
     })->name('custom');
 });
 
+// Test route - remove after testing
+Route::get('/test-route', function() {
+    return 'Test route is working';
+});
+
+// University Details Store Route (temporarily outside middleware for testing)
+Route::post('university/details/store', [\App\Http\Controllers\backend\UniversityController::class, 'storeUniversityDetails'])
+    ->name('admin.university.details.store');
+
 Route::middleware('ensurePermission')->group(function () {
     // University Routes
-    Route::prefix("/university")->group(function () {
+    Route::prefix("university")->group(function () {
         Route::get("", function (Request $request) {
             $universities = UniversityController::getUniversities($request);
             return view("admin.university.view_univ", [
@@ -234,19 +244,26 @@ Route::middleware('ensurePermission')->group(function () {
                 Route::post("", [UniversityController::class, 'editUniversity']);
             });
         });
+        // University Edit Routes
         Route::prefix("edit")->group(function () {
+            // Edit University Form
             Route::get("{univ_id}", function ($univ_id) {
                 $allCourses = Course::all()->toArray();
-                $university = University::with('courses')->find($univ_id)->toArray();
+                $university = University::with('courses')->find($univ_id);
                 
-                // Group courses by their type
+                if (!$university) {
+                    return redirect()->back()->with('error', 'University not found');
+                }
+                
+                $university = $university->toArray();
+                
                 $groupedCourses = [
-                    'UG' => ['UG'],
-                    'PG' => ['PG'],
-                    'DIPLOMA' => ['Diploma'],
-                    'CERTIFICATION' => ['Certification'],
-                    'TECHNICAL' => ['TECHNICAL COURSES'],
-                    'MANAGEMENT' => ['MANAGEMENT COURSES'],
+                    'ENGINEERING' => ['ENGINEERING COURSES', 'ENGINEERING & TECHNOLOGY', 'ENGINEERING AND TECHNOLOGY'],
+                    'MANAGEMENT' => ['MANAGEMENT COURSES', 'MANAGEMENT STUDIES', 'MANAGEMENT'],
+                    'SCIENCE' => ['SCIENCE COURSES', 'SCIENCE & TECHNOLOGY', 'SCIENCE AND TECHNOLOGY'],
+                    'ARTS' => ['ARTS COURSES', 'ARTS & HUMANITIES', 'ARTS AND HUMANITIES'],
+                    'COMMERCE' => ['COMMERCE COURSES', 'COMMERCE & BUSINESS STUDIES', 'COMMERCE AND BUSINESS STUDIES'],
+                    'LAW' => ['LAW COURSES', 'LAW & LEGAL STUDIES', 'LAW AND LEGAL STUDIES'],
                     'MEDICAL' => ['MEDICAL COURSES'],
                     'TRADITIONAL' => ['TRADITIONAL COURSES']
                 ];
@@ -280,52 +297,87 @@ Route::middleware('ensurePermission')->group(function () {
                 
                 return view("admin.university.edit_univ", $data);
             });
+            
+            // Update University
             Route::post("", function (Request $request) {
                 $result = UniversityController::editUniversity($request);
                 // The editUniversity method now returns a redirect response directly
                 return $result;
             });
-            Route::prefix("details")->group(function () {
-                Route::get("{id}", function ($id) {
-                    $university = University::with('metadata')->find($id);
+        });
+        
+        // University Details Management
+        Route::prefix('details')->group(function() {
+            // Add University Details Form
+            Route::get('add/{univ_id}', function ($univ_id) {
+                $university = University::find($univ_id);
+                if (!$university) {
+                    return redirect()->back()->with('error', 'University not found');
+                }
+                return view('admin.university.add_univ_details', compact('university'));
+            })->name('admin.university.details.add');
+
+            // Edit University Details
+            Route::get('edit/{id}', function ($id) {
+                $university = University::with('metadata')->find($id);
+                
+                if (!$university) {
+                    return redirect('/admin/university')->with('error', 'University not found');
+                }
+                
+                $universityData = $university->toArray();
+                
+                // Ensure metadata is always an array
+                if (!isset($universityData['metadata']) || !is_array($universityData['metadata'])) {
+                    $universityData['metadata'] = [];
+                }
+                
+                // Ensure url_slug exists in metadata
+                if (!isset($universityData['metadata']['url_slug'])) {
+                    $universityData['metadata']['url_slug'] = '';
+                }
+                
+                // Get states with the correct field name
+                $states = State::select(['id', 'state_name'])->get()->toArray();
+                
+                // Ensure univ_state is set in university data
+                if (!isset($universityData['univ_state'])) {
+                    $universityData['univ_state'] = '';
+                }
+                
+                $data = [
+                    "university" => $universityData,
+                    "states" => $states,
+                ];
+                
+                return view("admin.university.edit_univ_details", $data);
+            })->name('admin.university.details.edit');
+            
+            // Update University Details
+            Route::post('update/{id}', function (Request $request, $id) {
+                try {
+                    $response = UniversityController::editUniversityDetail($request);
                     
-                    if (!$university) {
-                        return redirect('/admin/university')->with('error', 'University not found');
+                    // If the response is a RedirectResponse, return it directly
+                    if ($response instanceof \Illuminate\Http\RedirectResponse) {
+                        return $response;
                     }
                     
-                    $universityData = $university->toArray();
-                    
-                    // Ensure metadata is always an array
-                    if (!isset($universityData['metadata']) || !is_array($universityData['metadata'])) {
-                        $universityData['metadata'] = [];
+                    // If it's an array, handle the success/error messages
+                    if (is_array($response)) {
+                        if (isset($response['success']) && $response['success']) {
+                            session()->flash('success', $response['message'] ?? 'University details updated successfully');
+                        } else {
+                            session()->flash('error', $response['message'] ?? 'Failed to update university details');
+                        }
                     }
                     
-                    // Ensure url_slug exists in metadata
-                    if (!isset($universityData['metadata']['url_slug'])) {
-                        $universityData['metadata']['url_slug'] = '';
-                    }
-                    
-                    // Get states with the correct field name
-                    $states = State::select(['id', 'state_name'])->get()->toArray();
-                    
-                    // Ensure univ_state is set in university data
-                    if (!isset($universityData['univ_state'])) {
-                        $universityData['univ_state'] = '';
-                    }
-                    
-                    $data = [
-                        "university" => $universityData,
-                        "states" => $states,
-                    ];
-                    
-                    return view("admin.university.edit_univ_details", $data);
-                });
-                Route::post("", function (Request $request) {
-                    $result = UniversityController::editUniversityDetail($request);
-                    session()->flash('success', $result['success']);
                     return redirect()->back();
-                });
-            });
+                } catch (\Exception $e) {
+                    session()->flash('error', 'An error occurred while updating university details');
+                    return redirect()->back();
+                }
+            })->name('admin.university.details.update');
         });
         
         Route::get('delete/{univ_id}', function ($univ_id) {
@@ -927,6 +979,7 @@ Route::middleware('ensurePermission')->group(function () {
         });
     });
     
+    // Admin Pages
     Route::prefix("/adminpage")->group(function () {
         Route::get("", function () {
             return view("admin.working");
@@ -944,14 +997,7 @@ Route::middleware('ensurePermission')->group(function () {
         });
     });
 
-
-
-    
-
-    // Route::prefix("/adminpage")->group(function () {
-    //     Route::get("", function () {
-    //     });
-    // });
+    // Mock Test Routes
     Route::prefix('mock-test')->group(function () {
         Route::get('/', [MockTestController::class, 'index'])->name('admin.mock-test.index');
         Route::get('/view/{id}', [MockTestController::class, 'show'])->name('admin.mock-test.show');
@@ -961,4 +1007,4 @@ Route::middleware('ensurePermission')->group(function () {
         Route::put('/edit/{id}', [MockTestController::class, 'update'])->name('admin.mock-test.update');
         Route::delete('/delete/{id}', [MockTestController::class, 'destroy'])->name('admin.mock-test.delete');
     });
-});
+}); // End of ensurePermission middleware group
