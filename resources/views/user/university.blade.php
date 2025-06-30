@@ -211,19 +211,9 @@
                                                         Overview
                                                     </button>
                                                     <button class="btn btn-sm btn-outline-primary" data-bs-toggle="collapse"
-                                                        data-bs-target="#rankings-{{ $index }}" aria-expanded="false"
-                                                        aria-controls="rankings-{{ $index }}">
-                                                        Rankings
-                                                    </button>
-                                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="collapse"
                                                         data-bs-target="#popular-courses-{{ $index }}" aria-expanded="false"
                                                         aria-controls="popular-courses-{{ $index }}">
                                                         Popular Courses
-                                                    </button>
-                                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="collapse"
-                                                        data-bs-target="#ranking-{{ $index }}" aria-expanded="false"
-                                                        aria-controls="ranking-{{ $index }}">
-                                                        Ranking Info
                                                     </button>
                                                 </div>
 
@@ -305,64 +295,10 @@
                                                             </article>
                                                         </div>
                                                     </div>
-                                                    <div id="rankings-{{ $index }}" class="accordion-collapse collapse"
-                                                        data-bs-parent="#accordion-{{ $index }}">
-                                                        <article class="p-2">
-                                                            <p class="univ_titles">Rankings of {{ $university['univ_name'] }}</p>
-                                                            <p>{{ $university['univ_name'] }} has consistently ranked among the top
-                                                                private universities in India by various reputed agencies. Here's a
-                                                                look at its recent rankings:</p>
-
-                                                            <div class="table-responsive">
-                                                                <table class="table rankings-table">
-                                                                    <thead>
-                                                                        <tr>
-                                                                            <th>Ranking Body</th>
-                                                                            <th>Category</th>
-                                                                            <th>Rank / Band</th>
-                                                                            <th>Year</th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                        <tr>
-                                                                            <td>NIRF (Ministry of Education)</td>
-                                                                            <td>Engineering (India)</td>
-                                                                            <td>101-150 Band</td>
-                                                                            <td>2023</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td>India Today</td>
-                                                                            <td>Private Universities</td>
-                                                                            <td>17th</td>
-                                                                            <td>2022</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td>IIRF Ranking</td>
-                                                                            <td>Overall Private Universities</td>
-                                                                            <td>35th</td>
-                                                                            <td>2023</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td>Outlook-ICARE</td>
-                                                                            <td>Engineering (Private)</td>
-                                                                            <td>16th</td>
-                                                                            <td>2022</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td>Times Engineering</td>
-                                                                            <td>Top Private Engineering Colleges</td>
-                                                                            <td>10th</td>
-                                                                            <td>2021</td>
-                                                                        </tr>
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-                                                        </article>
-                                                    </div>
                                                     <div id="popular-courses-{{ $index }}" class="accordion-collapse collapse"
                                                         data-bs-parent="#accordion-{{ $index }}">
                                                         <article class="p-2">
-                                                            <p class="univ_titles">Popular Courses at Manipal University Jaipur</p>
+                                                            <p class="univ_titles">Popular Courses at {{ $university['univ_name'] }}</p>
 
                                                             <!-- Undergraduate Programs -->
                                                             <h5 class="mt-3 text-primary">Undergraduate Programs</h5>

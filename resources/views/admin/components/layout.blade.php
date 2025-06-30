@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="/css/utils.php">
     <link rel="stylesheet" href="/css/my-admin.css">
     @stack('css')
+    @stack('styles')
 
 
     <style>

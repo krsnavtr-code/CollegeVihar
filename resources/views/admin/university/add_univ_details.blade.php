@@ -1,333 +1,9 @@
 @extends('admin.components.layout')
 @section('title', 'Add University Details - CV Admin')
 
-<style>
-    /* Form sections */
-    .section-form {
-        margin-bottom: 2.5rem;
-        background: #ffffff;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        padding: 1.5rem;
-        border: 1px solid #e0e0e0;
-    }
-    
-    /* Section headers */
-    .section-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-        padding-bottom: 0.75rem;
-        border-bottom: 1px solid #eaeaea;
-    }
-    
-    .section-header h3 {
-        margin: 0;
-        color: #2c3e50;
-        font-size: 1.25rem;
-        font-weight: 600;
-    }
-    
-    /* Buttons */
-    .btn-save, .btn.btn-sm.btn-primary {
-        padding: 0.5rem 1.25rem;
-        background: #4a90e2;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 0.9rem;
-        font-weight: 500;
-        display: inline-flex;
-        align-items: center;
-        transition: all 0.2s ease;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    
-    .btn-save:hover, .btn.btn-sm.btn-primary:hover {
-        background: #357abd;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    
-    .btn-save:disabled, .btn.btn-sm.btn-primary:disabled {
-        background: #cccccc;
-        cursor: not-allowed;
-        transform: none;
-        box-shadow: none;
-        opacity: 0.7;
-    }
-    
-    /* Form fields */
-    .field {
-        margin-bottom: 1.5rem;
-        position: relative;
-    }
-    
-    .field label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 500;
-        color: #333;
-        font-size: 0.95rem;
-    }
-    
-    .field-wrapper {
-        position: relative;
-        width: 100%;
-    }
-    
-    .field textarea {
-        width: 100%;
-        min-height: 120px;
-        padding: 12px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        resize: none;
-        overflow: hidden;
-        font-family: inherit;
-        font-size: 14px;
-        line-height: 1.5;
-        transition: all 0.2s;
-    }
-    
-    .field textarea:focus {
-        outline: none;
-        border-color: #4a90e2;
-        box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
-    }
-    
-    /* Remove field button */
-    .remove-field {
-        position: absolute;
-        right: 10px;
-        top: 10px;
-        background: #ff4444;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 24px;
-        height: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        padding: 0;
-        opacity: 0.8;
-        transition: all 0.2s;
-    }
-    
-    .remove-field:hover {
-        opacity: 1;
-        background: #cc0000;
-        transform: scale(1.1);
-    }
-    
-    /* Alert messages */
-    .alert {
-        padding: 12px 16px;
-        margin-bottom: 1.5rem;
-        border-radius: 4px;
-        font-size: 14px;
-    }
-    
-    .alert-success {
-        background-color: #d4edda;
-        color: #155724;
-        border: 1px solid #c3e6cb;
-    }
-    
-    /* Panel styling */
-    .panel {
-        background: white;
-        border-radius: 6px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    }
-    
-    .section_title {
-        margin-top: 0;
-        margin-bottom: 1.5rem;
-        padding-bottom: 0.75rem;
-        border-bottom: 1px solid #eee;
-        color: #444;
-        font-size: 1.1rem;
-    }
-    
-    /* Loading spinner */
-    .fa-spinner {
-        margin-right: 6px;
-    }
-    
-    .alert {
-        padding: 1rem;
-        margin-bottom: 1.5rem;
-        border-radius: 4px;
-    }
-    
-    .alert-success {
-        background-color: #d4edda;
-        color: #155724;
-        border: 1px solid #c3e6cb;
-    }
-    
-    .alert-danger {
-        background-color: #f8d7da;
-        color: #721c24;
-        border: 1px solid #f5c6cb;
-    }
-    
-    .alert ul {
-        margin: 0;
-        padding-left: 1.5rem;
-    }
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: #f9f9f9;
-    }
-
-    main {
-        padding: 2rem;
-        max-width: 1000px;
-        margin: auto;
-    }
-
-    .panel {
-        background: #fff;
-        padding: 1.5rem;
-        border-radius: 10px;
-        margin-bottom: 2rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    }
-
-    .section_title {
-        font-size: 1.25rem;
-        font-weight: 600;
-        margin-bottom: 1rem;
-        color: #333;
-    }
-
-    .field,
-    .field_group {
-        margin-bottom: 1rem;
-    }
-
-    .field label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 500;
-    }
-
-    input[type="text"],
-    input[type="file"],
-    textarea,
-    select {
-        width: 100%;
-        padding: 10px 12px;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-        font-size: 1rem;
-        transition: border-color 0.2s;
-    }
-
-    input:focus,
-    textarea:focus,
-    select:focus {
-        border-color: #5a67d8;
-        outline: none;
-    }
-
-    .field_group {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .cflex {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .aie {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    .img_label {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        cursor: pointer;
-    }
-
-    .img_label img {
-        height: 50px;
-        width: 50px;
-        object-fit: cover;
-        border-radius: 6px;
-        background-color: #eee;
-    }
-
-    .add_field {
-        color: #4a5568;
-        font-size: 1.1rem;
-        cursor: pointer;
-        display: inline-block;
-        margin-top: 10px;
-    }
-
-    .add_field:hover {
-        color: #2b6cb0;
-    }
-
-    button[type="submit"] {
-        padding: 0.75rem 1.5rem;
-        background: #4a90e2;
-        color: #fff;
-        font-size: 1rem;
-        font-weight: 600;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: background 0.2s ease;
-    }
-
-    button[type="submit"]:hover {
-        background: #357ac9;
-    }
-
-    @media (max-width: 768px) {
-        .field_group {
-            flex-direction: column;
-        }
-
-        .aie {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-    }
-
-    input[type="file"] {
-        padding: 10px;
-        background-color: #f0f0f0;
-    }
-
-    input[type="checkbox"] {
-        transform: scale(1.3);
-        margin-right: 0.5rem;
-    }
-
-    .field input:invalid {
-        border-color: #e53e3e;
-    }
-
-    .field input:valid {
-        border-color: #48bb78;
-    }
-</style>
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/university.css') }}">
+@endpush
 
 
 @section('main')
@@ -387,8 +63,8 @@
                     </div>
                 @endif
                 <section class="panel">
-                    <h3 class="section_title">Info: {{ $university['univ_name'] }}</h3>
-                    <div class="text-right" style="margin: 1rem 0;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="section_title">Info: {{ $university['univ_name'] }}</h3>
                         <button type="submit" class="btn-save">Save University Info</button>
                     </div>
                     <div id="desc_container">
@@ -416,15 +92,20 @@
                         @endforeach
                     </div>
                     {{-- Add Field Button --}}
-                    <div class="text-right mt-2">
-                        <button type="button" class="btn btn-sm btn-primary add-description-field">
+                    <div class="mt-2">
+                        <button type="button" class="btn btn-sm btn-primary" onclick="window.addDescriptionField()">
                             <i class="fa-solid fa-plus"></i> Add Another Paragraph
                         </button>
                     </div>
                 </section>
             </form>
 
+            <!-- University Highlights  -->
+            <!-- Overview -->
+            <!-- Year of Establishment -->
+             
 
+            <!-- University Facts -->
             <form id="factsForm" action="{{ route('admin.university.add.details.update.facts') }}" method="post" class="section-form">
                 @csrf
                 <input type="hidden" name="univ_id" value="{{ $university['id'] }}">
@@ -437,8 +118,8 @@
                     </div>
                 @endif
                 <section class="panel" data-name="univ_facts" data-label="Facts">
-                    <h3 class="section_title">Facts: {{ $university['univ_name'] }}</h3>
-                    <div class="text-right" style="margin: 1rem 0;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="section_title">Facts: {{ $university['univ_name'] }}</h3>
                         <button type="submit" class="btn-save">Save University Facts</button>
                     </div>
                     <div class="fields_container">
@@ -465,9 +146,9 @@
                         {{ session('message', 'University advantages updated successfully!') }}
                     </div>
                 @endif
-                <section class="panel">
-                    <h3 class="section_title">Advantages: {{ $university['univ_name'] }}</h3>
-                    <div class="text-right" style="margin: 1rem 0;">
+                <section class="panel" data-name="univ_advantages" data-label="Advantages">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="section_title">Advantages: {{ $university['univ_name'] }}</h3>
                         <button type="submit" class="btn-save">Save Advantages</button>
                     </div>
                     <div class="field cflex">
@@ -513,9 +194,9 @@
                         {{ session('message', 'Industry programs updated successfully!') }}
                     </div>
                 @endif
-                <section class="panel">
-                    <h3 class="section_title">Industry-Ready Programs for Enhanced Career Readiness: {{ $university['univ_name'] }}</h3>
-                    <div class="text-right" style="margin: 1rem 0;">
+                <section class="panel" data-name="univ_industry" data-label="Industry-Ready Programs">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="section_title">Industry-Ready Programs for Enhanced Career Readiness: {{ $university['univ_name'] }}</h3>
                         <button type="submit" class="btn-save">Save Industry Programs</button>
                     </div>
                     <div id="industry-container">
@@ -537,17 +218,14 @@
             <form id="careerGuidanceForm" action="{{ route('admin.university.add.details.update.career-guidance') }}" method="post" class="section-form">
                 @csrf
                 <input type="hidden" name="univ_id" value="{{ $university['id'] }}">
-                <div class="section-header">
-                    <h3>Career Guidance</h3>
-                </div>
                 @if(session('section') === 'career-guidance')
                     <div class="alert alert-success">
                         {{ session('message', 'Career guidance updated successfully!') }}
                     </div>
                 @endif
-                <section class="panel">
-                    <h3 class="section_title">Career Guidance: {{ $university['univ_name'] }}</h3>
-                    <div class="text-right" style="margin: 1rem 0;">
+                <section class="panel" data-name="univ_career_guidance" data-label="Career Guidance">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="section_title">Career Guidance: {{ $university['univ_name'] }}</h3>
                         <button type="submit" class="btn-save">Save Career Guidance</button>
                     </div>
                     <div class="field cflex">
@@ -621,6 +299,12 @@
     </main>
     @push('script')
         <script>
+            // Check if jQuery is loaded
+            if (typeof jQuery == 'undefined') {
+                console.error('jQuery is not loaded');
+            } else {
+                console.log('jQuery version:', jQuery.fn.jquery);
+            }
             // Function to display image preview
             function display_pic(node) {
                 $(`label[for='${node.id}'] img`)[0].src = URL.createObjectURL(node.files[0]);
@@ -680,7 +364,7 @@
                 const container = $('#desc_container');
                 const fieldCount = container.find('.field').length;
                 const newField = $(`
-                    <div class="field">
+                    <div class="field cflex">
                         <label for="desc_${fieldCount + 1}">Paragraph ${fieldCount + 1}</label>
                         <div class="field-wrapper">
                             <textarea oninput="auto_grow(this)" id="desc_${fieldCount + 1}" 
@@ -694,18 +378,62 @@
                 `);
                 container.append(newField);
                 newField[0].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                // Initialize auto-grow for the new textarea
+                auto_grow(newField.find('textarea')[0]);
             }
             
+            // Make the function globally available
+            window.addDescriptionField = function() {
+                console.log('addDescriptionField called');
+                try {
+                    const container = document.getElementById('desc_container');
+                    if (!container) {
+                        console.error('Container not found');
+                        return;
+                    }
+                    
+                    const fieldCount = container.querySelectorAll('.field').length;
+                    const newField = document.createElement('div');
+                    newField.className = 'field cflex';
+                    newField.innerHTML = `
+                        <label for="desc_${fieldCount + 1}">Paragraph ${fieldCount + 1}</label>
+                        <div class="field-wrapper">
+                            <textarea oninput="window.auto_grow(this)" id="desc_${fieldCount + 1}" 
+                                name="univ_description[]" placeholder="Write Here..." 
+                                class="form-control"></textarea>
+                            <button type="button" class="remove-field" onclick="window.removeField(this)">
+                                <i class="fa-solid fa-times"></i>
+                            </button>
+                        </div>
+                    `;
+                    container.appendChild(newField);
+                    newField.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    window.auto_grow(newField.querySelector('textarea'));
+                    console.log('Field added successfully');
+                } catch (error) {
+                    console.error('Error in addDescriptionField:', error);
+                }
+            };
+            
+            window.removeField = function(button) {
+                const field = button.closest('.field');
+                if (field && field.parentElement.querySelectorAll('.field').length > 1) {
+                    field.remove();
+                } else if (field) {
+                    field.querySelector('textarea').value = '';
+                }
+            };
+            
+            window.auto_grow = function(element) {
+                element.style.height = '5px';
+                element.style.height = (element.scrollHeight) + 'px';
+            };
+            
             $(document).ready(function() {
+                console.log('Document ready');
                 // Initialize auto-grow for existing textareas
                 $('textarea').each(function() {
-                    auto_grow(this);
-                });
-                
-                // Handle adding new description fields
-                $(document).on('click', '.add-description-field', function(e) {
-                    e.preventDefault();
-                    addDescriptionField();
+                    window.auto_grow(this);
                 });
                 
                 // Handle adding other fields
