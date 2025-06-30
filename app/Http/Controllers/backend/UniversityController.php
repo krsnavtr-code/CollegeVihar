@@ -577,6 +577,70 @@ class UniversityController extends Controller
             ->with('section', 'popular-courses')
             ->with('message', 'Popular courses updated successfully!');
     }
+    
+    /**
+     * Update university admission process
+     */
+    public function updateAdmissionProcess(Request $request)
+    {
+        $request->validate([
+            'univ_id' => 'required|exists:universities,id',
+            'univ_admission' => 'nullable|string',
+        ]);
+
+        $university = University::findOrFail($request->univ_id);
+        
+        // Clean and prepare the admission content
+        $admissionContent = $request->univ_admission ?? '';
+        
+        // Update the university record
+        $university->univ_admission = $admissionContent;
+        $university->save();
+
+        return back()
+            ->with('section', 'admission')
+            ->with('message', 'Admission process updated successfully!');
+    }
+    
+    /**
+     * Update university eligibility criteria
+     */
+    public function updateEligibilityCriteria(Request $request)
+    {
+        $request->validate([
+            'univ_id' => 'required|exists:universities,id',
+            'eligibility' => 'required|array',
+            'eligibility.*.course' => 'required|string|max:255',
+            'eligibility.*.percentage' => 'required|numeric|min:0|max:100',
+            'eligibility_notes' => 'nullable|string',
+        ]);
+
+        $university = University::findOrFail($request->univ_id);
+        
+        // Prepare eligibility data
+        $eligibilityData = [];
+        foreach ($request->eligibility as $item) {
+            if (!empty($item['course']) && isset($item['percentage'])) {
+                $eligibilityData[] = [
+                    'course' => $item['course'],
+                    'percentage' => (float) $item['percentage']
+                ];
+            }
+        }
+        
+        // Add notes if provided
+        if ($request->filled('eligibility_notes')) {
+            $eligibilityData['notes'] = $request->eligibility_notes;
+        }
+        
+        // Update the university record
+        $university->univ_eligibility = json_encode($eligibilityData, JSON_PRETTY_PRINT);
+        $university->save();
+
+        return back()
+            ->with('section', 'eligibility')
+            ->with('message', 'Eligibility criteria updated successfully!');
+    }
 
     /**
      * Update university facts

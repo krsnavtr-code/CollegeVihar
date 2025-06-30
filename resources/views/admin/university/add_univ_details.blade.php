@@ -360,6 +360,122 @@
                 </section>
             </form>
 
+            <!-- Admission Process -->
+            <form id="admissionProcessForm" action="{{ route('admin.university.add.details.update.admission') }}" method="post" class="section-form mb-4">
+                @csrf
+                <input type="hidden" name="univ_id" value="{{ $university['id'] }}">
+                @if(session('section') === 'admission')
+                    <div class="alert alert-success">
+                        {{ session('message', 'Admission process updated successfully!') }}
+                    </div>
+                @endif
+                <section class="panel" data-name="univ_admission" data-label="Admission Process">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="section_title">Admission Process: {{ $university['univ_name'] }}</h3>
+                        <button type="submit" class="btn-save">Save Admission Process</button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="univ_admission ">Admission Process Details</label>
+                        <textarea name="univ_admission" id="univ_admission" class="form-control rich-text-editor" 
+                            rows="10" placeholder="Enter detailed admission process information here...">{{ old('univ_admission', $university['univ_admission'] ?? '') }}</textarea>
+                        <small class="form-text text-muted">
+                            Provide detailed information about the admission process, requirements, important dates, and any other relevant information.
+                        </small>
+                    </div>
+                </section>
+            </form>
+
+            <!-- University Admission Eligibility criteria -->
+            <form id="eligibilityForm" action="{{ route('admin.university.add.details.update.eligibility') }}" method="post" class="section-form">
+                @csrf
+                <input type="hidden" name="univ_id" value="{{ $university['id'] }}">
+                @if(session('section') === 'eligibility')
+                    <div class="alert alert-success">
+                        {{ session('message', 'Admission eligibility criteria updated successfully!') }}
+                    </div>
+                @endif
+                <section class="panel" data-name="univ_eligibility" data-label="Admission Eligibility">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="section_title">Admission Eligibility: {{ $university['univ_name'] }}</h3>
+                        <button type="submit" class="btn-save">Save Eligibility Criteria</button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div id="eligibility-criteria-container">
+                            @php
+                                $eligibilityData = !empty($university['univ_eligibility']) ? json_decode($university['univ_eligibility'], true) : [];
+                                $eligibilityNotes = '';
+                                $eligibilityCriteria = [];
+                                
+                                // Separate notes from criteria
+                                if (is_array($eligibilityData)) {
+                                    foreach ($eligibilityData as $key => $item) {
+                                        if ($key === 'notes') {
+                                            $eligibilityNotes = $item;
+                                        } elseif (is_array($item) && isset($item['course']) && isset($item['percentage'])) {
+                                            $eligibilityCriteria[] = $item;
+                                        }
+                                    }
+                                }
+                                
+                                // If no criteria found, add an empty one
+                                if (empty($eligibilityCriteria)) {
+                                    $eligibilityCriteria = [['course' => '', 'percentage' => '']];
+                                }
+                            @endphp
+                            
+                            @foreach($eligibilityCriteria as $index => $criteria)
+                                <div class="eligibility-criteria-item mb-3 p-3 border rounded">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label>Course/Qualification</label>
+                                            <input type="text" name="eligibility[{{ $index }}][course]" 
+                                                class="form-control" placeholder="e.g., 10th, 12th, B.Tech, BBA" 
+                                                value="{{ $criteria['course'] ?? '' }}" required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label>Minimum Percentage (%)</label>
+                                            <div class="input-group">
+                                                <input type="number" name="eligibility[{{ $index }}][percentage]" 
+                                                    class="form-control" placeholder="e.g., 60" min="0" max="100" step="0.01"
+                                                    value="{{ $criteria['percentage'] ?? '' }}" required>
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 d-flex align-items-end">
+                                            @if($index > 0)
+                                                <button type="button" class="btn btn-sm btn-danger remove-eligibility-criteria" data-index="{{ $index }}">
+                                                    <i class="fa-solid fa-trash"></i> Remove
+                                                </button>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                        
+                        <div class="mt-3">
+                            <button type="button" id="add-eligibility-criteria" class="btn btn-sm btn-primary">
+                                <i class="fa-solid fa-plus"></i> Add Another Criteria
+                            </button>
+                        </div>
+                        
+                        <div class="form-group mt-3">
+                            <label for="eligibility_notes">Additional Notes (Optional)</label>
+                            <textarea name="eligibility_notes" id="eligibility_notes" class="form-control" 
+                                rows="3" placeholder="Any additional notes or special conditions...">{{ old('eligibility_notes', $eligibilityNotes ?? '') }}</textarea>
+                        </div>
+                        
+                        <small class="form-text text-muted">
+                            Add all relevant eligibility criteria with minimum percentage requirements. Click "Add Another Criteria" to include multiple requirements.
+                        </small>
+                </section>
+            </form>
+
+
             <!-- University Facts -->
             <form id="factsForm" action="{{ route('admin.university.add.details.update.facts') }}" method="post" class="section-form">
                 @csrf
@@ -572,15 +688,230 @@
                     }
                 });
                 
-                // Initialize form validation
-                const form = document.getElementById('popularCoursesForm');
-                if (form) {
+                    // Initialize form validation for all forms
+                const forms = document.querySelectorAll('form');
+                forms.forEach(form => {
                     form.addEventListener('submit', function(e) {
                         if (!form.checkValidity()) {
                             e.preventDefault();
                             e.stopPropagation();
                         }
                         form.classList.add('was-validated');
+                    });
+                });
+                
+                // Handle form submission for eligibility
+            const eligibilityForm = document.getElementById('eligibilityForm');
+            if (eligibilityForm) {
+                // Handle form submission
+                eligibilityForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    // Collect all criteria
+                    const criteria = [];
+                    const criteriaItems = document.querySelectorAll('.eligibility-criteria-item');
+                    let hasErrors = false;
+                    
+                    // Validate all criteria
+                    criteriaItems.forEach((item, index) => {
+                        const courseInput = item.querySelector('input[name$="[course]"]');
+                        const percentageInput = item.querySelector('input[name$="[percentage]"]');
+                        const course = courseInput?.value.trim();
+                        const percentage = percentageInput?.value.trim();
+                        
+                        // Clear previous error states
+                        courseInput?.classList.remove('is-invalid');
+                        percentageInput?.classList.remove('is-invalid');
+                        
+                        // Validate course
+                        if (!course) {
+                            courseInput?.classList.add('is-invalid');
+                            hasErrors = true;
+                        }
+                        
+                        // Validate percentage
+                        if (!percentage || isNaN(percentage) || percentage < 0 || percentage > 100) {
+                            percentageInput?.classList.add('is-invalid');
+                            hasErrors = true;
+                        }
+                        
+                        if (course && percentage) {
+                            criteria.push({
+                                course: course,
+                                percentage: parseFloat(percentage)
+                            });
+                        }
+                    });
+                    
+                    if (hasErrors) {
+                        // Show error message if there are validation errors
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'alert alert-danger mt-3';
+                        errorDiv.innerHTML = 'Please fill in all required fields with valid values (0-100 for percentage).';
+                        
+                        // Remove any existing error messages
+                        const existingError = eligibilityForm.querySelector('.alert-danger');
+                        if (existingError) {
+                            existingError.remove();
+                        }
+                        
+                        eligibilityForm.insertBefore(errorDiv, eligibilityForm.firstChild);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        return false;
+                    }
+                    
+                    if (criteria.length === 0) {
+                        // At least one criteria is required
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'alert alert-danger mt-3';
+                        errorDiv.textContent = 'At least one eligibility criteria is required.';
+                        
+                        // Remove any existing error messages
+                        const existingError = eligibilityForm.querySelector('.alert-danger');
+                        if (existingError) {
+                            existingError.remove();
+                        }
+                        
+                        eligibilityForm.insertBefore(errorDiv, eligibilityForm.firstChild);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        return false;
+                    }
+                    
+                    // Remove existing criteria inputs
+                    document.querySelectorAll('input[name^="eligibility["]').forEach(input => {
+                        input.remove();
+                    });
+                    
+                    // Add new criteria inputs
+                    criteria.forEach((item, index) => {
+                        const courseInput = document.createElement('input');
+                        courseInput.type = 'hidden';
+                        courseInput.name = `eligibility[${index}][course]`;
+                        courseInput.value = item.course;
+                        
+                        const percentageInput = document.createElement('input');
+                        percentageInput.type = 'hidden';
+                        percentageInput.name = `eligibility[${index}][percentage]`;
+                        percentageInput.value = item.percentage;
+                        
+                        eligibilityForm.appendChild(courseInput);
+                        eligibilityForm.appendChild(percentageInput);
+                    });
+                    
+                    // Show loading state
+                    const submitBtn = eligibilityForm.querySelector('button[type="submit"]');
+                    const originalBtnText = submitBtn.innerHTML;
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
+                    
+                    // Submit the form
+                    eligibilityForm.submit();
+                });
+            }
+            
+            // Handle adding new eligibility criteria
+            document.addEventListener('click', function(e) {
+                // Add new criteria
+                if (e.target && (e.target.id === 'add-eligibility-criteria' || e.target.closest('#add-eligibility-criteria'))) {
+                    const container = document.getElementById('eligibility-criteria-container');
+                    const index = container.querySelectorAll('.eligibility-criteria-item').length;
+                    
+                    const newCriteria = `
+                        <div class="eligibility-criteria-item mb-3 p-3 border rounded">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label>Course/Qualification</label>
+                                    <input type="text" name="eligibility[${index}][course]" 
+                                        class="form-control" placeholder="e.g., 10th, 12th, B.Tech, BBA" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label>Minimum Percentage (%)</label>
+                                    <div class="input-group">
+                                        <input type="number" name="eligibility[${index}][percentage]" 
+                                            class="form-control" placeholder="e.g., 60" min="0" max="100" step="0.01" required>
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end">
+                                    <button type="button" class="btn btn-sm btn-danger remove-eligibility-criteria">
+                                        <i class="fa-solid fa-trash"></i> Remove
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    container.insertAdjacentHTML('beforeend', newCriteria);
+                }
+                
+                // Remove criteria
+                if (e.target && (e.target.classList.contains('remove-eligibility-criteria') || e.target.closest('.remove-eligibility-criteria'))) {
+                    const button = e.target.classList.contains('remove-eligibility-criteria') ? e.target : e.target.closest('.remove-eligibility-criteria');
+                    button.closest('.eligibility-criteria-item').remove();
+                    
+                    // Update indices
+                    const container = document.getElementById('eligibility-criteria-container');
+                    container.querySelectorAll('.eligibility-criteria-item').forEach((item, index) => {
+                        const courseInput = item.querySelector('input[name^="eligibility["][name$="[course]"]');
+                        const percentageInput = item.querySelector('input[name^="eligibility["][name$="[percentage]"]');
+                        
+                        if (courseInput) {
+                            courseInput.name = `eligibility[${index}][course]`;
+                        }
+                        if (percentageInput) {
+                            percentageInput.name = `eligibility[${index}][percentage]`;
+                        }
+                    });
+                }
+            });
+            
+            // Initialize rich text editor for admission process
+            if (typeof tinymce !== 'undefined' && document.getElementById('univ_admission')) {
+                tinymce.init({
+                    selector: '#univ_admission',
+                    height: 300,
+                    menubar: false,
+                    plugins: [
+                        'advlist autolink lists link image charmap print preview anchor',
+                        'searchreplace visualblocks code fullscreen',
+                        'insertdatetime media table paste code help wordcount'
+                    ],
+                    toolbar: 'undo redo | formatselect | ' +
+                    'bold italic backcolor | alignleft aligncenter ' +
+                    'alignright alignjustify | bullist numlist outdent indent | ' +
+                    'removeformat | help',
+                    content_style: 'body { font-family: Arial, sans-serif; font-size: 14px }',
+                        setup: function(editor) {
+                            editor.on('change', function() {
+                                editor.save();
+                            });
+                        }
+                    });
+                }
+                
+                // Initialize rich text editor for eligibility criteria
+                if (typeof tinymce !== 'undefined' && document.getElementById('univ_eligibility')) {
+                    tinymce.init({
+                        selector: '#univ_eligibility',
+                        height: 300,
+                        menubar: false,
+                        plugins: [
+                            'advlist autolink lists link image charmap print preview anchor',
+                            'searchreplace visualblocks code fullscreen',
+                            'insertdatetime media table paste code help wordcount'
+                        ],
+                        toolbar: 'undo redo | formatselect | ' +
+                        'bold italic backcolor | alignleft aligncenter ' +
+                        'alignright alignjustify | bullist numlist outdent indent | ' +
+                        'removeformat | help',
+                        content_style: 'body { font-family: Arial, sans-serif; font-size: 14px }',
+                        setup: function(editor) {
+                            editor.on('change', function() {
+                                editor.save();
+                            });
+                        }
                     });
                 }
             });

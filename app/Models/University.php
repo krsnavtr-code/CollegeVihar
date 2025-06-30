@@ -44,10 +44,14 @@ class University extends Model
         'univ_approved_by',
         'univ_accreditation',
         'univ_programs_offered',
-        'univ_popular_courses'
+        'univ_popular_courses',
+        'univ_eligibility',
+        'univ_admission'
     ];
 
     protected $casts = [
+        'univ_eligibility' => 'string',
+        'univ_admission' => 'string',
         'univ_status' => 'boolean',
         'univ_detail_added' => 'boolean',
         'univ_payout' => 'boolean',

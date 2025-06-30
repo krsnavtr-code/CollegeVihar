@@ -290,6 +290,12 @@ Route::prefix("university")->group(function () {
                 
             Route::post("/update/popular-courses", [\App\Http\Controllers\backend\UniversityController::class, 'updatePopularCourses'])
                 ->name('admin.university.add.details.update.popular-courses');
+                
+            Route::post("/update/admission", [\App\Http\Controllers\backend\UniversityController::class, 'updateAdmissionProcess'])
+                ->name('admin.university.add.details.update.admission');
+                
+            Route::post("/update/eligibility", [\App\Http\Controllers\backend\UniversityController::class, 'updateEligibilityCriteria'])
+                ->name('admin.university.add.details.update.eligibility');
 
             // Legacy route for backward compatibility
             Route::post("/update-all", [\App\Http\Controllers\backend\UniversityController::class, 'editUniversityDetail'])->name('admin.university.update.all');
