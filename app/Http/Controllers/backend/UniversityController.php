@@ -500,6 +500,85 @@ class UniversityController extends Controller
     }
 
     /**
+     * Update university overview
+     */
+    public function updateOverview(Request $request)
+    {
+        $request->validate([
+            'univ_id' => 'required|exists:universities,id',
+            'univ_campus_area' => 'nullable|numeric|min:0',
+            'univ_courses_offered' => 'nullable|string|max:500',
+            'univ_student_strength' => 'nullable|integer|min:0',
+            'univ_faculty_strength' => 'nullable|integer|min:0',
+        ]);
+
+        $university = University::findOrFail($request->univ_id);
+        
+        // Update overview fields
+        $university->univ_campus_area = $request->univ_campus_area;
+        $university->univ_courses_offered = $request->univ_courses_offered;
+        $university->univ_student_strength = $request->univ_student_strength;
+        $university->univ_faculty_strength = $request->univ_faculty_strength;
+        
+        $university->save();
+
+        return back()
+            ->with('section', 'overview')
+            ->with('message', 'University overview updated successfully!');
+    }
+    
+    /**
+     * Update university popular courses
+     */
+    public function updatePopularCourses(Request $request)
+    {
+        $request->validate([
+            'univ_id' => 'required|exists:universities,id',
+            'undergrad_programs' => 'nullable|array',
+            'undergrad_programs.*.program' => 'required|string|max:255',
+            'undergrad_programs.*.duration' => 'required|string|max:50',
+            'undergrad_programs.*.specializations' => 'nullable|string|max:500',
+            'postgrad_programs' => 'nullable|array',
+            'postgrad_programs.*.program' => 'required|string|max:255',
+            'postgrad_programs.*.duration' => 'required|string|max:50',
+            'postgrad_programs.*.specializations' => 'nullable|string|max:500',
+            'diploma_programs' => 'nullable|array',
+            'diploma_programs.*.program' => 'required|string|max:255',
+            'diploma_programs.*.duration' => 'required|string|max:50',
+            'diploma_programs.*.specializations' => 'nullable|string|max:500',
+            'other_programs' => 'nullable|array',
+            'other_programs.*.program' => 'required|string|max:255',
+            'other_programs.*.duration' => 'required|string|max:50',
+            'other_programs.*.specializations' => 'nullable|string|max:500',
+        ]);
+
+        $university = University::findOrFail($request->univ_id);
+        
+        // Prepare popular courses data
+        $popularCourses = [
+            'undergraduate' => $request->undergrad_programs ?? [],
+            'postgraduate' => $request->postgrad_programs ?? [],
+            'diploma' => $request->diploma_programs ?? [],
+            'others' => $request->other_programs ?? []
+        ];
+        
+        // Remove any empty entries
+        foreach ($popularCourses as $key => $programs) {
+            $popularCourses[$key] = array_values(array_filter($programs, function($program) {
+                return !empty($program['program']) || !empty($program['duration']);
+            }));
+        }
+        
+        // Update the university record
+        $university->univ_popular_courses = $popularCourses;
+        $university->save();
+
+        return back()
+            ->with('section', 'popular-courses')
+            ->with('message', 'Popular courses updated successfully!');
+    }
+
+    /**
      * Update university facts
      */
     public function updateFacts(Request $request)

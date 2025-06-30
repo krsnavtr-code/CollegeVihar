@@ -8,6 +8,83 @@
     border: 1px solid #e0e0e0;
 }
 
+/* Popular Courses Section */
+.program-type {
+    margin-bottom: 2rem;
+    padding: 1.25rem;
+    background-color: #f9f9f9;
+    border-radius: 6px;
+    border-left: 4px solid #4a90e2;
+}
+
+.program-type-title {
+    color: #2c3e50;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.program-entry {
+    background-color: #fff;
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+}
+
+.program-entry:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.program-entry .form-control {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+}
+
+.program-entry .form-control:focus {
+    background-color: #fff;
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Add/Remove buttons */
+.add-program, .remove-program {
+    transition: all 0.2s ease;
+}
+
+.add-program {
+    background-color: #f8f9fa;
+    border: 1px dashed #6c757d;
+    color: #6c757d;
+}
+
+.add-program:hover {
+    background-color: #e9ecef;
+    border-color: #4a90e2;
+    color: #4a90e2;
+}
+
+.remove-program {
+    opacity: 0.7;
+}
+
+.remove-program:hover {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .program-entry .col-md-4,
+    .program-entry .col-md-3,
+    .program-entry .col-md-1 {
+        margin-bottom: 0.75rem;
+    }
+    
+    .program-entry .d-flex {
+        justify-content: flex-start !important;
+    }
+}
+
 /* Section headers */
 .section-header {
     display: flex;

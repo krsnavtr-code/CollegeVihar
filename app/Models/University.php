@@ -43,7 +43,8 @@ class University extends Model
         'univ_established_year',
         'univ_approved_by',
         'univ_accreditation',
-        'univ_programs_offered'
+        'univ_programs_offered',
+        'univ_popular_courses'
     ];
 
     protected $casts = [
@@ -53,6 +54,7 @@ class University extends Model
         'country_id' => 'integer',
         'state_id' => 'integer',
         'city_id' => 'integer',
+        'univ_popular_courses' => 'array',
     ];
     
     /**
