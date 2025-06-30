@@ -237,7 +237,7 @@ Route::prefix("university")->group(function () {
             // Show university details form
             Route::get("/{id}", function (University $id) {
                 $data = [
-                    "university" => $id->toArray(),
+                    "university" => $id,
                     "states" => UtilsController::getStates(),
                 ];
                 return view("admin.university.add_univ_details", $data);

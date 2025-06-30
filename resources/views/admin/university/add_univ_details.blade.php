@@ -685,13 +685,34 @@
                         <button type="submit" class="btn-save">Save University Facts</button>
                     </div>
                     <div class="fields_container">
-                        <div class="field cflex">
-                            <label for="univ_facts1">Paragraph 1</label>
-                            <textarea oninput="auto_grow(this)" id="univ_facts1" name="univ_facts[]"
-                                placeholder="Write Here..."></textarea>
-                        </div>
+                        @php
+                            // Check for form validation errors first, then use saved data, or default to empty array
+                            $savedFacts = old('univ_facts') ?? (is_array($university->univ_facts) ? $university->univ_facts : []);
+                            
+                            // If no saved facts and no validation errors, show one empty field
+                            if (empty($savedFacts)) {
+                                $savedFacts = [1 => ''];
+                            }
+                            
+                            $factCount = count($savedFacts);
+                        @endphp
+                        
+                        @foreach($savedFacts as $index => $fact)
+                            <div class="field cflex">
+                                <label for="univ_facts{{ $index }}">Paragraph {{ $index }}</label>
+                                <div class="d-flex align-items-center">
+                                    <textarea oninput="auto_grow(this)" id="univ_facts{{ $index }}" 
+                                        name="univ_facts[]" placeholder="Write Here..."
+                                        >{{ is_array($fact) ? ($fact['fact'] ?? '') : $fact }}</textarea>
+                                    <button type="button" class="btn btn-sm btn-danger ms-2" 
+                                        onclick="removeField(this)" {{ $factCount <= 1 ? 'disabled' : '' }}>
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
-                    <i class="icon fa-solid fa-plus add_field" onclick="addDynamicField(this)"></i>
+                    <i class="fa-plus btn btn-sm btn-outline-primary mt-2" onclick="addDynamicField(this)">Add Fact</i>
                 </section>
             </form>
 
@@ -1413,6 +1434,39 @@
                     });
                 }
             });
+            
+            // Function to add a new dynamic field for facts
+            window.addDynamicField = function(button) {
+                const container = button.closest('.panel').querySelector('.fields_container');
+                if (!container) return;
+                
+                const fields = container.querySelectorAll('.field');
+                const newIndex = fields.length + 1;
+                
+                const newField = document.createElement('div');
+                newField.className = 'field cflex';
+                newField.innerHTML = `
+                    <label for="univ_facts${newIndex}">Paragraph ${newIndex}</label>
+                    <div class="d-flex align-items-center">
+                        <textarea oninput="auto_grow(this)" id="univ_facts${newIndex}" 
+                            name="univ_facts[]" placeholder="Write Here..."></textarea>
+                        <button type="button" class="btn btn-sm btn-danger ms-2" onclick="removeField(this)">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(newField);
+                
+                // Initialize auto-grow for the new textarea
+                const textarea = newField.querySelector('textarea');
+                if (textarea) {
+                    window.auto_grow(textarea);
+                }
+                
+                // Scroll to the new field
+                newField.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            };
             
             window.removeField = function(button) {
                 const field = button.closest('.field');

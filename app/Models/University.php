@@ -61,6 +61,7 @@ class University extends Model
         'city_id' => 'integer',
         'univ_popular_courses' => 'array',
         'important_dates' => 'array',
+        'univ_facts' => 'array',
     ];
     
     /**

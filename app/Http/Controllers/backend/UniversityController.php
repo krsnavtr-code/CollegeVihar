@@ -734,22 +734,65 @@ class UniversityController extends Controller
 
     /**
      * Update university facts
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function updateFacts(Request $request)
     {
-        $request->validate([
-            'univ_id' => 'required|exists:universities,id',
-            'univ_facts' => 'required|array',
-            'univ_facts.*' => 'required|string',
-        ]);
+        try {
+            // Log the incoming request data for debugging
+            Log::info('Update Facts Request Data:', $request->all());
+            
+            $validated = $request->validate([
+                'univ_id' => 'required|exists:universities,id',
+                'univ_facts' => 'required|array|min:1',
+                'univ_facts.*' => 'required|string|max:1000',
+            ]);
 
-        $university = University::findOrFail($request->univ_id);
-        $university->univ_facts = json_encode($request->univ_facts);
-        $university->save();
+            $university = University::findOrFail($validated['univ_id']);
+            
+            // Filter out empty facts and reindex the array
+            $facts = array_values(array_filter($validated['univ_facts'], function($fact) {
+                return !empty(trim($fact));
+            }));
+            
+            if (empty($facts)) {
+                return back()
+                    ->with('section', 'facts')
+                    ->with('error', 'At least one fact is required')
+                    ->withInput();
+            }
+            
+            // Log the facts before saving
+            Log::info('Saving facts:', $facts);
+            
+            // Update the university record
+            $university->univ_facts = $facts;
+            $university->save();
+            
+            // Log the saved data for verification
+            $savedUniversity = University::find($validated['univ_id']);
+            Log::info('Saved university facts:', [
+                'univ_id' => $validated['univ_id'],
+                'saved_facts' => $savedUniversity->univ_facts
+            ]);
 
-        return back()
-            ->with('section', 'facts')
-            ->with('message', 'University facts updated successfully!');
+            return back()
+                ->with('section', 'facts')
+                ->with('message', 'University facts updated successfully!');
+                
+        } catch (\Exception $e) {
+            Log::error('Error updating university facts: ' . $e->getMessage(), [
+                'exception' => $e,
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return back()
+                ->with('section', 'facts')
+                ->with('error', 'Failed to update university facts. Please try again.')
+                ->withInput();
+        }
     }
 
     /**
