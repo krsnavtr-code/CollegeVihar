@@ -247,6 +247,9 @@ Route::prefix("university")->group(function () {
             Route::post("", [\App\Http\Controllers\backend\UniversityController::class, 'editUniversity']);
 
             // Individual update routes for each section with consistent naming
+            Route::post("/update/placement", [\App\Http\Controllers\backend\UniversityController::class, 'updatePlacement'])
+                ->name('admin.university.add.details.update.placement');
+                
             Route::post("/update/slug", [\App\Http\Controllers\backend\UniversityController::class, 'updateSlug'])
                 ->name('admin.university.add.details.update.slug');
 

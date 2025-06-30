@@ -643,6 +643,54 @@ class UniversityController extends Controller
     }
     
     /**
+     * Update university placement details
+     */
+    public function updatePlacement(Request $request)
+    {
+        $request->validate([
+            'univ_id' => 'required|exists:universities,id',
+            'highest_package' => 'nullable|numeric|min:0',
+            'average_package' => 'nullable|numeric|min:0',
+            'recruiters' => 'nullable|array',
+            'recruiters.*' => 'string|max:255',
+            'placement_year' => 'nullable|integer|min:2000|max:' . (date('Y') + 1),
+            'students_placed' => 'nullable|integer|min:0',
+            'placement_percentage' => 'nullable|numeric|min:0|max:100',
+            'placement_highlights' => 'nullable|string',
+        ]);
+
+        try {
+            $university = University::findOrFail($request->univ_id);
+            
+            // Prepare placement data
+            $placementData = [
+                'highest_package' => $request->filled('highest_package') ? (float) $request->highest_package : null,
+                'average_package' => $request->filled('average_package') ? (float) $request->average_package : null,
+                'recruiters' => $request->recruiters ? array_values(array_filter($request->recruiters)) : [],
+                'placement_year' => $request->filled('placement_year') ? (int) $request->placement_year : null,
+                'students_placed' => $request->filled('students_placed') ? (int) $request->students_placed : null,
+                'placement_percentage' => $request->filled('placement_percentage') ? (float) $request->placement_percentage : null,
+                'placement_highlights' => $request->placement_highlights,
+                'updated_at' => now(),
+            ];
+            
+            // Update the university record
+            $university->univ_placement = $placementData;
+            $university->save();
+
+            return back()
+                ->with('section', 'placement')
+                ->with('message', 'Placement details updated successfully!');
+                
+        } catch (\Exception $e) {
+            Log::error('Error updating placement details: ' . $e->getMessage());
+            return back()
+                ->with('section', 'placement')
+                ->with('error', 'Failed to update placement details. Please try again.');
+        }
+    }
+    
+    /**
      * Update important dates for university
      */
     public function updateImportantDates(Request $request)

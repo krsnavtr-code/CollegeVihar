@@ -583,6 +583,89 @@
                     </div>
                 </section>
             </form>
+
+            <!-- Placement Details -->
+            <form id="placementForm" action="{{ route('admin.university.add.details.update.placement') }}" method="post" class="section-form">
+                @csrf
+                <input type="hidden" name="univ_id" value="{{ $university['id'] }}">
+                
+                <section class="card card-body mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="mb-0">Placement Details</h4>
+                        <button type="button" class="btn btn-primary btn-sm save-section" data-form="placementForm">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Highest Package (in LPA)</label>
+                        <input type="number" step="0.01" name="highest_package" class="form-control" 
+                               value="{{ old('highest_package', $university->univ_placement['highest_package'] ?? '') }}" 
+                               placeholder="E.g., 45.5">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Average Package (in LPA)</label>
+                        <input type="number" step="0.01" name="average_package" class="form-control" 
+                               value="{{ old('average_package', $university->univ_placement['average_package'] ?? '') }}" 
+                               placeholder="E.g., 8.5">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Top Recruiters</label>
+                        <div id="recruiters-container">
+                            @php
+                                $recruiters = old('recruiters', $university->univ_placement['recruiters'] ?? ['Google', 'Microsoft', 'Amazon']);
+                                if (is_string($recruiters)) {
+                                    $recruiters = json_decode($recruiters, true) ?? [];
+                                }
+                            @endphp
+                            
+                            @foreach($recruiters as $index => $recruiter)
+                                <div class="recruiter-item input-group mb-2">
+                                    <input type="text" name="recruiters[]" class="form-control" 
+                                           value="{{ $recruiter }}" placeholder="Company name">
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-outline-danger remove-recruiter" {{ count($recruiters) <= 1 ? 'disabled' : '' }}>
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="add-recruiter">
+                            <i class="fas fa-plus"></i> Add Recruiter
+                        </button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Placement Statistics (Year)</label>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <input type="number" name="placement_year" class="form-control" 
+                                       value="{{ old('placement_year', $university->univ_placement['placement_year'] ?? date('Y') - 1) }}" 
+                                       placeholder="Year">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="number" name="students_placed" class="form-control" 
+                                       value="{{ old('students_placed', $university->univ_placement['students_placed'] ?? '') }}" 
+                                       placeholder="Students Placed">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="number" step="0.01" name="placement_percentage" class="form-control" 
+                                       value="{{ old('placement_percentage', $university->univ_placement['placement_percentage'] ?? '') }}" 
+                                       placeholder="Placement %">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Placement Highlights</label>
+                        <textarea name="placement_highlights" class="form-control" rows="4" 
+                                  placeholder="Key highlights about placements, notable companies, etc.">{{ old('placement_highlights', $university->univ_placement['placement_highlights'] ?? '') }}</textarea>
+                    </div>
+                </section>
+            </form>
             
             <!-- University Facts -->
             <form id="factsForm" action="{{ route('admin.university.add.details.update.facts') }}" method="post" class="section-form">
