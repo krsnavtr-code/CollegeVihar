@@ -288,7 +288,6 @@ class UniversityController extends Controller
     }
 
     /* Update University Details */
-    // Update University Details
     static function editUniversity(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -459,100 +458,224 @@ class UniversityController extends Controller
             ->with('success', 'University updated successfully!');
     }
 
-    /* Edit University Detail */
-    static function editUniversityDetail(Request $request)
+
+    // Update University all details one by one
+    /**
+     * Update university slug
+     */
+    public function updateSlug(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $request->validate([
+            'univ_id' => 'required|exists:universities,id',
+            'univ_slug' => 'required|string|max:255|unique:universities,univ_slug,' . $request->univ_id,
+        ]);
+
+        $university = University::findOrFail($request->univ_id);
+        $university->univ_slug = $request->univ_slug;
+        $university->save();
+
+        return back()
+            ->with('section', 'slug')
+            ->with('message', 'University URL slug updated successfully!');
+    }
+
+    /**
+     * Update university info/description
+     */
+    public function updateInfo(Request $request)
+    {
+        $request->validate([
+            'univ_id' => 'required|exists:universities,id',
+            'univ_description' => 'required|array',
+            'univ_description.*' => 'required|string',
+        ]);
+
+        $university = University::findOrFail($request->univ_id);
+        $university->univ_description = json_encode($request->univ_description);
+        $university->save();
+
+        return back()
+            ->with('section', 'info')
+            ->with('message', 'University information updated successfully!');
+    }
+
+    /**
+     * Update university facts
+     */
+    public function updateFacts(Request $request)
+    {
+        $request->validate([
+            'univ_id' => 'required|exists:universities,id',
+            'univ_facts' => 'required|array',
+            'univ_facts.*' => 'required|string',
+        ]);
+
+        $university = University::findOrFail($request->univ_id);
+        $university->univ_facts = json_encode($request->univ_facts);
+        $university->save();
+
+        return back()
+            ->with('section', 'facts')
+            ->with('message', 'University facts updated successfully!');
+    }
+
+    /**
+     * Update university SEO details
+     */
+    public function updateSeo(Request $request)
+    {
+        $request->validate([
+            'univ_id' => 'required|exists:universities,id',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string|max:500',
+            'meta_keywords' => 'nullable|string|max:500',
+            'meta_canonical' => 'nullable|url|max:255',
+            'meta_h1' => 'nullable|string|max:255',
+        ]);
+
+        $university = University::findOrFail($request->univ_id);
+
+        // Update or create SEO metadata
+        $university->meta_title = $request->meta_title;
+        $university->meta_description = $request->meta_description;
+        $university->meta_keywords = $request->meta_keywords;
+        $university->meta_canonical = $request->meta_canonical;
+        $university->meta_h1 = $request->meta_h1;
+
+        $university->save();
+
+        return back()->with('success', 'SEO details updated successfully!');
+    }
+
+    /**
+     * Update university basic information
+     */
+    public function updateBasicInfo(Request $request)
+    {
+        $request->validate([
             'univ_id' => 'required|exists:universities,id',
             'univ_established_year' => 'required|integer|min:1800|max:' . date('Y'),
             'univ_approved_by' => 'required|string|max:50',
             'univ_accreditation' => 'required|string|max:10',
             'univ_programs_offered' => 'nullable|string',
-            'univ_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'univ_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
-            'univ_gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
-            'deleted_gallery' => 'nullable|array',
-            'deleted_gallery.*' => 'exists:university_galleries,id',
+            'univ_address' => 'required|string|max:500',
+            'univ_state' => 'required|exists:states,id',
         ], [
             'univ_established_year.required' => 'The established year is required.',
             'univ_established_year.min' => 'The established year must be at least 1800.',
             'univ_established_year.max' => 'The established year cannot be in the future.',
             'univ_approved_by.required' => 'The approval body is required.',
             'univ_accreditation.required' => 'The accreditation is required.',
-            'univ_logo.image' => 'The university logo must be an image.',
-            'univ_image.image' => 'The university banner must be an image.',
-            'univ_gallery.*.image' => 'Each gallery file must be an image.',
-            'univ_logo.mimes' => 'The university logo must be a file of type: jpeg, png, jpg, gif.',
-            'univ_image.mimes' => 'The university banner must be a file of type: jpeg, png, jpg, gif.',
-            'univ_gallery.*.mimes' => 'Each gallery file must be of type: jpeg, png, jpg, gif.',
-            'univ_logo.max' => 'The university logo may not be greater than 2MB.',
-            'univ_image.max' => 'The university banner may not be greater than 5MB.',
-            'univ_gallery.*.max' => 'Each gallery image may not be greater than 5MB.',
         ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
+        $university = University::findOrFail($request->univ_id);
 
-        $uni = University::with('gallery')->findOrFail($request->univ_id);
+        $university->update([
+            'univ_established_year' => $request->univ_established_year,
+            'univ_approved_by' => $request->univ_approved_by,
+            'univ_accreditation' => $request->univ_accreditation,
+            'univ_programs_offered' => $request->univ_programs_offered,
+            'univ_address' => $request->univ_address,
+            'univ_state' => $request->univ_state,
+            'univ_detail_added' => 1
+        ]);
 
-        // Basic details
-        $uni->univ_state = $request->univ_state ?? $uni->state_id;
-        $uni->univ_address = $request->univ_address;
-        $uni->univ_detail_added = $request->univ_detail_added ?? 0;
-        $uni->univ_slug = $request->univ_slug ?? Str::slug($uni->univ_name);
+        return back()->with('success', 'Basic information updated successfully!');
+    }
 
-        // University other info
-        $uni->univ_established_year = $request->univ_established_year;
-        $uni->univ_approved_by = $request->univ_approved_by;
-        $uni->univ_accreditation = $request->univ_accreditation;
-        $uni->univ_programs_offered = $request->univ_programs_offered;
+    /**
+     * Handle university logo upload
+     */
+    public function updateLogo(Request $request)
+    {
+        $request->validate([
+            'univ_id' => 'required|exists:universities,id',
+            'univ_logo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ], [
+            'univ_logo.required' => 'Please select a logo to upload.',
+            'univ_logo.image' => 'The logo must be an image file.',
+            'univ_logo.mimes' => 'The logo must be a file of type: jpeg, png, jpg, gif.',
+            'univ_logo.max' => 'The logo may not be greater than 2MB.',
+        ]);
 
-        // JSON encoded fields
-        $uni->univ_description = json_encode($request->univ_desc ?? []);
-        $uni->univ_facts = json_encode($request->univ_facts ?? []);
-        $uni->univ_industry = json_encode($request->industry ?? []);
-        $uni->univ_carrier = json_encode($request->carrier ?? []);
+        $university = University::findOrFail($request->univ_id);
 
-        // Handle logo update/removal
-        if ($request->has('remove_logo') && $uni->univ_logo) {
-            // Remove logo if checkbox is checked
-            if (file_exists(public_path($uni->univ_logo))) {
-                unlink(public_path($uni->univ_logo));
+        // Handle logo upload
+        if ($request->hasFile('univ_logo')) {
+            // Delete old logo if exists
+            if ($university->univ_logo && file_exists(public_path($university->univ_logo))) {
+                unlink(public_path($university->univ_logo));
             }
-            $uni->univ_logo = null;
-        } elseif ($request->hasFile('univ_logo')) {
-            // Update logo if a new one is uploaded
-            if ($uni->univ_logo && file_exists(public_path($uni->univ_logo))) {
-                unlink(public_path($uni->univ_logo));
-            }
+
             $logo = $request->file('univ_logo');
             $logoName = 'logo_' . time() . '.' . $logo->getClientOriginalExtension();
-            $logo->move(public_path(LOGO_PATH), $logoName);
-            $uni->univ_logo = LOGO_PATH . '/' . $logoName;
+            $logo->move(public_path('images/university/logo'), $logoName);
+
+            $university->update([
+                'univ_logo' => 'images/university/logo/' . $logoName
+            ]);
         }
 
-        // Handle banner update/removal
-        if ($request->has('remove_banner') && $uni->univ_image) {
-            // Remove banner if checkbox is checked
-            if (file_exists(public_path($uni->univ_image))) {
-                unlink(public_path($uni->univ_image));
+        return back()->with('success', 'University logo updated successfully!');
+    }
+
+    /**
+     * Handle university banner upload
+     */
+    public function updateBanner(Request $request)
+    {
+        $request->validate([
+            'univ_id' => 'required|exists:universities,id',
+            'univ_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
+        ], [
+            'univ_image.required' => 'Please select a banner image to upload.',
+            'univ_image.image' => 'The banner must be an image file.',
+            'univ_image.mimes' => 'The banner must be a file of type: jpeg, png, jpg, gif.',
+            'univ_image.max' => 'The banner may not be greater than 5MB.',
+        ]);
+
+        $university = University::findOrFail($request->univ_id);
+
+        // Handle banner upload
+        if ($request->hasFile('univ_image')) {
+            // Delete old banner if exists
+            if ($university->univ_image && file_exists(public_path($university->univ_image))) {
+                unlink(public_path($university->univ_image));
             }
-            $uni->univ_image = null;
-        } elseif ($request->hasFile('univ_image')) {
-            // Update banner if a new one is uploaded
-            if ($uni->univ_image && file_exists(public_path($uni->univ_image))) {
-                unlink(public_path($uni->univ_image));
-            }
+
             $banner = $request->file('univ_image');
             $bannerName = 'banner_' . time() . '.' . $banner->getClientOriginalExtension();
-            $banner->move(public_path(IMG_PATH), $bannerName);
-            $uni->univ_image = IMG_PATH . '/' . $bannerName;
+            $banner->move(public_path('images/university/banner'), $bannerName);
+
+            $university->update([
+                'univ_image' => 'images/university/banner/' . $bannerName
+            ]);
         }
 
-        // Handle gallery images deletion
+        return back()->with('success', 'University banner updated successfully!');
+    }
+
+    /**
+     * Handle university gallery images
+     */
+    public function updateGallery(Request $request)
+    {
+        $request->validate([
+            'univ_id' => 'required|exists:universities,id',
+            'univ_gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'deleted_gallery' => 'nullable|array',
+            'deleted_gallery.*' => 'exists:university_galleries,id',
+        ], [
+            'univ_gallery.*.image' => 'Each file must be an image.',
+            'univ_gallery.*.mimes' => 'Each file must be of type: jpeg, png, jpg, gif.',
+            'univ_gallery.*.max' => 'Each image may not be greater than 5MB.',
+        ]);
+
+        $university = University::with('gallery')->findOrFail($request->univ_id);
+
+        // Handle deleted gallery items
         if (!empty($request->deleted_gallery)) {
-            $galleryToDelete = $uni->gallery()->whereIn('id', $request->deleted_gallery)->get();
+            $galleryToDelete = $university->gallery()->whereIn('id', $request->deleted_gallery)->get();
             foreach ($galleryToDelete as $image) {
                 if (file_exists(public_path($image->image_path))) {
                     unlink(public_path($image->image_path));
@@ -561,88 +684,200 @@ class UniversityController extends Controller
             }
         }
 
-        // Handle new gallery images upload
+        // Handle new gallery uploads
         if ($request->hasFile('univ_gallery')) {
             $galleryPath = 'images/university/gallery/';
             if (!file_exists(public_path($galleryPath))) {
                 mkdir(public_path($galleryPath), 0777, true);
             }
 
-            foreach ($request->file('univ_gallery') as $galleryImage) {
-                try {
-                    // Skip if the file is not valid
-                    if (!$galleryImage->isValid()) {
-                        continue;
-                    }
+            foreach ($request->file('univ_gallery') as $image) {
+                if ($image->isValid()) {
+                    $imageName = 'gallery_' . time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                    $image->move(public_path($galleryPath), $imageName);
 
-                    $galleryName = 'gallery_' . time() . '_' . uniqid() . '.' . $galleryImage->getClientOriginalExtension();
-                    $destinationPath = public_path($galleryPath);
-
-                    // Move the file first
-                    $galleryImage->move($destinationPath, $galleryName);
-
-                    // Get the file size after moving
-                    $filePath = $destinationPath . $galleryName;
-                    $fileSize = file_exists($filePath) ? filesize($filePath) : 0;
-
-                    $uni->gallery()->create([
-                        'image_path' => $galleryPath . $galleryName,
-                        'original_name' => $galleryImage->getClientOriginalName(),
-                        'mime_type' => $galleryImage->getClientMimeType(),
-                        'size' => $fileSize,
+                    $university->gallery()->create([
+                        'image_path' => $galleryPath . $imageName,
+                        'original_name' => $image->getClientOriginalName(),
+                        'mime_type' => $image->getClientMimeType(),
+                        'size' => $image->getSize(),
                     ]);
-                } catch (\Exception $e) {
-                    // Log the error but don't stop the process for other files
-                    Log::error('Error uploading gallery image: ' . $e->getMessage());
-                    continue;
                 }
             }
         }
 
-        // Handle university advantages
-        $uni_adv = [
-            'about' => $request->univ_adv['about'] ?? '',
+        return back()->with('success', 'University gallery updated successfully!');
+    }
+
+    /**
+     * Update university industry connections
+     */
+    public function updateIndustry(Request $request)
+    {
+        $request->validate([
+            'univ_id' => 'required|exists:universities,id',
+            'industry' => 'required|array',
+            'industry.*' => 'required|string',
+        ]);
+
+        $university = University::findOrFail($request->univ_id);
+        $university->update([
+            'univ_industry' => json_encode($request->industry)
+        ]);
+
+        return back()->with('success', 'Industry connections updated successfully!');
+    }
+
+    /**
+     * Update university career guidance
+     */
+    public function updateCareerGuidance(Request $request)
+    {
+        $request->validate([
+            'univ_id' => 'required|exists:universities,id',
+            'career' => 'required|array',
+            'career.*' => 'required|string',
+        ]);
+
+        $university = University::findOrFail($request->univ_id);
+        $university->update([
+            'univ_career_guidance' => json_encode($request->career)
+        ]);
+
+        return back()->with('success', 'Career guidance information updated successfully!');
+    }
+
+    /**
+     * Update university facilities
+     */
+    public function updateFacilities(Request $request)
+    {
+        $request->validate([
+            'univ_id' => 'required|exists:universities,id',
+            'facilities' => 'required|array',
+            'facilities.*.title' => 'required|string|max:255',
+            'facilities.*.description' => 'nullable|string',
+            'facilities.*.image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $university = University::findOrFail($request->univ_id);
+        $facilities = [];
+        $facilityPath = 'images/university/facilities/';
+
+        if (!file_exists(public_path($facilityPath))) {
+            mkdir(public_path($facilityPath), 0777, true);
+        }
+
+        foreach ($request->facilities as $index => $facility) {
+            $facilityData = [
+                'id' => $facility['id'] ?? 'facility-' . $index . '-' . time(),
+                'title' => $facility['title'],
+                'description' => $facility['description'] ?? null,
+            ];
+
+            // Handle facility image upload if present
+            if (isset($facility['image']) && $facility['image']->isValid()) {
+                $image = $facility['image'];
+                $imageName = 'facility_' . $index . '_' . time() . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path($facilityPath), $imageName);
+                $facilityData['image'] = $facilityPath . $imageName;
+            } elseif (isset($facility['existing_image'])) {
+                $facilityData['image'] = $facility['existing_image'];
+            }
+
+            $facilities[] = $facilityData;
+        }
+
+        $university->update([
+            'univ_facilities' => json_encode($facilities)
+        ]);
+
+        return back()->with('success', 'University facilities updated successfully!');
+    }
+
+    /**
+     * Update university scholarships
+     */
+    public function updateScholarships(Request $request)
+    {
+        $request->validate([
+            'univ_id' => 'required|exists:universities,id',
+            'scholarships' => 'required|array',
+            'scholarships.*.name' => 'required|string|max:255',
+            'scholarships.*.description' => 'nullable|string',
+            'scholarships.*.eligibility' => 'nullable|string',
+            'scholarships.*.amount' => 'nullable|string',
+        ]);
+
+        $university = University::findOrFail($request->univ_id);
+        $university->update([
+            'univ_scholarship' => json_encode($request->scholarships)
+        ]);
+
+        return back()->with('success', 'Scholarship information updated successfully!');
+    }
+
+    /**
+     * Update university advantages
+     */
+    public function updateAdvantages(Request $request)
+    {
+        $request->validate([
+            'univ_id' => 'required|exists:universities,id',
+            'about' => 'required|string',
+            'advantages' => 'required|array',
+            'advantages.*.title' => 'required|string|max:255',
+            'advantages.*.description' => 'required|string',
+            'advantages.*.logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'advantages.*.existing_logo' => 'nullable|string',
+        ]);
+
+        $university = University::findOrFail($request->univ_id);
+
+        $advantages = [
+            'about' => $request->about,
             'data' => []
         ];
 
-        if (isset($request->univ_adv['data'])) {
-            foreach ($request->univ_adv['data'] as $adv) {
-                $logo = $adv['existing_logo'] ?? null;
+        foreach ($request->advantages as $index => $adv) {
+            $logo = $adv['existing_logo'] ?? null;
 
-                // Handle logo upload if a new one is provided
-                if (isset($adv['logo']) && $adv['logo'] instanceof \Illuminate\Http\UploadedFile) {
-                    $logo = Str::random(10) . now()->timestamp . '.' . $adv['logo']->getClientOriginalExtension();
-                    $adv['logo']->move(public_path(PNG_LOGO_PATH), $logo);
+            // Handle logo upload if a new one is provided
+            if (isset($adv['logo']) && $adv['logo'] instanceof \Illuminate\Http\UploadedFile) {
+                $logoName = 'advantage_' . $index . '_' . time() . '.' . $adv['logo']->getClientOriginalExtension();
+                $logoPath = 'images/university/advantages/';
+
+                if (!file_exists(public_path($logoPath))) {
+                    mkdir(public_path($logoPath), 0777, true);
                 }
 
-                if (!empty($adv['title']) || !empty($adv['description'])) {
-                    $uni_adv['data'][] = [
-                        'logo' => $logo,
-                        'title' => $adv['title'] ?? '',
-                        'description' => $adv['description'] ?? ''
-                    ];
-                }
+                $adv['logo']->move(public_path($logoPath), $logoName);
+                $logo = $logoPath . $logoName;
             }
+
+            $advantages['data'][] = [
+                'logo' => $logo,
+                'title' => $adv['title'],
+                'description' => $adv['description']
+            ];
         }
 
-        $uni->univ_advantage = json_encode($uni_adv);
+        $university->update([
+            'univ_advantage' => json_encode($advantages)
+        ]);
 
-        // Update slug and metadata
-        if (!empty($request->univ_slug)) {
-            $request->merge(['univ_slug' => "university/" . $request->univ_slug]);
-            $result = UtilsController::add_metadata($request);
+        return back()->with('success', 'University advantages updated successfully!');
+    }
 
-            if ($result['success']) {
-                $uni->univ_slug = $result['id'];
-            }
-        }
-
-        // Save all changes to the university
-        $uni->save();
-
-        // Handle redirect with success message
-        return redirect()->route('admin.university.edit.details', $uni->id)
-            ->with('success', 'University details updated successfully!');
+    /**
+     * Legacy method - kept for backward compatibility
+     * Will be removed in future versions
+     */
+    public static function editUniversityDetail(Request $request)
+    {
+        // This method is now deprecated and will be removed in future versions
+        // All functionality has been moved to individual update methods
+        return redirect()->back()->with('warning', 'This action is no longer supported. Please use the individual update forms.');
     }
 
     /* Permanent Delete University */

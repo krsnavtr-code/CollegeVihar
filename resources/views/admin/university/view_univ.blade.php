@@ -90,7 +90,7 @@ $permissions = Request::get('admin_permissions');
                             @endif
 
                             @if ((in_array(15, $permissions) || $permissions[0] == '*') && $university['univ_detail_added'])
-                            <a href="/admin/university/edit/details/{{ $university['id'] }}" class="btn btn-info btn-sm" title="Edit Details">
+                            <a href="/admin/university/add/details/{{ $university['id'] }}" class="btn btn-info btn-sm" title="Edit Details">
                                 <i class="fa-solid fa-pen-fancy"></i>
                             </a>
                             @endif
