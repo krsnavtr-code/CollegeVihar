@@ -177,6 +177,10 @@ Route::prefix('reports')->name('admin.reports.')->group(function () {
 Route::post('/admin/update-university-info', [\App\Http\Controllers\backend\UniversityController::class, 'updateInfo'])
     ->name('university.update.info');
 
+// Route for updating important dates
+Route::post('/admin/update-important-dates', [\App\Http\Controllers\backend\UniversityController::class, 'updateImportantDates'])
+    ->name('university.update.important_dates');
+
 // University Routes
 Route::prefix("university")->group(function () {
     Route::get("", function (Request $request) {

@@ -475,7 +475,115 @@
                 </section>
             </form>
 
-
+            <!-- Important Dates (Tentative) -->
+            <form id="importantDatesForm" action="{{ route('university.update.important_dates') }}" method="post" class="section-form">
+                @csrf
+                <input type="hidden" name="univ_id" value="{{ $university['id'] }}">
+                @if(session('section') === 'important_dates')
+                    <div class="alert alert-success">
+                        {{ session('message', 'Important dates updated successfully!') }}
+                    </div>
+                @endif
+                <section class="panel" data-name="important_dates" data-label="Important Dates (Tentative)">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="section_title">Important Dates (Tentative): {{ $university['univ_name'] }}</h3>
+                        <button type="submit" class="btn-save">Save Important Dates</button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div id="important-dates-container">
+                            @php
+                                $importantDatesData = $university['important_dates'] ?? [];
+                                $importantDatesNotes = '';
+                                $importantDates = [];
+                                
+                                if (!empty($importantDatesData) && is_array($importantDatesData)) {
+                                    // Check if the first element has 'event' key to determine the format
+                                    if (isset($importantDatesData[0]) && is_array($importantDatesData[0]) && array_key_exists('event', $importantDatesData[0])) {
+                                        // New format: Array of events with event, date, description
+                                        $importantDates = array_filter($importantDatesData, function($item) {
+                                            return is_array($item) && isset($item['event']);
+                                        });
+                                        // Check if notes exist in the array (not as a numeric key)
+                                        if (array_key_exists('notes', $importantDatesData)) {
+                                            $importantDatesNotes = $importantDatesData['notes'];
+                                            // Remove notes from the dates array if it was included
+                                            $importantDates = array_filter($importantDates, function($key) {
+                                                return is_numeric($key);
+                                            }, ARRAY_FILTER_USE_KEY);
+                                        }
+                                    } else {
+                                        // Handle case where it might be a string (shouldn't happen with array cast, but just in case)
+                                        $importantDatesNotes = is_string($importantDatesData) ? $importantDatesData : '';
+                                    }
+                                }
+                                
+                                // If no dates exist, add one empty row
+                                if (empty($importantDates)) {
+                                    $importantDates = [['event' => '', 'date' => '', 'description' => '']];
+                                }
+                            @endphp
+                            
+                            @foreach($importantDates as $index => $date)
+                                @if(is_array($date) && isset($date['event']))
+                                    <div class="important-date-item mb-3 p-3 border rounded">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="event_{{ $index }}">Event Name</label>
+                                                    <input type="text" name="important_dates[{{ $index }}][event]" 
+                                                           id="event_{{ $index }}" class="form-control" 
+                                                           value="{{ old('important_dates.' . $index . '.event', $date['event'] ?? '') }}" 
+                                                           placeholder="E.g., Application Start Date" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label for="date_{{ $index }}">Date</label>
+                                                    <input type="date" name="important_dates[{{ $index }}][date]" 
+                                                           id="date_{{ $index }}" class="form-control" 
+                                                           value="{{ old('important_dates.' . $index . '.date', $date['date'] ?? '') }}" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="description_{{ $index }}">Description (Optional)</label>
+                                                    <input type="text" name="important_dates[{{ $index }}][description]" 
+                                                           id="description_{{ $index }}" class="form-control" 
+                                                           value="{{ old('important_dates.' . $index . '.description', $date['description'] ?? '') }}" 
+                                                           placeholder="Additional details about this date">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-1 d-flex align-items-end">
+                                                @if($index > 0)
+                                                    <button type="button" class="btn btn-danger btn-sm remove-important-date" data-index="{{ $index }}">
+                                                        <i class="fa fa-times"></i>
+                                                    </button>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
+                        
+                        <div class="mt-3">
+                            <button type="button" class="btn btn-primary btn-sm" id="add-important-date">
+                                <i class="fa fa-plus"></i> Add Another Date
+                            </button>
+                        </div>
+                        
+                        <div class="form-group mt-4">
+                            <label for="important_dates_notes">Additional Notes</label>
+                            <textarea name="important_dates_notes" id="important_dates_notes" 
+                                     class="form-control" rows="3" 
+                                     placeholder="Any additional notes or instructions about these dates">{{ old('important_dates_notes', $importantDatesNotes) }}</textarea>
+                            <small class="form-text text-muted">This will be displayed below the important dates table.</small>
+                        </div>
+                    </div>
+                </section>
+            </form>
+            
             <!-- University Facts -->
             <form id="factsForm" action="{{ route('admin.university.add.details.update.facts') }}" method="post" class="section-form">
                 @csrf
@@ -1079,38 +1187,155 @@
                 console.log('addDescriptionField called');
                 try {
                     const container = document.getElementById('desc_container');
-                    if (!container) {
-                        console.error('Container not found');
-                        return;
-                    }
+                    const fields = container.querySelectorAll('.field');
+                    const newIndex = fields.length;
                     
-                    const fieldCount = container.querySelectorAll('.field').length;
                     const newField = document.createElement('div');
                     newField.className = 'field cflex';
                     newField.innerHTML = `
-                        <label for="desc_${fieldCount + 1}">Paragraph ${fieldCount + 1}</label>
+                        <label for="desc_${newIndex + 1}">Paragraph ${newIndex + 1}</label>
                         <div class="field-wrapper">
-                            <textarea oninput="window.auto_grow(this)" id="desc_${fieldCount + 1}" 
+                            <textarea oninput="auto_grow(this)" id="desc_${newIndex + 1}" 
                                 name="univ_description[]" placeholder="Write Here..." 
                                 class="form-control"></textarea>
-                            <button type="button" class="remove-field" onclick="window.removeField(this)">
+                            <button type="button" class="remove-field" onclick="removeField(this)">
                                 <i class="fa-solid fa-times"></i>
                             </button>
                         </div>
                     `;
+                    
                     container.appendChild(newField);
-                    newField.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                    window.auto_grow(newField.querySelector('textarea'));
-                    console.log('Field added successfully');
                 } catch (error) {
                     console.error('Error in addDescriptionField:', error);
                 }
             };
             
+            // Important Dates Functionality
+            document.addEventListener('DOMContentLoaded', function() {
+                // Add new date entry
+                document.getElementById('add-important-date')?.addEventListener('click', function() {
+                    const container = document.getElementById('important-dates-container');
+                    if (!container) return;
+                    
+                    // Get current number of date items
+                    const dateItems = container.querySelectorAll('.important-date-item');
+                    const newIndex = dateItems.length;
+                    
+                    // Create new date item HTML
+                    const newDateItem = document.createElement('div');
+                    newDateItem.className = 'important-date-item mb-3 p-3 border rounded';
+                    newDateItem.innerHTML = `
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="event_${newIndex}">Event Name</label>
+                                    <input type="text" name="important_dates[${newIndex}][event]" 
+                                           id="event_${newIndex}" class="form-control" 
+                                           placeholder="E.g., Application Start Date" required>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="date_${newIndex}">Date</label>
+                                    <input type="date" name="important_dates[${newIndex}][date]" 
+                                           id="date_${newIndex}" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="description_${newIndex}">Description (Optional)</label>
+                                    <input type="text" name="important_dates[${newIndex}][description]" 
+                                           id="description_${newIndex}" class="form-control" 
+                                           placeholder="Additional details about this date">
+                                </div>
+                            </div>
+                            <div class="col-md-1 d-flex align-items-end">
+                                <button type="button" class="btn btn-danger btn-sm remove-important-date">
+                                    <i class="fa fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Add the new item to the container
+                    container.appendChild(newDateItem);
+                    
+                    // Move the add button container to the end
+                    const addButtonContainer = document.querySelector('#important-dates-container + .mt-3');
+                    if (addButtonContainer) {
+                        container.parentNode.insertBefore(addButtonContainer, container.nextSibling);
+                    }
+                    
+                    // Initialize date picker for the new date field
+                    if (typeof flatpickr !== 'undefined') {
+                        flatpickr(`#date_${newIndex}`, {
+                            dateFormat: 'Y-m-d',
+                            allowInput: true
+                        });
+                    }
+                });
+                
+                // Handle remove date item
+                document.addEventListener('click', function(e) {
+                    if (e.target.closest('.remove-important-date')) {
+                        const item = e.target.closest('.important-date-item');
+                        const container = document.getElementById('important-dates-container');
+                        if (item && container) {
+                            const allItems = container.querySelectorAll('.important-date-item');
+                            if (allItems.length > 1) { // Prevent removing the last item
+                                if (confirm('Are you sure you want to remove this date?')) {
+                                    item.remove();
+                                    updateImportantDateIndices();
+                                }
+                            } else {
+                                alert('At least one date is required.');
+                            }
+                        }
+                    }
+                });
+                
+                // Update indices of all date items
+                function updateImportantDateIndices() {
+                    const container = document.getElementById('important-dates-container');
+                    if (!container) return;
+                    
+                    const dateItems = container.querySelectorAll('.important-date-item');
+                    dateItems.forEach((item, index) => {
+                        // Update event field
+                        const eventInput = item.querySelector('input[type="text"][name^="important_dates["]');
+                        if (eventInput) {
+                            eventInput.name = `important_dates[${index}][event]`;
+                            eventInput.id = `event_${index}`;
+                            const label = eventInput.closest('.form-group').querySelector('label');
+                            if (label) label.setAttribute('for', `event_${index}`);
+                        }
+                        
+                        // Update date field
+                        const dateInput = item.querySelector('input[type="date"]');
+                        if (dateInput) {
+                            dateInput.name = `important_dates[${index}][date]`;
+                            dateInput.id = `date_${index}`;
+                            const label = dateInput.closest('.form-group').querySelector('label');
+                            if (label) label.setAttribute('for', `date_${index}`);
+                        }
+                        
+                        // Update description field
+                        const descInput = item.querySelector('input[type="text"][name$="[description]"]');
+                        if (descInput) {
+                            descInput.name = `important_dates[${index}][description]`;
+                            descInput.id = `description_${index}`;
+                            const label = descInput.closest('.form-group').querySelector('label');
+                            if (label) label.setAttribute('for', `description_${index}`);
+                        }
+                    });
+                }
+            });
+            
             window.removeField = function(button) {
                 const field = button.closest('.field');
                 if (field && field.parentElement.querySelectorAll('.field').length > 1) {
                     field.remove();
+                    updateFieldIndices(field.parentElement);
                 } else if (field) {
                     field.querySelector('textarea').value = '';
                 }

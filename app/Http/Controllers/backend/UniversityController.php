@@ -641,6 +641,48 @@ class UniversityController extends Controller
             ->with('section', 'eligibility')
             ->with('message', 'Eligibility criteria updated successfully!');
     }
+    
+    /**
+     * Update important dates for university
+     */
+    public function updateImportantDates(Request $request)
+    {
+        $request->validate([
+            'univ_id' => 'required|exists:universities,id',
+            'important_dates' => 'required|array',
+            'important_dates.*.event' => 'required|string|max:255',
+            'important_dates.*.date' => 'required|date',
+            'important_dates.*.description' => 'nullable|string',
+            'important_dates_notes' => 'nullable|string',
+        ]);
+
+        $university = University::findOrFail($request->univ_id);
+        
+        // Prepare important dates data
+        $importantDatesData = [];
+        foreach ($request->important_dates as $item) {
+            if (!empty($item['event']) && !empty($item['date'])) {
+                $importantDatesData[] = [
+                    'event' => $item['event'],
+                    'date' => $item['date'],
+                    'description' => $item['description'] ?? null,
+                ];
+            }
+        }
+        
+        // Add notes if provided
+        if ($request->filled('important_dates_notes')) {
+            $importantDatesData['notes'] = $request->important_dates_notes;
+        }
+        
+        // Update the university record
+        $university->important_dates = $importantDatesData;
+        $university->save();
+
+        return back()
+            ->with('section', 'important_dates')
+            ->with('message', 'Important dates updated successfully!');
+    }
 
     /**
      * Update university facts

@@ -46,7 +46,8 @@ class University extends Model
         'univ_programs_offered',
         'univ_popular_courses',
         'univ_eligibility',
-        'univ_admission'
+        'univ_admission',
+        'important_dates'
     ];
 
     protected $casts = [
@@ -59,6 +60,7 @@ class University extends Model
         'state_id' => 'integer',
         'city_id' => 'integer',
         'univ_popular_courses' => 'array',
+        'important_dates' => 'array',
     ];
     
     /**
