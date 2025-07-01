@@ -50,6 +50,52 @@ class UniversityController extends Controller
             ], 500);
         }
     }
+    
+    /**
+     * Update university visibility on frontend
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     */
+    public function updateVisibility(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'univ_id' => 'required|exists:universities,id',
+                'univ_detail_added' => 'sometimes|boolean',
+            ]);
+
+            $university = University::findOrFail($validated['univ_id']);
+            $university->univ_detail_added = $request->has('univ_detail_added') ? 1 : 0;
+            $university->save();
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Visibility updated successfully!',
+                    'univ_detail_added' => $university->univ_detail_added
+                ]);
+            }
+
+            return back()
+                ->with('section', 'visibility')
+                ->with('message', 'Visibility updated successfully!');
+                
+        } catch (\Exception $e) {
+            Log::error('Error updating visibility: ' . $e->getMessage());
+            
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to update visibility. Please try again.'
+                ], 500);
+            }
+
+            return back()
+                ->with('section', 'visibility')
+                ->with('error', 'Failed to update visibility. Please try again.');
+        }
+    }
 
     /* Get universities data */
     static function getUniversities(Request $request = null)
@@ -800,27 +846,37 @@ class UniversityController extends Controller
      */
     public function updateSeo(Request $request)
     {
-        $request->validate([
-            'univ_id' => 'required|exists:universities,id',
-            'meta_title' => 'nullable|string|max:255',
-            'meta_description' => 'nullable|string|max:500',
-            'meta_keywords' => 'nullable|string|max:500',
-            'meta_canonical' => 'nullable|url|max:255',
-            'meta_h1' => 'nullable|string|max:255',
-        ]);
+        try {
+            $validated = $request->validate([
+                'univ_id' => 'required|exists:universities,id',
+                'meta_title' => 'nullable|string|max:255',
+                'meta_description' => 'nullable|string|max:500',
+                'meta_keywords' => 'nullable|string|max:500',
+                'meta_canonical' => 'nullable|url|max:255',
+                'meta_h1' => 'nullable|string|max:255',
+            ]);
 
-        $university = University::findOrFail($request->univ_id);
+            $university = University::findOrFail($validated['univ_id']);
 
-        // Update or create SEO metadata
-        $university->meta_title = $request->meta_title;
-        $university->meta_description = $request->meta_description;
-        $university->meta_keywords = $request->meta_keywords;
-        $university->meta_canonical = $request->meta_canonical;
-        $university->meta_h1 = $request->meta_h1;
+            // Update SEO metadata with database column names
+            $university->univ_meta_title = $validated['meta_title'] ?? null;
+            $university->univ_meta_description = $validated['meta_description'] ?? null;
+            $university->univ_meta_keywords = $validated['meta_keywords'] ?? null;
+            $university->univ_meta_canonical = $validated['meta_canonical'] ?? null;
+            $university->univ_meta_h1 = $validated['meta_h1'] ?? null;
 
-        $university->save();
+            $university->save();
 
-        return back()->with('success', 'SEO details updated successfully!');
+            return back()
+                ->with('section', 'seo')
+                ->with('message', 'SEO details updated successfully!');
+                
+        } catch (\Exception $e) {
+            Log::error('Error updating SEO details: ' . $e->getMessage());
+            return back()
+                ->with('section', 'seo')
+                ->with('error', 'Failed to update SEO details. Please try again.');
+        }
     }
 
     /**

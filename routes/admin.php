@@ -262,6 +262,9 @@ Route::prefix("university")->group(function () {
 
             Route::post("/update/seo", [\App\Http\Controllers\backend\UniversityController::class, 'updateSeo'])
                 ->name('admin.university.add.details.update.seo');
+                
+            Route::post("/update/visibility", [\App\Http\Controllers\backend\UniversityController::class, 'updateVisibility'])
+                ->name('admin.university.add.details.update.visibility');
 
             Route::post("/update/basic-info", [\App\Http\Controllers\backend\UniversityController::class, 'updateBasicInfo'])
                 ->name('admin.university.add.details.update.basic-info');
