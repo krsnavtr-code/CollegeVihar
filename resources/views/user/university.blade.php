@@ -3,10 +3,45 @@
     $page_title = $university['univ_name'];
     $univ_img = $university['univ_image'];
 
-    $desc = json_decode($university['univ_description']);
-    $facts = json_decode($university['univ_facts']);
-    $advantage = json_decode($university['univ_advantage'], true);
-    $industry = json_decode($university['univ_industry'], true);
+    // Helper function to safely decode JSON
+    function safeJsonDecode($json, $default = []) {
+        if (empty($json)) {
+            return $default;
+        }
+        
+        if (is_array($json)) {
+            return $json;
+        }
+        
+        $decoded = json_decode($json, true);
+        return (json_last_error() === JSON_ERROR_NONE) ? $decoded : $default;
+    }
+
+    // Decode all JSON fields with proper error handling
+    $desc = safeJsonDecode($university['univ_description'] ?? '', ['']);
+    $facts = safeJsonDecode($university['univ_facts'] ?? '');
+    $advantages = safeJsonDecode($university['univ_advantage'] ?? '');
+    $industry = safeJsonDecode($university['univ_industry'] ?? '');
+    $popularCourses = safeJsonDecode($university['univ_popular_courses'] ?? '', [
+        'undergraduate' => [],
+        'postgraduate' => [],
+        'diploma' => [],
+        'others' => []
+    ]);
+    
+    $admission = $university['univ_admission'] ?? '';
+    $eligibility = safeJsonDecode($university['univ_eligibility'] ?? '');
+    $importantDates = safeJsonDecode($university['important_dates'] ?? '');
+    $placement = safeJsonDecode($university['univ_placement'] ?? '', ['highlights' => [], 'top_recruiters' => [], 'statistics' => []]);
+    $careerGuidance = safeJsonDecode($university['univ_career_guidance'] ?? '', ['services' => [], 'testimonials' => []]);
+    $scholarships = safeJsonDecode($university['univ_scholarship'] ?? '');
+    $facilities = safeJsonDecode($university['univ_facilities'] ?? '');
+    $gallery = safeJsonDecode($university['univ_gallery'] ?? '');
+    
+    // Ensure description is always an array
+    if (!is_array($desc)) {
+        $desc = [$desc];
+    }
 @endphp
 @push('css')
     <link rel="stylesheet" href="/css/university-page.css">
@@ -151,604 +186,894 @@
 @section('main')
     <main>
         @include('user.components.breadcrumbs.uni-breadcrumb')
-        <div class="container">
+        <div class="container py-4">
             <div class="row">
-                <div class=" col-9 col-s-12 col-m-12 col-l-12">
+                <!-- Main Content -->
+                <div class="col-12 col-lg-8">
                     <!-- University Header -->
-                    <section class="univ-header mb-4">
-                        <div class=" d-flex flex-column flex-md-row">
-                            <div class="col-md-2">
-                                <img src="{{ !empty($university['univ_image']) ? '/images/university/campus/' . $university['univ_image'] : '/images/logomini.png' }}"
-                                    alt="{{ $university['univ_name'] }}"
-                                    class="img-fluid rounded shadow h-100 w-100 object-fit-cover object-position-center">
-                            </div>
-                            <div class="col-md-10 ms-3">
-                                <h2>{{ $university['univ_name'] }}</h2>
-                                <p><span
-                                        class="blue fw-bold me-1 ">{{ !empty($university['courses']) ? count($university['courses']) : 0 }}</span>
-                                    Course{{ !empty($university['courses']) && count($university['courses']) !== 1 ? 's' : '' }}
-                                    Available
-                                </p>
-                                <p><span><i class="fa-solid fa-industry blue"></i>
-                                        {{ !empty($university['univ_category']) ? $university['univ_category'] : 'Not specified' }}</span>
-                                    | <span><i class="fa-solid fa-award blue"></i> UGC, AICTE, NAAC, BCI, COA</span> |
-                                    <span><i class="fa-solid fa-university blue"></i>
-                                        {{ !empty($university['univ_type']) ? $university['univ_type'] : 'Not specified' }}
-                                        University</span>
-                                </p>
-                                <p><span
-                                        class="blue fw-bold me-1 ">{{ !empty($university['univ_address']) ? $university['univ_address'] : 'Location not specified' }}</span>
-                                </p>
+                    <section class="card shadow-sm mb-4">
+                        <div class="card-body">
+                            <div class="d-flex flex-column flex-md-row align-items-center">
+                                <div class="col-md-3 text-center mb-3 mb-md-0">
+                                    <div class="university-logo-container">
+                                        <img src="{{ asset($university['univ_logo'] ?? 'images/default-university.png') }}" 
+                                             alt="{{ $university['univ_name'] }} Logo" 
+                                             class="img-fluid university-logo">
+                                    </div>
+                                </div>
+                                <div class="col-md-9 ps-md-4">
+                                    <h1 class="mb-3">{{ $university['univ_name'] }}</h1>
+                                    <div class="d-flex flex-wrap gap-2 mb-2">
+                                        @if(!empty($university['univ_establishment_year']))
+                                            <span class="badge bg-primary">Est. {{ $university['univ_establishment_year'] }}</span>
+                                        @endif
+                                        @if(!empty($university['univ_type']))
+                                            <span class="badge bg-secondary">{{ $university['univ_type'] }}</span>
+                                        @endif
+                                        @if(!empty($university['univ_ownership']))
+                                            <span class="badge bg-info">{{ $university['univ_ownership'] }}</span>
+                                        @endif
+                                        @if(!empty($university['univ_approval']))
+                                            <span class="badge bg-success">{{ $university['univ_approval'] }} Approved</span>
+                                        @endif
+                                    </div>
+                                    
+                                    @if(!empty($university['univ_address']) || !empty($university['univ_website']) || !empty($university['univ_phone']))
+                                        <div class="university-meta mt-3">
+                                            @if(!empty($university['univ_address']))
+                                                <p class="mb-1">
+                                                    <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                                                    {{ $university['univ_address'] }}
+                                                </p>
+                                            @endif
+                                            
+                                            @if(!empty($university['univ_website']))
+                                                <p class="mb-1">
+                                                    <i class="fas fa-globe text-primary me-2"></i>
+                                                    <a href="{{ $university['univ_website'] }}" target="_blank" class="text-decoration-none">
+                                                        {{ parse_url($university['univ_website'], PHP_URL_HOST) }}
+                                                    </a>
+                                                </p>
+                                            @endif
+                                            
+                                            @if(!empty($university['univ_phone']))
+                                                <p class="mb-0">
+                                                    <i class="fas fa-phone text-primary me-2"></i>
+                                                    <a href="tel:{{ $university['univ_phone'] }}" class="text-decoration-none">
+                                                        {{ $university['univ_phone'] }}
+                                                    </a>
+                                                </p>
+                                            @endif
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </section>
 
-                    <!-- University Content -->
-                    <section id="university">
-                        <div class="">
-                            <div class="row">
-                                <article class="p-2">
-                                    <p class="univ_titles">About {{ $university['univ_name'] }}</p>
-                                    @if(!empty($desc) && is_array($desc))
-                                        @foreach ($desc as $p)
-                                            <p class="ps-2 mb-3">{{ $p }}</p>
-                                        @endforeach
-                                    @else
-                                        <p class="p-2">No description available.</p>
-                                    @endif
-                                </article>
-
-                                <article class="p-2">
-                                    <p class="univ_titles mb-2">Highlights of {{ $university['univ_name'] }}</p>
-                                    @if (!empty($industry) && is_array($industry))
-                                        @foreach ($industry as $index => $p)
-                                            <div class=" ps-2 mb-3">
-                                                <!-- Button group -->
-                                                <div class="d-flex justify-content-start gap-2 mb-2">
-                                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="collapse"
-                                                        data-bs-target="#details-{{ $index }}" aria-expanded="true"
-                                                        aria-controls="details-{{ $index }}">
-                                                        Overview
-                                                    </button>
-                                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="collapse"
-                                                        data-bs-target="#popular-courses-{{ $index }}" aria-expanded="false"
-                                                        aria-controls="popular-courses-{{ $index }}">
-                                                        Popular Courses
-                                                    </button>
-                                                </div>
-
-                                                <!-- Accordion for this row -->
-                                                <div class="accordion" id="accordion-{{ $index }}">
-                                                    <div id="details-{{ $index }}" class="accordion-collapse collapse show"
-                                                        data-bs-parent="#accordion-{{ $index }}">
-                                                        <div class="accordion-body">
-                                                            <!-- <strong>Details:</strong> {{ $p['details'] ?? 'N/A' }} -->
-                                                            <article class="">
-                                                                <p class="univ_titles">Overview</p>
-
-                                                                <div class="table-responsive">
-                                                                    <table class="table overview-table">
-                                                                        <tbody>
-                                                                            <tr>
-                                                                                <th>University Name</th>
-                                                                                <td>Manipal University Jaipur (MUJ)</td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <th>Year of Establishment</th>
-                                                                                <td>2011</td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <th>University Type</th>
-                                                                                <td>Private</td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <th>Recognitions</th>
-                                                                                <td>UGC, AICTE, COA, BCI, DSIR</td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <th>Accreditation</th>
-                                                                                <td>NAAC 'A+' Grade</td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <th>Campus Area</th>
-                                                                                <td>122 Acres</td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <th>Location</th>
-                                                                                <td>Dehmi Kalan, Jaipur-Ajmer Expressway, Jaipur
-                                                                                </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <th>Admission Mode</th>
-                                                                                <td>Entrance-Based & Merit-Based</td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <th>Entrance Exams Accepted</th>
-                                                                                <td>MU-OET, JEE, CAT, MAT, CLAT, LSAT, NATA</td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <th>Courses Offered</th>
-                                                                                <td>UG, PG, Ph.D. (Engineering, Management, Design,
-                                                                                    Law, Arts, etc.)</td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <th>Student Strength</th>
-                                                                                <td>~8000+ Students (approx.)</td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <th>Faculty Strength</th>
-                                                                                <td>300+ Qualified Faculty</td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <th>Placement Assistance</th>
-                                                                                <td>Yes, with top recruiters & dedicated placement
-                                                                                    cell</td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <th>Official Website</th>
-                                                                                <td><a href="https://jaipur.manipal.edu"
-                                                                                        target="_blank">jaipur.manipal.edu</a></td>
-                                                                            </tr>
-                                                                        </tbody>
-                                                                    </table>
-                                                                </div>
-                                                            </article>
-                                                        </div>
+                    <!-- Quick Facts -->
+                    @if(!empty($facts) && count($facts) > 0)
+                        <section id="quick-facts" class="card shadow-sm mb-4">
+                            <div class="card-header bg-light">
+                                <h2 class="h5 mb-0">Quick Facts</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    @foreach($facts as $fact)
+                                        @if(!empty($fact['title']) || !empty($fact['value']))
+                                            <div class="col-md-6 mb-3">
+                                                <div class="d-flex">
+                                                    <div class="flex-shrink-0 text-primary me-3">
+                                                        <i class="fas {{ $fact['icon'] ?? 'fa-check-circle' }}"></i>
                                                     </div>
-                                                    <div id="popular-courses-{{ $index }}" class="accordion-collapse collapse"
-                                                        data-bs-parent="#accordion-{{ $index }}">
-                                                        <article class="p-2">
-                                                            <p class="univ_titles">Popular Courses at {{ $university['univ_name'] }}</p>
+                                                    <div>
+                                                        @if(!empty($fact['title']))
+                                                            <h6 class="mb-1">{{ $fact['title'] }}</h6>
+                                                        @endif
+                                                        @if(!empty($fact['value']))
+                                                            <p class="mb-0 text-muted">{{ $fact['value'] }}</p>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            </div>
+                        </section>
+                    @endif
 
-                                                            <!-- Undergraduate Programs -->
-                                                            <h5 class="mt-3 text-primary">Undergraduate Programs</h5>
-                                                            <div class="table-responsive">
-                                                                <table class="table course-table">
-                                                                    <thead>
-                                                                        <tr>
-                                                                            <th>Program</th>
-                                                                            <th>Duration</th>
-                                                                            <th>Specializations</th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                        <tr>
-                                                                            <td>B.Tech</td>
-                                                                            <td>4 Years</td>
-                                                                            <td>CSE, ECE, Mechanical, AI & ML, Civil, IT, Data
-                                                                                Science</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td>BBA</td>
-                                                                            <td>3 Years</td>
-                                                                            <td>General, Finance, HR, Marketing</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td>BCA</td>
-                                                                            <td>3 Years</td>
-                                                                            <td>Data Analytics, Cyber Security</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td>B.Des</td>
-                                                                            <td>4 Years</td>
-                                                                            <td>Interior, Fashion, Communication Design</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td>BA (Hons)</td>
-                                                                            <td>3 Years</td>
-                                                                            <td>English, Psychology, Economics</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td>B.Com (Hons)</td>
-                                                                            <td>3 Years</td>
-                                                                            <td>Finance, International Business, Taxation</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td>BA LLB / BBA LLB</td>
-                                                                            <td>5 Years (Integrated)</td>
-                                                                            <td>Law Degree Program</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td>B.Arch</td>
-                                                                            <td>5 Years</td>
-                                                                            <td>Architecture</td>
-                                                                        </tr>
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
+                    <!-- About University -->
+                    @if(!empty($desc))
+                        <section id="about" class="card shadow-sm mb-4">
+                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                <h2 class="h5 mb-0">About {{ $university['univ_name'] }}</h2>
+                            </div>
+                            <div class="card-body">
+                                @foreach($desc as $paragraph)
+                                    @if(!empty($paragraph))
+                                        <p>{!! nl2br(e($paragraph)) !!}</p>
+                                    @endif
+                                @endforeach
+                                
+                                @if(!empty($university['univ_campus_area']) || !empty($university['univ_student_strength']) || !empty($university['univ_faculty_strength']))
+                                    <div class="row mt-4">
+                                        @if(!empty($university['univ_campus_area']))
+                                            <div class="col-md-4 mb-3">
+                                                <div class="stat-card">
+                                                    <div class="stat-number">{{ $university['univ_campus_area'] }}</div>
+                                                    <div class="stat-label">Campus Area (acres)</div>
+                                                </div>
+                                            </div>
+                                        @endif
+                                        
+                                        @if(!empty($university['univ_student_strength']))
+                                            <div class="col-md-4 mb-3">
+                                                <div class="stat-card">
+                                                    <div class="stat-number">{{ number_format($university['univ_student_strength']) }}+</div>
+                                                    <div class="stat-label">Students</div>
+                                                </div>
+                                            </div>
+                                        @endif
+                                        
+                                        @if(!empty($university['univ_faculty_strength']))
+                                            <div class="col-md-4 mb-3">
+                                                <div class="stat-card">
+                                                    <div class="stat-number">{{ number_format($university['univ_faculty_strength']) }}+</div>
+                                                    <div class="stat-label">Faculty Members</div>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endif
+                            </div>
+                        </section>
+                    @endif
 
-                                                            <!-- Postgraduate Programs -->
-                                                            <h5 class="mt-4 text-primary">Postgraduate Programs</h5>
-                                                            <div class="table-responsive">
-                                                                <table class="table course-table">
-                                                                    <thead>
+                    <!-- Popular Courses -->
+                    @if(!empty($undergraduateCourses) || !empty($postgraduateCourses) || !empty($diplomaCourses) || !empty($otherCourses))
+                        <section id="courses" class="card shadow-sm mb-4">
+                            <div class="card-header bg-light">
+                                <h2 class="h5 mb-0">Popular Courses at {{ $university['univ_name'] }}</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="accordion" id="coursesAccordion">
+                                    @if(!empty($undergraduateCourses))
+                                        <div class="accordion-item">
+                                            <h3 class="accordion-header" id="undergradHeading">
+                                                <button class="accordion-button" type="button" data-bs-toggle="collapse" 
+                                                        data-bs-target="#undergradCollapse" aria-expanded="true" 
+                                                        aria-controls="undergradCollapse">
+                                                    <i class="fas fa-graduation-cap me-2"></i> Undergraduate Programs
+                                                </button>
+                                            </h3>
+                                            <div id="undergradCollapse" class="accordion-collapse collapse show" 
+                                                 aria-labelledby="undergradHeading" data-bs-parent="#coursesAccordion">
+                                                <div class="accordion-body p-0">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-hover mb-0">
+                                                            <thead class="table-light">
+                                                                <tr>
+                                                                    <th>Program</th>
+                                                                    <th>Duration</th>
+                                                                    <th>Eligibility</th>
+                                                                    <th>Fees (Annual)</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach($undergraduateCourses as $course)
+                                                                    @if(is_array($course) && !empty($course['program']))
                                                                         <tr>
-                                                                            <th>Program</th>
-                                                                            <th>Duration</th>
-                                                                            <th>Specializations</th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                        <tr>
-                                                                            <td>MBA</td>
-                                                                            <td>2 Years</td>
-                                                                            <td>Marketing, Finance, HR, Operations, Analytics</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td>M.Tech</td>
-                                                                            <td>2 Years</td>
-                                                                            <td>Power Systems, VLSI Design, Structural, Data Science
+                                                                            <td>
+                                                                                <strong>{{ $course['program'] }}</strong>
+                                                                                @if(!empty($course['specializations']))
+                                                                                    <div class="text-muted small">
+                                                                                        {{ is_array($course['specializations']) ? implode(', ', $course['specializations']) : $course['specializations'] }}
+                                                                                    </div>
+                                                                                @endif
+                                                                            </td>
+                                                                            <td>{{ $course['duration'] ?? 'N/A' }}</td>
+                                                                            <td>{{ $course['eligibility'] ?? '10+2 or equivalent' }}</td>
+                                                                            <td>
+                                                                                @if(!empty($course['fees']))
+                                                                                    ₹{{ number_format($course['fees']) }}
+                                                                                @else
+                                                                                    N/A
+                                                                                @endif
                                                                             </td>
                                                                         </tr>
-                                                                        <tr>
-                                                                            <td>M.Sc</td>
-                                                                            <td>2 Years</td>
-                                                                            <td>Mathematics, Biotechnology, Data Science</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td>MA</td>
-                                                                            <td>2 Years</td>
-                                                                            <td>Journalism, English</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td>LLM</td>
-                                                                            <td>1 Year</td>
-                                                                            <td>Corporate Law, Constitutional Law</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td>MCA</td>
-                                                                            <td>2 Years</td>
-                                                                            <td>Software Development, AI</td>
-                                                                        </tr>
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-
-                                                            <!-- Doctoral Programs -->
-                                                            <h5 class="mt-4 text-primary">Doctoral Programs (Ph.D.)</h5>
-                                                            <p>Offered across multiple streams such as <strong>Engineering, Law,
-                                                                    Management, Arts, and Sciences</strong> with both
-                                                                <strong>full-time and part-time</strong> options.
-                                                            </p>
-                                                        </article>
+                                                                    @endif
+                                                                @endforeach
+                                                            </tbody>
+                                                        </table>
                                                     </div>
-                                                    <div id="ranking-{{ $index }}" class="accordion-collapse collapse"
-                                                        data-bs-parent="#accordion-{{ $index }}">
-                                                        <div class="accordion-body">
-                                                            <strong>Ranking Info:</strong> {{ $p['ranking_body'] ?? 'N/A' }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                    
+                                    <!-- Postgraduate Programs -->
+                                    @if(!empty($postgraduateCourses))
+                                        <div class="accordion-item">
+                                            <h3 class="accordion-header" id="postgradHeading">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                                        data-bs-target="#postgradCollapse" aria-expanded="false" 
+                                                        aria-controls="postgradCollapse">
+                                                    <i class="fas fa-user-graduate me-2"></i> Postgraduate Programs
+                                                </button>
+                                            </h3>
+                                            <div id="postgradCollapse" class="accordion-collapse collapse" 
+                                                 aria-labelledby="postgradHeading" data-bs-parent="#coursesAccordion">
+                                                <div class="accordion-body p-0">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-hover mb-0">
+                                                            <thead class="table-light">
+                                                                <tr>
+                                                                    <th>Program</th>
+                                                                    <th>Duration</th>
+                                                                    <th>Eligibility</th>
+                                                                    <th>Fees (Annual)</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach($postgraduateCourses as $course)
+                                                                    @if(is_array($course) && !empty($course['program']))
+                                                                        <tr>
+                                                                            <td>
+                                                                                <strong>{{ $course['program'] }}</strong>
+                                                                                @if(!empty($course['specializations']))
+                                                                                    <div class="text-muted small">
+                                                                                        {{ is_array($course['specializations']) ? implode(', ', $course['specializations']) : $course['specializations'] }}
+                                                                                    </div>
+                                                                                @endif
+                                                                            </td>
+                                                                            <td>{{ $course['duration'] ?? 'N/A' }}</td>
+                                                                            <td>{{ $course['eligibility'] ?? 'Graduation' }}</td>
+                                                                            <td>
+                                                                                @if(!empty($course['fees']))
+                                                                                    ₹{{ number_format($course['fees']) }}
+                                                                                @else
+                                                                                    N/A
+                                                                                @endif
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endif
+                                                                @endforeach
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    <!-- Diploma Programs -->
+                                    @if(!empty($diplomaCourses))
+                                        <div class="accordion-item">
+                                            <h3 class="accordion-header" id="diplomaHeading">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                                        data-bs-target="#diplomaCollapse" aria-expanded="false" 
+                                                        aria-controls="diplomaCollapse">
+                                                    <i class="fas fa-certificate me-2"></i> Diploma Programs
+                                                </button>
+                                            </h3>
+                                            <div id="diplomaCollapse" class="accordion-collapse collapse" 
+                                                 aria-labelledby="diplomaHeading" data-bs-parent="#coursesAccordion">
+                                                <div class="accordion-body p-0">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-hover mb-0">
+                                                            <thead class="table-light">
+                                                                <tr>
+                                                                    <th>Program</th>
+                                                                    <th>Duration</th>
+                                                                    <th>Eligibility</th>
+                                                                    <th>Fees (Total)</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach($diplomaCourses as $course)
+                                                                    @if(is_array($course) && !empty($course['program']))
+                                                                        <tr>
+                                                                            <td>
+                                                                                <strong>{{ $course['program'] }}</strong>
+                                                                                @if(!empty($course['specializations']))
+                                                                                    <div class="text-muted small">
+                                                                                        {{ is_array($course['specializations']) ? implode(', ', $course['specializations']) : $course['specializations'] }}
+                                                                                    </div>
+                                                                                @endif
+                                                                            </td>
+                                                                            <td>{{ $course['duration'] ?? 'N/A' }}</td>
+                                                                            <td>{{ $course['eligibility'] ?? '10th/12th Pass' }}</td>
+                                                                            <td>
+                                                                                @if(!empty($course['fees']))
+                                                                                    ₹{{ number_format($course['fees']) }}
+                                                                                @else
+                                                                                    N/A
+                                                                                @endif
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endif
+                                                                @endforeach
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    <!-- Other Programs -->
+                                    @if(!empty($otherCourses))
+                                        <div class="accordion-item">
+                                            <h3 class="accordion-header" id="otherCoursesHeading">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                                        data-bs-target="#otherCoursesCollapse" aria-expanded="false" 
+                                                        aria-controls="otherCoursesCollapse">
+                                                    <i class="fas fa-book me-2"></i> Other Programs
+                                                </button>
+                                            </h3>
+                                            <div id="otherCoursesCollapse" class="accordion-collapse collapse" 
+                                                 aria-labelledby="otherCoursesHeading" data-bs-parent="#coursesAccordion">
+                                                <div class="accordion-body p-0">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-hover mb-0">
+                                                            <thead class="table-light">
+                                                                <tr>
+                                                                    <th>Program</th>
+                                                                    <th>Type</th>
+                                                                    <th>Duration</th>
+                                                                    <th>Eligibility</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach($otherCourses as $course)
+                                                                    @if(is_array($course) && !empty($course['program']))
+                                                                        <tr>
+                                                                            <td>
+                                                                                <strong>{{ $course['program'] }}</strong>
+                                                                                @if(!empty($course['description']))
+                                                                                    <div class="text-muted small">
+                                                                                        {{ $course['description'] }}
+                                                                                    </div>
+                                                                                @endif
+                                                                            </td>
+                                                                            <td>{{ $course['type'] ?? 'Certificate' }}</td>
+                                                                            <td>{{ $course['duration'] ?? 'N/A' }}</td>
+                                                                            <td>{{ $course['eligibility'] ?? 'Varies' }}</td>
+                                                                        </tr>
+                                                                    @endif
+                                                                @endforeach
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    <!-- Prospectus Download -->
+                                    @if(!empty($university['univ_prospectus']))
+                                        <div class="mt-4 text-center">
+                                            <a href="{{ asset($university['univ_prospectus']) }}" 
+                                               class="btn btn-outline-primary" target="_blank" download>
+                                                <i class="fas fa-download me-2"></i> Download Full Prospectus
+                                            </a>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </section>
+                    @else
+                        <div class="alert alert-info mb-4">
+                            <i class="fas fa-info-circle me-2"></i>
+                            No course information is currently available. Please check back later or contact the university directly for more information.
+                        </div>
+                    @endif
+
+                    <!-- Admission Process -->
+                    @if(!empty($admission))
+                        <section class="card shadow-sm mb-4">
+                            <div class="card-header bg-light">
+                                <h2 class="h5 mb-0">Admission Process</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="admission-content">
+                                    {!! $admission !!}
+                                </div>
+                            </div>
+                        </section>
+                    @endif
+
+                    <!-- Eligibility Criteria -->
+                    @if(!empty($eligibility) && is_array($eligibility) && count($eligibility) > 0)
+                        <section class="card shadow-sm mb-4">
+                            <div class="card-header bg-light">
+                                <h2 class="h5 mb-0">Eligibility Criteria</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="accordion" id="eligibilityAccordion">
+                                    @foreach($eligibility as $index => $criteria)
+                                        @if(!empty($criteria['title']) && !empty($criteria['description']))
+                                            <div class="accordion-item">
+                                                <h3 class="accordion-header" id="eligibilityHeading{{ $index }}">
+                                                    <button class="accordion-button {{ $loop->first ? '' : 'collapsed' }}" 
+                                                            type="button" 
+                                                            data-bs-toggle="collapse" 
+                                                            data-bs-target="#eligibilityCollapse{{ $index }}" 
+                                                            aria-expanded="{{ $loop->first ? 'true' : 'false' }}" 
+                                                            aria-controls="eligibilityCollapse{{ $index }}">
+                                                        {{ $criteria['title'] }}
+                                                    </button>
+                                                </h3>
+                                                <div id="eligibilityCollapse{{ $index }}" 
+                                                     class="accordion-collapse collapse {{ $loop->first ? 'show' : '' }}" 
+                                                     aria-labelledby="eligibilityHeading{{ $index }}" 
+                                                     data-bs-parent="#eligibilityAccordion">
+                                                    <div class="accordion-body">
+                                                        {!! $criteria['description'] !!}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            </div>
+                        </section>
+                    @endif
+
+                    <!-- Placement & Internships -->
+                    @if(!empty($placement) && is_array($placement) && !empty($placement['highlights']))
+                        <section id="placement" class="card shadow-sm mb-4">
+                            <div class="card-header bg-light">
+                                <h2 class="h5 mb-0">Placement & Internships</h2>
+                            </div>
+                            <div class="card-body">
+                                @if(!empty($placement['highlights']))
+                                    <div class="mb-4">
+                                        <h4 class="h6 text-primary mb-3">Placement Highlights</h4>
+                                        <div class="row">
+                                            @foreach($placement['highlights'] as $highlight)
+                                                <div class="col-md-6 mb-3">
+                                                    <div class="d-flex">
+                                                        <div class="flex-shrink-0 text-success me-2">
+                                                            <i class="fas fa-check-circle"></i>
                                                         </div>
+                                                        <div>
+                                                            {{ $highlight }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
+
+                                @if(!empty($placement['top_recruiters']) && is_array($placement['top_recruiters']))
+                                    <div class="mb-4">
+                                        <h4 class="h6 text-primary mb-3">Top Recruiters</h4>
+                                        <div class="row g-3">
+                                            @foreach($placement['top_recruiters'] as $recruiter)
+                                                @if(!empty($recruiter['logo']))
+                                                    <div class="col-4 col-md-3">
+                                                        <div class="bg-white p-2 border rounded text-center" style="height: 80px;">
+                                                            <img src="{{ asset('storage/' . $recruiter['logo']) }}" 
+                                                                 alt="{{ $recruiter['name'] ?? 'Recruiter Logo' }}" 
+                                                                 class="img-fluid h-100" 
+                                                                 style="object-fit: contain;">
+                                                        </div>
+                                                        @if(!empty($recruiter['name']))
+                                                            <div class="small text-center mt-1">{{ $recruiter['name'] }}</div>
+                                                        @endif
+                                                    </div>
+                                                @endif
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
+
+                                @if(!empty($placement['statistics']) && is_array($placement['statistics']))
+                                    <div class="mt-4">
+                                        <h4 class="h6 text-primary mb-3">Placement Statistics</h4>
+                                        <div class="row">
+                                            @foreach($placement['statistics'] as $stat)
+                                                <div class="col-md-6 mb-3">
+                                                    <div class="card h-100 border-0 shadow-sm">
+                                                        <div class="card-body text-center">
+                                                            <div class="display-6 text-primary fw-bold mb-1">{{ $stat['value'] ?? 'N/A' }}</div>
+                                                            <div class="text-muted small">{{ $stat['label'] ?? '' }}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        </section>
+                    @endif
+
+                    <!-- Career Guidance -->
+                    @if(!empty($careerGuidance) && is_array($careerGuidance) && !empty($careerGuidance['services']))
+                        <section id="career-guidance" class="card shadow-sm mb-4">
+                            <div class="card-header bg-light">
+                                <h2 class="h5 mb-0">Career Guidance & Support</h2>
+                            </div>
+                            <div class="card-body">
+                                @if(!empty($careerGuidance['services']))
+                                    <div class="row">
+                                        @foreach($careerGuidance['services'] as $service)
+                                            <div class="col-md-6 mb-4">
+                                                <div class="d-flex h-100">
+                                                    <div class="flex-shrink-0 text-primary me-3 mt-1">
+                                                        <i class="fas {{ $service['icon'] ?? 'fa-check-circle' }} fa-lg"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="h6 mb-2">{{ $service['title'] ?? '' }}</h5>
+                                                        <p class="small text-muted mb-0">{{ $service['description'] ?? '' }}</p>
                                                     </div>
                                                 </div>
                                             </div>
                                         @endforeach
-                                    @else
-                                        <p class="p-2">No industry available.</p>
-                                    @endif
-                                </article>
-
-                                <article class="p-2">
-                                    <p class="univ_titles">Admission Process</p>
-                                    <ul class="ps-2 ms-3 mb-3">
-                                        <li>Online Registration: Visit jaipur.manipal.edu to apply online.</li>
-                                        <li>Check Eligibility: Based on 10+2 or UG scores and entrance exam results.
-                                        </li>
-                                        <li>Entrance Exam: MUJ conducts MU-OET for specific programs; national-level
-                                            scores like JEE/CAT/CLAT are also accepted.</li>
-                                        <li>Counselling/Interview: Shortlisted candidates are invited.</li>
-                                        <li>Document Verification & Fee Payment to confirm admission.</li>
-                                    </ul>
-                                </article>
-
-                                <article class="p-2">
-                                    <p class="univ_titles">Important Dates (Tentative)</p>
-                                    <ul class="ps-2 ms-3 mb-3">
-                                        <li>Online Application Starts January 2025</li>
-                                        <li>Application Deadline May 2025</li>
-                                        <li>MU-OET Exam Dates June 2025</li>
-                                        <li>Counselling Begins July 2025</li>
-                                        <li>Session Commencement August 2025</li>
-                                        <li>Cut-Off Details (Program-wise)</li>
-                                        <li>Program Accepted Exam Cut-Off (Expected)</li>
-                                        <li>B.Tech (CSE) JEE Main / MU-OET 85+ Percentile / 140+ Marks</li>
-                                        <li>B.Tech (IT, ECE, AI) JEE / MU-OET 70–80 Percentile</li>
-                                        <li>B.Des MUJ DAT + Portfolio 60%+ Score</li>
-                                        <li>MBA CAT/MAT/XAT/CMAT 60+ Percentile</li>
-                                        <li>BA LLB / BBA LLB CLAT / LSAT CLAT Rank < 10000</li>
-                                        <li>BBA / BCA Merit-Based 70–75% in Class 12th</li>
-                                        <li>B.Arch NATA 90+ Score</li>
-                                    </ul>
-                                </article>
-
-                                <article class="p-2">
-                                    <p class="univ_titles">Placement Details at {{ $university['univ_name'] }}</p>
-                                    <p class="ps-2 mb-3">
-                                        MUJ has a strong placement cell and maintains robust industry connections. Every year, more than 90% of eligible students land great job offers.
-                                    </p>
-                                </article>
-
-                                <article class="p-2">
-                                    <p class="univ_titles">Key Placement Stats (2023)</p>
-                                    <ul class="ps-2 ms-3 mb-3">
-                                        <li>Highest CTC: ₹45 LPA (offered by Microsoft to a CSE graduate)</li>
-                                        <li>Average CTC: ₹6.5 LPA (Engineering), ₹5.2 LPA (MBA)</li>
-                                        <li>Placement Percentage: 90%+</li>
-                                    </ul>
-                                </article>
-
-                                <article class="p-2">
-                                    <p class="univ_titles">Top Recruiters</p>
-                                    <div class="recruiter-marquee-container ps-2 mb-3">
-                                        <div class="recruiter-marquee-track">
-                                            @foreach ([
-                                                'Microsoft', 'Amazon', 'Deloitte', 'Accenture', 'Infosys', 'TCS',
-                                                'Bosch', 'IBM', 'Wipro', 'L&T', 'Capgemini', 'HDFC Bank',
-                                                'ZS Associates', 'Cognizant', 'Byju\'s'
-                                            ] as $recruiter)
-                                                <span class="recruiter-badge">{{ $recruiter }}</span>
-                                            @endforeach
-                                        </div>
                                     </div>
-                                </article>
+                                @endif
 
-                                <article class="p-2">
-                                    <p class="univ_titles">Facts</p>
-                                    @if(!empty($facts) && is_array($facts))
-                                        <ul class="ps-2 ms-3 mb-3">
-                                            @foreach ($facts as $li)
-                                                <li>{{$li}}</li>
-                                            @endforeach
-                                        </ul>
-                                    @else
-                                        <p>No facts available.</p>
-                                    @endif
-                                </article>
-                                <article>
-                                    <p class="univ_titles">Advantages</p>
-                                    @if(!empty($advantage) && is_array($advantage) && isset($advantage['data']) && is_array($advantage['data']))
-                                        <div class="row ps-2">
-                                            @foreach ($advantage['data'] as $d)
-                                                <div class="col-md-3 col-6 p-2"> <!-- Reduced column size -->
-                                                    <article class="card p-2 h-100 shadow-sm border-0 text-center">
-                                                        <div class="image-container">
-                                                            <img class="img-fluid" src="/images/icon_png/{{ $d['logo'] }}"
-                                                                alt="{{$d['title']}}">
+                                @if(!empty($careerGuidance['testimonials']) && is_array($careerGuidance['testimonials']))
+                                    <div class="mt-4">
+                                        <h4 class="h6 text-primary mb-3">Student Testimonials</h4>
+                                        <div class="row">
+                                            @foreach($careerGuidance['testimonials'] as $testimonial)
+                                                <div class="col-md-6 mb-3">
+                                                    <div class="card h-100">
+                                                        <div class="card-body">
+                                                            <div class="d-flex align-items-center mb-3">
+                                                                @if(!empty($testimonial['image']))
+                                                                    <img src="{{ asset('storage/' . $testimonial['image']) }}" 
+                                                                         alt="{{ $testimonial['name'] ?? 'Student' }}" 
+                                                                         class="rounded-circle me-3" 
+                                                                         width="50" 
+                                                                         height="50">
+                                                                @endif
+                                                                <div>
+                                                                    <div class="fw-bold">{{ $testimonial['name'] ?? 'Anonymous' }}</div>
+                                                                    <div class="text-muted small">{{ $testimonial['position'] ?? 'Student' }}</div>
+                                                                </div>
+                                                            </div>
+                                                            <p class="mb-0">"{{ $testimonial['testimonial'] ?? '' }}"</p>
                                                         </div>
-                                                        <p class="blue mt-2">{{ $d['title'] }}</p>
-                                                        <!-- <p class="text-muted small">{{ $d['description'] }}</p> -->
-                                                    </article>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    @else
-                                        <p>No advantages available.</p>
-                                    @endif
-                                </article>
-                                <article class="p-2">
-                                    <p class="univ_titles">Available Courses</p>
-                                    @foreach ($university['courses'] as $course)
-                                        @php
-                                            $metadata = DB::table('universitycourses')
-                                                ->where('course_id', $course['id'])
-                                                ->where('university_id', $university['id'])
-                                                ->first();
-
-                                            $url = $metadata->univ_course_slug ?? ''; // Use null coalescing operator to handle null value
-                                            $metadata2 = DB::table('metadata')->where('id', $url)->first();
-                                            $url2 = $metadata2->url_slug ?? '';
-                                        @endphp
-                                        <a class="btn btn-outline-primary m-1" title="{{ $course['course_name'] }}"
-                                            href="/{{ $url2 }}" target="blank">{{ $course['course_short_name'] }}</a>
-                                    @endforeach
-                                </article>
-                                <article class="p-2">
-                                    <p class="univ_titles">Boost Your Future</p>
-                                    <p>Embark on Your Path to Success: Seize the Golden Opportunity Awaiting You! Take a
-                                        Moment
-                                        to Fill Out
-                                        Our Thorough Query Form, and You'll Be Initiating the First Thrilling Steps Towards
-                                        a
-                                        Brilliant
-                                        Future Filled with Remarkable Achievements and Lifelong Growth.</p>
-
-                                </article>
-                            </div>
-                        </div>
-                    </section>
-                    <section class="py-2">
-                        <div class="">
-                            <div class="row">
-                                <div class="col-md-6 p-2">
-                                    <article>
-                                        <p class="univ_titles">Admission Process</p>
-                                        <p>There is an online admissions process available at Online
-                                            {{ $university['univ_name'] }}, therefore there is
-                                            no need to physically visit the campus to apply for admission. There is no
-                                            entrance
-                                            exam required to apply for
-                                            admission to {{ $university['univ_name'] }} Online because admissions are made
-                                            directly. The following
-                                            describes the {{ $university['univ_name'] }}'s admissions process for online
-                                            courses:
-                                        </p>
-                                        <a class="btn btn-primary my-2" title="get recommendation" href="#queryModal"
-                                            data-bs-toggle="modal" data-bs-target="#queryModal">
-                                            Ask Admission Query
-                                        </a>
-                                    </article>
-                                </div>
-                                <div class="col-md-6 p-2">
-                                    <div class="accordion">
-                                        @php
-                                            $steps = [['step_title' => 'Explore Programs', 'step_desc' => 'Browse our diverse range of programs like MBA, BBA, MA, B.COM, Machine Learning, Python and many more...'], ['step_title' => 'Fill Application', 'step_desc' => 'Fill online application form with accurate.'], ['step_title' => 'Get Expert Help', 'step_desc' => "You get your own education mentor who helps with all your questions about courses, university, colleges and fees. They're there to make things clear and easy for you."], ['step_title' => 'Upload Documents', 'step_desc' => 'Make your college application faster by sending your documents and paying the registeration fees.'], ['step_title' => 'Confirm Admission', 'step_desc' => 'Upon acceptance, pay fees to secure your seat and finalize enrollment'], ['step_title' => 'Start Class & Claim Gift', 'step_desc' => 'Confirm your class date, seat, enrollment number and get your gift as reward points']];
-                                        @endphp
-                                        @for ($i = 0; $i < count($steps); $i++)
-                                            <article class="accordion-item">
-                                                <p class="accordion-header">
-                                                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                                        data-bs-target="#panel{{ $i + 1 }}" aria-expanded="true"
-                                                        aria-controls="panel{{ $i + 1 }}">
-                                                        <span>Step {{ $i + 1 }} : </span>
-                                                        <span class="ms-1">{{ $steps[$i]['step_title'] }}</span>
-                                                    </button>
-                                                </p>
-                                                <div id="panel{{ $i + 1 }}" class="accordion-collapse collapse">
-                                                    <div class="accordion-body">
-                                                        <p class="step_desc">{{ $steps[$i]['step_desc'] }}</p>
                                                     </div>
                                                 </div>
-                                            </article>
-                                        @endfor
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                    <section class="examination p-2">
-                        <div class="">
-                            <div class="row">
-                                <p class="section_title"><span>{{ $university['univ_name'] }} Examination Pattern</span></p>
-                                <p>With simply a laptop or desktop computer and a strong internet connection, you can take
-                                    tests
-                                    whenever and
-                                    wherever it suits you.</p>
-                                @php
-                                    $patterns = [['title' => 'Exam Schedule', 'desc' => 'Exam schedule alerts will be sent to students through email or SMS in advance.', 'color' => '#6e5cbc'], ['title' => 'Slot Booking', 'desc' => 'Through the LMS, learners can reserve their preferred exam time slots.', 'color' => '#02233a'], ['title' => 'E-Hall Tickets', 'desc' => 'One week prior to the exam, hall tickets will be accessible for download through the LMS.', 'color' => '#f58e16'], ['title' => 'Exam', 'desc' => 'Using a secure browser from the comfort of your home, take examinations that are proctored online.', 'color' => '#1a697e'], ['title' => 'Evaluation & Results', 'desc' => 'Results will be announced and shared with students shortly following evaluation.', 'color' => '#2fb3b7']];
-                                @endphp
-                                @foreach ($patterns as $i => $pattern)
-                                    <div class="col-md-4 col-6 p-2">
-                                        <div
-                                            class="card bg-light text-center h-100 p-2 rounded-1 bordered border-2 border-primary m-2">
-                                            <p class="count rounded-circle bg-blue position-absolute start-0 top-0 center"
-                                                style="width: 40px; height: 40px; transform: translate(-50%, 50%);">{{ $i + 1 }}
-                                            </p>
-                                            <p class="blue">{{ $pattern['title'] }}</p>
-                                            <p class="text-secondary">{{ $pattern['desc'] }}</p>
-                                            <span class="bottom-line"></span>
+                                            @endforeach
                                         </div>
                                     </div>
-                                @endforeach
+                                @endif
                             </div>
+                        </section>
+                    @endif
+
+                    <!-- Scholarships & Financial Aid -->
+                    @if(!empty($university['univ_scholarship']))
+                        <?php $scholarships = json_decode($university['univ_scholarship'], true); ?>
+                        @if(is_array($scholarships) && count($scholarships) > 0)
+                            <section id="scholarships" class="card shadow-sm mb-4">
+                                <div class="card-header bg-light">
+                                    <h2 class="h5 mb-0">Scholarships & Financial Aid</h2>
+                                </div>
+                                <div class="card-body">
+                                    <div class="accordion" id="scholarshipAccordion">
+                                        @foreach($scholarships as $index => $scholarship)
+                                            @if(!empty($scholarship['name']) && !empty($scholarship['description']))
+                                                <div class="accordion-item">
+                                                    <h3 class="accordion-header" id="scholarshipHeading{{ $index }}">
+                                                        <button class="accordion-button {{ $loop->first ? '' : 'collapsed' }}" 
+                                                                type="button" 
+                                                                data-bs-toggle="collapse" 
+                                                                data-bs-target="#scholarshipCollapse{{ $index }}" 
+                                                                aria-expanded="{{ $loop->first ? 'true' : 'false' }}" 
+                                                                aria-controls="scholarshipCollapse{{ $index }}">
+                                                            {{ $scholarship['name'] }}
+                                                            @if(!empty($scholarship['amount']))
+                                                                <span class="badge bg-success ms-2">Up to {{ $scholarship['amount'] }}</span>
+                                                            @endif
+                                                        </button>
+                                                    </h3>
+                                                    <div id="scholarshipCollapse{{ $index }}" 
+                                                         class="accordion-collapse collapse {{ $loop->first ? 'show' : '' }}" 
+                                                         aria-labelledby="scholarshipHeading{{ $index }}" 
+                                                         data-bs-parent="#scholarshipAccordion">
+                                                        <div class="accordion-body">
+                                                            <div class="mb-3">
+                                                                {!! $scholarship['description'] !!}
+                                                            </div>
+                                                            @if(!empty($scholarship['eligibility']))
+                                                                <h6 class="text-primary">Eligibility Criteria:</h6>
+                                                                <ul class="mb-3">
+                                                                    @foreach(explode('\n', $scholarship['eligibility']) as $criteria)
+                                                                        <li>{{ trim($criteria) }}</li>
+                                                                    @endforeach
+                                                                </ul>
+                                                            @endif
+                                                            @if(!empty($scholarship['application_deadline']))
+                                                                <p class="mb-0">
+                                                                    <strong>Application Deadline:</strong> 
+                                                                    {{ $scholarship['application_deadline'] }}
+                                                                </p>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </section>
+                        @endif
+                    @endif
+
+                    <!-- Campus Facilities -->
+                    @if(!empty($university['univ_facilities']))
+                        <?php $facilities = json_decode($university['univ_facilities'], true); ?>
+                        @if(is_array($facilities) && count($facilities) > 0)
+                            <section id="facilities" class="card shadow-sm mb-4">
+                                <div class="card-header bg-light">
+                                    <h2 class="h5 mb-0">Campus Facilities</h2>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-4">
+                                        @foreach($facilities as $facility)
+                                            @if(!empty($facility['name']))
+                                                <div class="col-md-6">
+                                                    <div class="d-flex">
+                                                        <div class="flex-shrink-0 text-primary me-3">
+                                                            <i class="fas {{ $facility['icon'] ?? 'fa-check-circle' }} fa-2x"></i>
+                                                        </div>
+                                                        <div>
+                                                            <h5 class="h6 mb-1">{{ $facility['name'] }}</h5>
+                                                            @if(!empty($facility['description']))
+                                                                <p class="small text-muted mb-0">{{ $facility['description'] }}</p>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </section>
+                        @endif
+                    @endif
+
+                    <!-- FAQ Section -->
+                    <section id="faq" class="card shadow-sm mb-4">
+                        <div class="card-header bg-light">
+                            <h2 class="h5 mb-0">Frequently Asked Questions</h2>
                         </div>
-                    </section>
-                    <section class="Programs p-2">
-                        <div class="">
-                            <div class="row">
-                                <p class="univ_titles">Industry-Ready Programs for Enhanced Career Readiness</p>
-                                <ul class="list-unstyled row">
-                                    @foreach (['Communication', 'Self-development & Confidence building', 'Critical thinking & Problem solving', 'Leadership', 'Professionalism', 'Teamwork & Collaboration', 'Cultural fluency', 'Technology'] as $i => $li)
-                                        <li class="p-2 col-6">
-                                            <span class="blue">#</span>{{ $li }}
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        </div>
-                    </section>
-                    <section class="Programs p-2">
-                        <div class="">
-                            <div class="row">
-                                <p class="univ_titles">Expert Career Guidance and Placement Services</p>
-                                <p>Our goal is to increase the employability quotient of students who are eager to pursue
-                                    careers after
-                                    completing their programs. We maintain a wide network with the top businesses in India,
-                                    including both
-                                    well-established and start-up businesses, to assist our students. Our goal is to match
-                                    alumni of our
-                                    programs with employers seeking the right talent and the right set of employment
-                                    possibilities that
-                                    coincide with their career goals.</p>
-                                <ul class="list-unstyled row">
-                                    @foreach (['Career Counseling', 'Resume Building', 'Interview Preparation', 'Skill Development', 'Networking Opportunities', 'Industry Insights', 'Job Placement Services', 'Soft Skills Training'] as $li)
-                                        <li class="p-2 col-6">
-                                            <span class="blue">#</span>{{ $li }}
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        </div>
-                    </section>
-                    <!-- Placement Section -->
-                    <section class="Placement p-2">
-                        <div class="">
-                            <div class="row">
-                                <p class="univ_titles">Placement Partners</p>
-                                @php
-                                    $cards = [['/images/uni-page/placement.png', '1000 + Hiring partners'], ['/images/uni-page/experience.png', 'Enhanced Hands-on Experience'], ['/images/uni-page/hiring.png', 'E-Hire Portal for Exclusive Job Opportunities']];
-                                @endphp
-                                @foreach ($cards as $i => $card)
-                                    <div class="col-md-4 p-2">
-                                        <div class="card p-4 bordered border-primary bg-light blue">
-                                            <div class="flex">
-                                                <img class="img-fluid" src="{{ $card[0] }}" alt="{{$card[1]}}" width="100">
-                                                <p>{{ $card[1] }}</p>
+                        <div class="card-body">
+                            <div class="accordion" id="faqAccordion">
+                                <!-- Admission FAQs -->
+                                <div class="accordion-item">
+                                    <h3 class="accordion-header" id="admissionFaqHeading">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse" 
+                                                data-bs-target="#admissionFaqCollapse" aria-expanded="true" 
+                                                aria-controls="admissionFaqCollapse">
+                                            Admission Related Queries
+                                        </button>
+                                    </h3>
+                                    <div id="admissionFaqCollapse" class="accordion-collapse collapse show" 
+                                         aria-labelledby="admissionFaqHeading" data-bs-parent="#faqAccordion">
+                                        <div class="accordion-body">
+                                            <div class="mb-3">
+                                                <h6>What are the admission requirements for international students?</h6>
+                                                <p class="mb-0">
+                                                    International students need to submit their academic transcripts, proof of English 
+                                                    proficiency (TOEFL/IELTS), passport copy, and other relevant documents. Please check 
+                                                    our international admissions page for detailed requirements.
+                                                </p>
+                                            </div>
+                                            <div class="mb-3">
+                                                <h6>When does the application process begin?</h6>
+                                                <p class="mb-0">
+                                                    The application process typically begins in January for the fall semester and in 
+                                                    September for the spring semester. Please check our academic calendar for specific dates.
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
-                                @endforeach
+                                </div>
+
+                                <!-- Course FAQs -->
+                                <div class="accordion-item">
+                                    <h3 class="accordion-header" id="courseFaqHeading">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                                data-bs-target="#courseFaqCollapse" aria-expanded="false" 
+                                                aria-controls="courseFaqCollapse">
+                                            Course & Program Queries
+                                        </button>
+                                    </h3>
+                                    <div id="courseFaqCollapse" class="accordion-collapse collapse" 
+                                         aria-labelledby="courseFaqHeading" data-bs-parent="#faqAccordion">
+                                        <div class="accordion-body">
+                                            <div class="mb-3">
+                                                <h6>Can I change my major after being admitted?</h6>
+                                                <p class="mb-0">
+                                                    Yes, you can change your major after completing at least one semester at the university. 
+                                                    You'll need to meet with an academic advisor and submit a change of major request form.
+                                                </p>
+                                            </div>
+                                            <div class="mb-3">
+                                                <h6>Are there online course options available?</h6>
+                                                <p class="mb-0">
+                                                    Yes, we offer a variety of online courses and degree programs. Please check our online 
+                                                    learning section for available programs and courses.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Scholarship FAQs -->
+                                <div class="accordion-item">
+                                    <h3 class="accordion-header" id="scholarshipFaqHeading">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                                data-bs-target="#scholarshipFaqCollapse" aria-expanded="false" 
+                                                aria-controls="scholarshipFaqCollapse">
+                                            Scholarship & Financial Aid
+                                        </button>
+                                    </h3>
+                                    <div id="scholarshipFaqCollapse" class="accordion-collapse collapse" 
+                                         aria-labelledby="scholarshipFaqHeading" data-bs-parent="#faqAccordion">
+                                        <div class="accordion-body">
+                                            <div class="mb-3">
+                                                <h6>How do I apply for scholarships?</h6>
+                                                <p class="mb-0">
+                                                    You can apply for scholarships through our online portal. Make sure to submit all required 
+                                                    documents before the deadline. Some scholarships may require separate applications.
+                                                </p>
+                                            </div>
+                                            <div class="mb-3">
+                                                <h6>When will I know if I've been awarded a scholarship?</h6>
+                                                <p class="mb-0">
+                                                    Scholarship decisions are typically made within 4-6 weeks after the application deadline. 
+                                                    You will be notified via email if you are selected for a scholarship.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </section>
-                    <!-- Gallery Section -->
-                    <section class="Gallery p-2">
-                        <p class="univ_titles">Gallery</p>
-                        <div class="row row-cols-md-3 row-cols-2 g-2 mb-2 ms-2">
-                            <div class="col-md-4 col-6 p-2">
-                                <img class="img-fluid rounded hover-zoom" src="/images/university/gallery/user (2).jpg" alt="">
+
+                    <!-- Important Dates -->
+                    @if(!empty($importantDates) && is_array($importantDates) && count($importantDates) > 0)
+                        <section id="dates" class="card shadow-sm mb-4">
+                            <div class="card-header bg-light">
+                                <h2 class="h5 mb-0">Important Dates</h2>
                             </div>
-                            <div class="col-md-4 col-6 p-2">
-                                <img class="img-fluid rounded hover-zoom" src="/images/university/gallery/user (4).jpg" alt="">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Event</th>
+                                                <th>Start Date</th>
+                                                <th>End Date</th>
+                                                <th>Description</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($importantDates as $date)
+                                                @if(isset($date['event']) && (isset($date['start_date']) || isset($date['end_date'])))
+                                                    <tr>
+                                                        <td>{{ $date['event'] ?? 'N/A' }}</td>
+                                                        <td>{{ $date['start_date'] ?? 'N/A' }}</td>
+                                                        <td>{{ $date['end_date'] ?? 'N/A' }}</td>
+                                                        <td>{{ $date['description'] ?? '' }}</td>
+                                                    </tr>
+                                                @endif
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
-                            <div class="col-md-4 col-6 p-2">
-                                <img class="img-fluid rounded hover-zoom" src="/images/university/gallery/user_bg.jpg" alt="">
-                            </div>
-                        </div>
-                    </section>
-                    <!-- FAQ's -->
-                     <section class="FAQ p-2">
-                        <div class="">
-                            <div class="row">
-                                <p class="univ_titles">FAQ's</p>
-                                <p>Here is the list of frequently asked questions by the students</p>
-                                <ul class="list-unstyled row ms-2 ">
-                                    @foreach (['Communication', 'Self-development & Confidence building', 'Critical thinking & Problem solving', 'Leadership', 'Professionalism', 'Teamwork & Collaboration', 'Cultural fluency', 'Technology'] as $i => $li)
-                                        <li class="p-2 col-6">
-                                            <span class="blue">#</span>{{ $li }}
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        </div>
-                    </section>
-                    <!-- College MAP Location Section -->
-                    <section class="p-2">
-                        <p class="univ_titles">College Location</p>
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3559.877133408761!2d75.56265937414662!3d26.84385996304845!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396c4850e05bee9b%3A0x1b8d67402d4eb863!2sManipal%20University%20Jaipur!5e0!3m2!1sen!2sin!4v1750999981023!5m2!1sen!2sin" width="100%" height="200" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downdowngrade"
-                        class="rounded shadow ms-2 mb-2"></iframe>
-                    </section>
+                        </section>
+                    @endif
                 </div>
-                <!-- Make sure parent is position: relative if needed -->
-                <div class="col-3 col-s-12 col-m-12 col-l-12 mt-5">
-                    <div class="card border-0 bg-light rounded-2 shadow"
-                        style="position: sticky; top: 20%; max-height: calc(100vh - 100px); overflow-y: auto;">
-                        <div>
-                            <p class="text-primary fw-bold mb-3">Admission</p>
-                            <p>Eligibility Criteria</p>
-                            <p>Important Dates</p>
-                            <p>Application Process</p>
-                            <p>Fee Structure</p>
-                            <p>Scholarships</p>
-                            <p>More Details</p>
-                            <p>More Details</p>
-                            <p>More Details</p>
-                            <p>More Details</p>
-                            <!-- Add more to test scroll -->
+                <!-- End of main content column -->
+
+                <!-- Sidebar -->
+                <div class="col-12 col-lg-4">
+                    <!-- Quick Links -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light">
+                            <h3 class="h6 mb-0">Quick Links</h3>
+                        </div>
+                        <div class="list-group list-group-flush">
+                            <a href="#about" class="list-group-item list-group-item-action">About University</a>
+                            @if(!empty($popularCourses))<a href="#courses" class="list-group-item list-group-item-action">Popular Courses</a>@endif
+                            @if(!empty($admission))<a href="#admission" class="list-group-item list-group-item-action">Admission Process</a>@endif
+                            @if(!empty($eligibility))<a href="#eligibility" class="list-group-item list-group-item-action">Eligibility Criteria</a>@endif
+                            @if(!empty($importantDates))<a href="#dates" class="list-group-item list-group-item-action">Important Dates</a>@endif
+                            @if(!empty($placement))<a href="#placement" class="list-group-item list-group-item-action">Placement</a>@endif
                         </div>
                     </div>
+
+                    <!-- Contact Information -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light">
+                            <h3 class="h6 mb-0">Contact Information</h3>
+                        </div>
+                        <div class="card-body">
+                            @if(!empty($university['univ_address']))
+                                <p class="mb-3">
+                                    <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                                    {{ $university['univ_address'] }}
+                                </p>
+                            @endif
+                            
+                            @if(!empty($university['univ_phone']))
+                                <p class="mb-3">
+                                    <i class="fas fa-phone me-2 text-primary"></i>
+                                    <a href="tel:{{ $university['univ_phone'] }}" class="text-decoration-none">
+                                        {{ $university['univ_phone'] }}
+                                    </a>
+                                </p>
+                            @endif
+                            
+                            @if(!empty($university['univ_email']))
+                                <p class="mb-3">
+                                    <i class="fas fa-envelope me-2 text-primary"></i>
+                                    <a href="mailto:{{ $university['univ_email'] }}" class="text-decoration-none">
+                                        {{ $university['univ_email'] }}
+                                    </a>
+                                </p>
+                            @endif
+                            
+                            @if(!empty($university['univ_website']))
+                                <p class="mb-0">
+                                    <i class="fas fa-globe me-2 text-primary"></i>
+                                    <a href="{{ $university['univ_website'] }}" target="_blank" class="text-decoration-none">
+                                        Visit Website
+                                    </a>
+                                </p>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- University Gallery -->
+                    @if(!empty($university['univ_gallery']))
+                        <?php $gallery = json_decode($university['univ_gallery'], true); ?>
+                        @if(is_array($gallery) && count($gallery) > 0)
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header bg-light">
+                                    <h3 class="h6 mb-0">Campus Gallery</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-2">
+                                        @foreach(array_slice($gallery, 0, 6) as $image)
+                                            <div class="col-4">
+                                                <a href="{{ asset('storage/' . $image) }}" data-lightbox="university-gallery" class="d-block">
+                                                    <img src="{{ asset('storage/' . $image) }}" 
+                                                         alt="Campus Image {{ $loop->iteration }}" 
+                                                         class="img-fluid rounded shadow-sm">
+                                                </a>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    @if(count($gallery) > 6)
+                                        <div class="text-center mt-2">
+                                            <a href="#" class="btn btn-sm btn-outline-primary">View All Photos</a>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        @endif
+                    @endif
                 </div>
+                <!-- End of sidebar column -->
             </div>
         </div>
     </main>
-
+                               
     @push('script')
         <script>
             function toggleContent(index, type) {

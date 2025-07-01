@@ -372,9 +372,9 @@ Route::get("/university/{identifier}", function ($identifier) {
             array_filter(explode("\n\n", $university->univ_description)) : 
             ['No description available.'];
         
-        // Convert facts to array
+        // Get facts (already cast to array in model)
         $facts = !empty($university->univ_facts) ? 
-            array_filter(explode("\n", $university->univ_facts)) : 
+            (is_array($university->univ_facts) ? $university->univ_facts : [$university->univ_facts]) : 
             ['No facts available.'];
         
         // Prepare the university data
